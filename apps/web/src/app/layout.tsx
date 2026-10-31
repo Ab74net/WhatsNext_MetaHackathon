@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import brand from "@shared/brand.json";
+import { AppShell } from "@/components/AppShell";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -18,6 +19,13 @@ export const metadata: Metadata = {
   description: `${brand.projectName}: disaster recovery help and a claims inventory from your photos.`,
 };
 
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f6f4ef" },
+    { media: "(prefers-color-scheme: dark)", color: "#0d1311" },
+  ],
+};
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
@@ -25,11 +33,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <div className="flex-1 flex flex-col">{children}</div>
-        <footer className="px-4 py-3 text-xs text-zinc-500 border-t border-zinc-200 dark:border-zinc-800">
-          {brand.projectName} gives general guidance only. It is not insurance or legal advice. In an
-          emergency, call 911.
-        </footer>
+        <AppShell>
+          <div className="flex-1 flex flex-col">{children}</div>
+          <footer className="px-4 py-4 text-center text-xs text-muted">
+            {brand.projectName} gives general guidance only. It is not insurance or legal advice.
+          </footer>
+        </AppShell>
       </body>
     </html>
   );

@@ -1,5 +1,5 @@
 // Thin client for the FastAPI backend. /api/* is forwarded to it by next.config.ts.
-import type { Health, PhotoMeta, PhotoResult } from "@shared/types";
+import type { Health, InventoryItem, PhotoMeta, PhotoResult } from "@shared/types";
 
 async function call<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`/api${path}`, init);
@@ -28,7 +28,17 @@ export const api = {
   photoUrl: (sid: string, pid: string) => `/api/sessions/${sid}/photos/${pid}.jpg`,
   extract: (sid: string, pid: string) =>
     call<PhotoResult>(`/sessions/${sid}/photos/${pid}/extract`, { method: "POST" }),
+  patchItem: (sid: string, iid: string, patch: ItemPatch) =>
+    call<InventoryItem>(`/sessions/${sid}/items/${iid}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(patch),
+    }),
+  deleteItem: (sid: string, iid: string) =>
+    call<{ deleted: boolean }>(`/sessions/${sid}/items/${iid}`, { method: "DELETE" }),
 };
+
+export type ItemPatch = Partial<Pick<InventoryItem, "category" | "brand" | "model" | "condition" | "user_confirmed">>;
 
 // Run async tasks with at most `limit` in flight.
 export async function pool<T>(items: T[], limit: number, fn: (item: T) => Promise<void>) {

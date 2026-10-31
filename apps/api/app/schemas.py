@@ -53,6 +53,16 @@ class InventoryItem(BaseModel):
     user_confirmed: bool = False
 
 
+class ItemPatch(BaseModel):
+    """User edits from the review screen. Evidence and photos can't be edited."""
+
+    category: str | None = Field(default=None, min_length=1)
+    brand: str | None = None
+    model: str | None = None
+    condition: Condition | None = None
+    user_confirmed: bool | None = None
+
+
 # --- Spark structured output ------------------------------------------------------
 
 

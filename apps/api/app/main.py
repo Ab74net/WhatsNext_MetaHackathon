@@ -10,7 +10,7 @@ from . import config, sessions
 from .images import NotAnImageError, process_upload
 from .model_client import make_client
 from .pipeline import process_photo
-from .schemas import Health, PhotoMeta, PhotoResult
+from .schemas import Health, InventoryItem, ItemPatch, PhotoMeta, PhotoResult
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("api")
@@ -88,4 +88,34 @@ async def extract(sid: str, pid: str) -> PhotoResult:
         log.warning("extract failed: %s", type(err).__name__)
         raise HTTPException(502, f"Model call failed: {type(err).__name__}: {str(err)[:300]}")
     session.results[pid] = result
+    # Re-running a photo replaces its items rather than duplicating them.
+    for iid in [i for i, it in session.items.items() if it.photos[0].photo_id == pid]:
+        del session.items[iid]
+    session.items.update({it.id: it for it in result.items})
     return result
+
+
+@app.get("/api/sessions/{sid}/items", response_model=list[InventoryItem])
+def list_items(sid: str) -> list[InventoryItem]:
+    return list(_session(sid).items.values())
+
+
+@app.patch("/api/sessions/{sid}/items/{iid}", response_model=InventoryItem)
+def edit_item(sid: str, iid: str, patch: ItemPatch) -> InventoryItem:
+    session = _session(sid)
+    item = session.items.get(iid)
+    if not item:
+        raise HTTPException(404, "Item not found")
+    changes = patch.model_dump(exclude_unset=True)
+    if "category" in changes:
+        changes["category"] = changes["category"].strip().lower()
+    for key in ("brand", "model"):
+        if key in changes and changes[key] is not None:
+            changes[key] = changes[key].strip() or None
+    session.items[iid] = item.model_copy(update=changes)
+    return session.items[iid]
+
+
+@app.delete("/api/sessions/{sid}/items/{iid}")
+def delete_item(sid: str, iid: str) -> dict:
+    return {"deleted": _session(sid).items.pop(iid, None) is not None}

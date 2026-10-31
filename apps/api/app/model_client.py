@@ -19,6 +19,7 @@ log = logging.getLogger(__name__)
 IDENTIFY_PROMPT = """You help a disaster survivor rebuild a home-contents inventory for an insurance claim.
 First classify the photo. If it shows an ID card, passport, document, receipt-like paper, or is a screenshot, set photo_kind accordingly and return an empty items list.
 Otherwise list distinct household belongings worth claiming (furniture, electronics, appliances, decor, clothing, tools). Skip walls, floors, windows, people and pets.
+This is a contents (personal property) inventory, so also skip built-in fixtures that are part of the building: toilets, sinks, vanities, bathtubs, cabinets, countertops, kitchen islands, built-in ovens, cooktops, range hoods, ceiling fans and fixed light fixtures.
 Use a short lowercase noun for category (it is used as a segmentation prompt), e.g. "sofa", "television", "floor lamp".
 Never guess a brand or model you cannot read; use null. Use evidence "inferred" only when the item is implied but not clearly visible. Be conservative: never inflate."""
 
@@ -76,6 +77,7 @@ class MetaModelClient:
                 }],
                 text={"format": {"type": "json_schema", "name": "photo_items",
                                  "schema": PHOTO_JSON_SCHEMA, "strict": True}},
+                reasoning={"effort": config.SPARK_IDENTIFY_EFFORT},
             )
             try:
                 return PhotoIdentification.model_validate(json.loads(res.output_text))

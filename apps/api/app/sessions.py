@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 
 from .config import SESSION_TTL_MINUTES
 from .images import ProcessedPhoto
-from .schemas import PhotoResult
+from .schemas import InventoryItem, PhotoResult
 
 
 @dataclass
@@ -22,6 +22,7 @@ class Session:
     last_seen: float = field(default_factory=time.time)
     photos: dict[str, StoredPhoto] = field(default_factory=dict)
     results: dict[str, PhotoResult] = field(default_factory=dict)
+    items: dict[str, InventoryItem] = field(default_factory=dict)  # the inventory; export reads this
 
 
 _sessions: dict[str, Session] = {}

@@ -1,26 +1,94 @@
 @import "tailwindcss";
 
+/* Design tokens: calm and dignified (users have just lost something). Use them as
+   Tailwind classes: bg-surface, text-ink, text-muted, border-line, bg-accent, ... */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --bg: #f6f4ef;
+  --surface: #ffffff;
+  --surface-2: #efece5;
+  --ink: #1b2220;
+  --muted: #5d6763;
+  --line: #e2ddd3;
+  --accent: #0f6e66;
+  --accent-ink: #ffffff;
+  --accent-soft: #d7ebe7;
+  --warn: #a35a07;
+  --warn-soft: #fbefd9;
+  --danger: #b42318;
+  --good: #1f7a3f;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --bg: #0d1311;
+    --surface: #141c19;
+    --surface-2: #1b2521;
+    --ink: #e7ece9;
+    --muted: #98a49f;
+    --line: #26312d;
+    --accent: #3fb3a3;
+    --accent-ink: #06201c;
+    --accent-soft: #15302b;
+    --warn: #e7a74a;
+    --warn-soft: #2e2312;
+    --danger: #f2756a;
+    --good: #5fc786;
   }
 }
 
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-danger: var(--danger);
+  --color-good: var(--good);
+  /* kept so existing bg-background / text-foreground classes still work */
+  --color-background: var(--bg);
+  --color-foreground: var(--ink);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* --- Scan animations ----------------------------------------------------------- */
+
+/* A soft light bar that sweeps down a photo while it is being scanned. */
+@keyframes scan-sweep {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+.scan-sweep {
+  background: linear-gradient(to bottom, transparent 0%, color-mix(in srgb, var(--accent) 35%, transparent) 50%, transparent 100%);
+  animation: scan-sweep 1.8s ease-in-out infinite;
+}
+
+/* Mask outlines trace themselves in (paths use pathLength="1"), then the fill fades up. */
+@keyframes mask-draw {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes mask-fill {
+  from { fill-opacity: 0; }
+}
+.mask-draw {
+  stroke-dasharray: 1;
+  animation: mask-draw 0.9s ease-out both, mask-fill 0.6s ease-out 0.6s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scan-sweep { animation: none; opacity: 0.4; transform: none; }
+  .mask-draw { animation: none; stroke-dasharray: none; }
 }

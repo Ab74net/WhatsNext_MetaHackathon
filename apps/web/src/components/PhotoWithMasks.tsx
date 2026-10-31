@@ -1,9 +1,35 @@
-import type { InventoryItem, PhotoMeta } from "@shared/types";
+import type { InventoryItem, Mask, PhotoMeta } from "@shared/types";
 
-const COLORS = ["#2563eb", "#16a34a", "#d97706", "#db2777", "#7c3aed", "#0891b2"];
+const COLORS = ["#2a9d8f", "#e9a23b", "#5b8def", "#e76f51", "#8e7dbe", "#4caf7a"];
 
 export function colorFor(index: number) {
   return COLORS[index % COLORS.length];
+}
+
+function strokeFor(width: number) {
+  return Math.max(2, width / 300);
+}
+
+// One mask as SVG. Paths are in mask-local coordinates, so translate by the bounds.
+// pathLength=1 lets the CSS "mask-draw" animation trace any outline in the same time.
+function MaskShape({ mask, color, width, animate, delayMs = 0 }: {
+  mask: Mask; color: string; width: number; animate: boolean; delayMs?: number;
+}) {
+  const { left, top, right, bottom } = mask.bounds;
+  const common = {
+    fill: color,
+    fillOpacity: 0.3,
+    stroke: color,
+    strokeWidth: strokeFor(width),
+    pathLength: 1,
+    className: animate ? "mask-draw" : undefined,
+    style: animate ? { animationDelay: `${delayMs}ms, ${delayMs + 600}ms` } : undefined,
+  };
+  return mask.svg_path ? (
+    <path d={mask.svg_path} transform={`translate(${left} ${top})`} {...common} />
+  ) : (
+    <rect x={left} y={top} width={right - left} height={bottom - top} {...common} fillOpacity={0} />
+  );
 }
 
 // The photo with each item's SAM mask drawn on top. The SVG viewBox uses the photo's
@@ -12,46 +38,52 @@ export function PhotoWithMasks({
   src,
   meta,
   items,
-  highlightId,
+  highlightId = null,
+  animate = false,
+  className = "",
 }: {
   src: string;
   meta: PhotoMeta;
   items: InventoryItem[];
-  highlightId: string | null;
+  highlightId?: string | null;
+  animate?: boolean;
+  className?: string;
 }) {
   return (
-    <div className="relative w-full overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-900">
+    <div className={`relative overflow-hidden bg-surface-2 ${className}`}>
       {/* eslint-disable-next-line @next/next/no-img-element -- session photo, not a static asset */}
-      <img src={src} alt={meta.filename} className="block w-full h-auto" />
-      <svg
-        viewBox={`0 0 ${meta.width} ${meta.height}`}
-        className="absolute inset-0 w-full h-full pointer-events-none"
-      >
+      <img src={src} alt={meta.filename} className="block h-auto w-full" />
+      <svg viewBox={`0 0 ${meta.width} ${meta.height}`} className="pointer-events-none absolute inset-0 h-full w-full">
         {items.map((item, i) => {
           const mask = item.photos.find((p) => p.photo_id === meta.photo_id)?.mask;
           if (!mask) return null;
-          const { left, top, right, bottom } = mask.bounds;
-          const color = colorFor(i);
           const dim = highlightId !== null && highlightId !== item.id;
           return (
-            <g key={item.id} opacity={dim ? 0.15 : 1}>
-              {mask.svg_path ? (
-                <path
-                  d={mask.svg_path}
-                  transform={`translate(${left} ${top})`}
-                  fill={color}
-                  fillOpacity={0.35}
-                  stroke={color}
-                  strokeWidth={Math.max(2, meta.width / 400)}
-                />
-              ) : (
-                <rect x={left} y={top} width={right - left} height={bottom - top}
-                  fill="none" stroke={color} strokeWidth={Math.max(2, meta.width / 400)} />
-              )}
+            <g key={item.id} opacity={dim ? 0.12 : 1} className="transition-opacity">
+              <MaskShape mask={mask} color={colorFor(i)} width={meta.width} animate={animate} delayMs={i * 140} />
             </g>
           );
         })}
       </svg>
     </div>
+  );
+}
+
+// A thumbnail zoomed to one item's mask: the viewBox crops the full photo to the
+// padded bounds, so no image processing is needed.
+export function ItemCrop({ src, meta, mask, color }: { src: string; meta: PhotoMeta; mask: Mask | null; color: string }) {
+  let box = [0, 0, meta.width, meta.height];
+  if (mask) {
+    const { left, top, right, bottom } = mask.bounds;
+    const pad = Math.max(right - left, bottom - top) * 0.15;
+    const x = Math.max(0, left - pad);
+    const y = Math.max(0, top - pad);
+    box = [x, y, Math.min(meta.width, right + pad) - x, Math.min(meta.height, bottom + pad) - y];
+  }
+  return (
+    <svg viewBox={box.join(" ")} preserveAspectRatio="xMidYMid slice" className="h-full w-full bg-surface-2">
+      <image href={src} width={meta.width} height={meta.height} />
+      {mask && <MaskShape mask={mask} color={color} width={box[2] * 1.5} animate={false} />}
+    </svg>
   );
 }

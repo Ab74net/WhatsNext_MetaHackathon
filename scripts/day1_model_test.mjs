@@ -93,6 +93,7 @@ async function identify(dataUrl) {
         ],
       }],
       text: { format: { type: "json_schema", name: "photo_items", schema: PHOTO_JSON_SCHEMA, strict: true } },
+      reasoning: { effort: process.env.SPARK_IDENTIFY_EFFORT || "low" }, // same default as the backend
     });
     const ms = Date.now() - t0;
     try {

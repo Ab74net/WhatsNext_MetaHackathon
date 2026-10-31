@@ -12,12 +12,13 @@ from .schemas import IdentifiedItem, InventoryItem, Mask, PhotoEvidence, PhotoRe
 from .sessions import Session
 
 log = logging.getLogger(__name__)
-_limit = asyncio.Semaphore(config.MAX_PARALLEL_MODEL_CALLS)
+_spark_limit = asyncio.Semaphore(config.MAX_PARALLEL_SPARK_CALLS)
+_sam_limit = asyncio.Semaphore(config.MAX_PARALLEL_SAM_CALLS)
 EXTRA_INSTANCE_MIN_CONFIDENCE = 0.5
 
 
-async def _limited(coro):
-    async with _limit:
+async def _limited(limit: asyncio.Semaphore, coro):
+    async with limit:
         return await coro
 
 
@@ -66,7 +67,7 @@ async def process_photo(client, session: Session, photo_id: str) -> PhotoResult:
     warnings: list[str] = []
 
     t0 = time.perf_counter()
-    ident = await _limited(client.identify(photo.jpeg))
+    ident = await _limited(_spark_limit, client.identify(photo.jpeg))
     timings["identify"] = int((time.perf_counter() - t0) * 1000)
 
     if ident.photo_kind != "room_or_belongings":
@@ -80,7 +81,7 @@ async def process_photo(client, session: Session, photo_id: str) -> PhotoResult:
 
     t0 = time.perf_counter()
     results = await asyncio.gather(
-        *(_limited(client.segment(c, photo.jpeg)) for c in to_segment), return_exceptions=True)
+        *(_limited(_sam_limit, client.segment(c, photo.jpeg)) for c in to_segment), return_exceptions=True)
     timings["segment"] = int((time.perf_counter() - t0) * 1000)
 
     masks_by_category: dict[str, list[Mask]] = {}

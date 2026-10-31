@@ -34,9 +34,14 @@ for _m in (SPARK_MODEL, SAM_MODEL):
     if "contributor" in _m:
         raise RuntimeError(f"{_m}: -contributor models are not allowed (privacy rule)")
 
+# Reasoning tokens dominate Spark latency: on a test photo "low" took 2.9 s vs 7.0 s
+# for the default, with the same items found. Raise it if recognition gets worse.
+SPARK_IDENTIFY_EFFORT = os.environ.get("SPARK_IDENTIFY_EFFORT", "low")
+
 SESSION_TTL_MINUTES = int(os.environ.get("SESSION_TTL_MINUTES", "60"))
 MAX_IMAGE_SIDE = 2048  # downscale before sending to models: cheaper and faster
-SAM_PROMPTS_PER_PHOTO = 4
-MAX_PARALLEL_MODEL_CALLS = 4
+SAM_PROMPTS_PER_PHOTO = 12  # SAM is cheap ($2.50 / 1,000 images) and ~1 s per call
+MAX_PARALLEL_SPARK_CALLS = 4
+MAX_PARALLEL_SAM_CALLS = 12
 
 BRAND = json.loads((REPO_ROOT / "packages" / "shared" / "brand.json").read_text(encoding="utf-8"))
