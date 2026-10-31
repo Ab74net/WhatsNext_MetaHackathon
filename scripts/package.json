@@ -1,0 +1,14 @@
+{
+  "name": "scripts",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "day1": "node --env-file-if-exists=../.env day1_model_test.mjs"
+  },
+  "dependencies": {
+    "@meta-sam/parser": "^0.1.0",
+    "exifr": "^7.1.3",
+    "openai": "^7.45.1",
+    "zod": "^3.25.76"
+  }
+}

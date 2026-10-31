@@ -1,0 +1,15 @@
+# secrets
+.env
+.env.*
+!.env.example
+
+# never commit personal photos or model output derived from them
+scripts/test_photos/*
+!scripts/test_photos/.gitkeep
+scripts/out/
+
+node_modules/
+.next/
+__pycache__/
+*.pyc
+.venv/
