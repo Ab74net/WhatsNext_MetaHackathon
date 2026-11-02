@@ -10,7 +10,7 @@ type Size = "sm" | "md" | "lg";
 
 const VARIANTS: Record<Variant, string> = {
   // Black filled pill: the one main action on a screen.
-  primary: "bg-ink text-white hover:bg-[#2b2b2b]",
+  primary: "bg-primary text-primary-ink hover:bg-primary-hover",
   // Thin black outlined pill.
   secondary: "border border-ink bg-surface text-ink hover:bg-surface-2",
   ghost: "text-muted hover:bg-surface-2 hover:text-ink",
@@ -19,9 +19,9 @@ const VARIANTS: Record<Variant, string> = {
   accent: "bg-accent text-accent-ink hover:bg-accent-hover",
 };
 const SIZES: Record<Size, string> = {
-  sm: "h-9 px-3.5 text-[13px] gap-1.5",
-  md: "h-10 px-4 text-sm gap-2",
-  lg: "h-12 px-6 text-[15px] gap-2",
+  sm: "min-h-11 px-4 text-[13px] gap-1.5",
+  md: "min-h-11 px-5 text-sm gap-2",
+  lg: "min-h-13 px-7 text-base gap-3",
 };
 
 export function buttonClass(variant: Variant = "secondary", size: Size = "md", className = "") {
@@ -45,7 +45,7 @@ export function ButtonLink({ variant = "secondary", size = "md", className = "",
 }
 
 export function Card({ className = "", children, ...props }: ComponentProps<"div">) {
-  return <div {...props} className={`rounded-2xl border border-line bg-surface shadow-card ${className}`}>{children}</div>;
+  return <div {...props} className={`ui-card border border-line bg-surface shadow-card ${className}`}>{children}</div>;
 }
 
 type Tone = "neutral" | "accent" | "blue" | "good" | "warn" | "danger";
@@ -70,7 +70,7 @@ export function Badge({ tone = "neutral", icon, children, className = "" }:
 
 export function ProgressBar({ value, tone = "accent", className = "" }: { value: number; tone?: "accent" | "good"; className?: string }) {
   return (
-    <div className={`h-1.5 overflow-hidden rounded-full bg-surface-3 ${className}`} role="progressbar"
+    <div className={`h-2.5 overflow-hidden rounded-full bg-surface-3 ${className}`} role="progressbar" aria-label="Progress"
       aria-valuenow={Math.round(value * 100)} aria-valuemin={0} aria-valuemax={100}>
       <div className={`h-full rounded-full transition-[width] duration-500 ${tone === "good" ? "bg-good" : "bg-accent"}`}
         style={{ width: `${Math.min(100, Math.max(0, value * 100))}%` }} />
@@ -124,7 +124,7 @@ export function Stepper<K extends string>({ steps, current, reachable, onSelect,
 }) {
   const at = steps.findIndex((s) => s.key === current);
   return (
-    <nav aria-label={label}>
+    <nav className="claim-stepper" aria-label={label}>
       <ol className="flex items-center gap-2 sm:gap-3">
         {steps.map((s, i) => {
           const isCurrent = i === at;
@@ -134,11 +134,11 @@ export function Stepper<K extends string>({ steps, current, reachable, onSelect,
               <button type="button" data-tour={`claims-step-${s.key}`} disabled={!reachable[s.key] || isCurrent}
                 onClick={() => onSelect(s.key)} aria-current={isCurrent ? "step" : undefined}
                 className="group flex min-h-11 items-center gap-2 disabled:cursor-default">
-                <span className={`flex size-7 shrink-0 items-center justify-center rounded-full text-[13px] font-bold ${
+                <span className={`step-number flex size-7 shrink-0 items-center justify-center rounded-full text-[13px] font-bold ${
                   isCurrent ? "bg-accent text-accent-ink" : done ? "border border-ink text-ink" : "border border-line-strong text-subtle"}`}>
                   {done ? <svg viewBox="0 0 24 24" className="size-3.5" aria-hidden><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></svg> : i + 1}
                 </span>
-                <span className={`hidden whitespace-nowrap text-sm font-semibold sm:inline ${
+                <span className={`step-label hidden whitespace-nowrap text-sm font-semibold sm:inline ${
                   isCurrent ? "text-ink" : reachable[s.key] ? "text-ink group-hover:underline" : "text-subtle"}`}>{s.label}</span>
               </button>
               {i < steps.length - 1 && <span aria-hidden className={`h-px flex-1 ${i < at ? "bg-ink" : "bg-line"}`} />}

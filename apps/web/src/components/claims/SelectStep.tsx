@@ -76,22 +76,22 @@ export function SelectStep({ onScan, scannedCount }: { onScan: (picks: Pick[]) =
       onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
       onDragLeave={() => setDragging(false)}
       onDrop={(e) => { e.preventDefault(); setDragging(false); addFiles(e.dataTransfer.files); }}
-      className={`flex cursor-pointer flex-col items-center gap-3 rounded-lg border-2 border-dashed text-center transition-colors ${
-        picks.length ? "px-4 py-5 sm:flex-row sm:text-left" : "px-6 py-14"} ${
+      className={`flex cursor-pointer flex-col items-center gap-4 rounded-[20px] border border-dashed text-center transition-colors focus-within:outline-2 focus-within:outline-offset-4 focus-within:outline-blue ${
+        picks.length ? "px-4 py-5 sm:flex-row sm:text-left" : "px-6 py-20"} ${
         dragging ? "border-accent bg-accent-soft" : "border-line hover:border-accent/60 hover:bg-surface-2"}`}
     >
       <span className={`flex shrink-0 items-center justify-center rounded-lg bg-accent-soft text-accent ${picks.length ? "size-10" : "size-14"}`}>
         {reading ? <Pulse className="size-2.5" /> : <ImageUp className="size-6" aria-hidden />}
       </span>
       <span className="flex flex-col gap-1">
-        <span className="font-semibold">{picks.length ? "Add more photos" : "Choose photos from your camera roll"}</span>
+        <span className="font-display text-xl font-bold sm:text-2xl">{picks.length ? "Add more photos" : "Your photos are a place to start."}</span>
         <span className="max-w-md text-sm text-muted">
           {reading ? "Reading photo dates on your device…"
             : "Birthdays, holidays, move-in day: any photo with your things in the background. You can also drag photos here."}
         </span>
       </span>
-      {!picks.length && <span className="mt-1 inline-flex h-9 items-center rounded-lg bg-accent px-4 text-sm font-semibold text-accent-ink">Choose photos</span>}
-      <input type="file" accept="image/*,.heic,.heif" multiple className="hidden"
+      {!picks.length && <span className="mt-3 inline-flex h-12 items-center rounded-full bg-primary px-7 text-sm font-semibold text-primary-ink">Choose photos</span>}
+      <input type="file" aria-label="Choose photos from your camera roll" accept="image/*,.heic,.heif" multiple className="sr-only"
         onChange={(e) => { addFiles(e.target.files); e.target.value = ""; }} />
     </label>
   );

@@ -21,13 +21,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <TourProvider>
-    <div className="flex min-h-full flex-col">
+    <div className="app-shell flex min-h-dvh flex-col">
+      <a href="#main-content" className="fixed -top-20 left-4 z-50 rounded-full bg-primary px-5 py-3 text-primary-ink focus:top-3">Skip to content</a>
       <header className="sticky top-0 z-30 border-b border-line bg-canvas">
-        <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-3 px-4 sm:px-6">
+        <div className="mx-auto flex h-20 w-full max-w-[1440px] items-center gap-3 px-4 sm:px-8 lg:px-10">
           <Link href="/" className="flex min-w-0 items-center gap-2.5">
             <Mark />
-            <span className="truncate font-display text-[17px] font-bold tracking-tight">
-              {brand.projectName}<span className="hidden font-medium text-muted sm:inline"> × {brand.partner}</span>
+            <span className="truncate font-display text-lg font-bold tracking-tight lg:text-[23px]">
+              {brand.projectName}<span className="hidden sm:inline"> × {brand.partner}</span>
             </span>
           </Link>
 
@@ -48,16 +49,25 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               className="inline-flex h-10 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 text-[13px] font-semibold text-danger transition-colors hover:bg-danger-soft">
               <Phone className="size-3.5" aria-hidden /> Call 911
             </a>
-            <Link href="/agent" className="hidden h-10 items-center rounded-full bg-ink px-4 text-sm font-semibold text-white hover:bg-[#2b2b2b] sm:inline-flex">
+            <Link href="/agent" className="hidden h-11 items-center rounded-full bg-primary px-6 text-sm font-semibold text-primary-ink hover:bg-primary-hover sm:inline-flex">
               Get help
             </Link>
           </div>
         </div>
       </header>
 
-      <main className="flex min-w-0 flex-1 flex-col">{children}</main>
+      <main id="main-content" tabIndex={-1} className="app-content flex min-w-0 flex-1 flex-col">
+        <span aria-hidden className="page-decoration page-decoration-blue" />
+        <span aria-hidden className="page-decoration page-decoration-coral" />
+        {children}
+      </main>
 
       <footer className="border-t border-line px-4 pb-24 pt-5 text-center text-xs text-subtle md:pb-5">
+        <div className="mb-3 flex flex-wrap justify-center gap-5 text-[13px] font-medium text-ink">
+          <Link href="/#privacy" className="hover:underline">Privacy</Link>
+          <Link href="/toolkit" className="hover:underline">Recovery toolkit</Link>
+          <a href="tel:911" className="text-danger hover:underline">In danger? Call 911.</a>
+        </div>
         General guidance only. Not insurance or legal advice. Every source shows when it was last checked.
       </footer>
 

@@ -28,7 +28,6 @@ export function ScanStep({ session, onReview }: { session: ClaimSession; onRevie
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="grid gap-4 lg:grid-cols-[1fr_360px]">
       <Card className="flex flex-col gap-4 p-6">
         <div className="flex flex-wrap items-center gap-x-10 gap-y-4">
           <div className="flex items-center gap-3">
@@ -70,11 +69,15 @@ export function ScanStep({ session, onReview }: { session: ClaimSession; onRevie
           </p>
         )}
       </Card>
+      <div className="grid items-start gap-6 lg:grid-cols-[1.2fr_1fr]">
+      {photos[0] && <ScanCard photo={photos[0]} src={photos[0].meta ? session.photoUrl(photos[0].meta.photo_id) : photos[0].localUrl}
+        found={photos[0].meta ? Object.values(items).filter((it) => it.photos.some((ph) => ph.photo_id === photos[0].meta!.photo_id)) : []}
+        onConfirmAll={() => photos[0].meta && session.confirmPhoto(photos[0].meta.photo_id)} />}
       <ScanChecklist photos={photos} allDone={allDone} merge={merge.status} />
       </div>
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
-        {photos.map((p) => (
+        {photos.slice(1).map((p) => (
           <ScanCard key={p.key} photo={p} src={p.meta ? session.photoUrl(p.meta.photo_id) : p.localUrl}
             found={p.meta ? Object.values(items).filter((it) => it.photos.some((ph) => ph.photo_id === p.meta!.photo_id)) : []}
             onConfirmAll={() => p.meta && session.confirmPhoto(p.meta.photo_id)} />
@@ -172,9 +175,10 @@ function ScanChecklist({ photos, allDone, merge }: { photos: ScanPhoto[]; allDon
   ];
   const current = steps.findIndex((s) => !s.done);
   return (
-    <Card className="p-6">
-      <h2 className="text-xl">{current === -1 ? "Your photos are ready." : "Analyzing your photos…"}</h2>
-      <ol className="mt-4 flex flex-col gap-3" aria-live="polite">
+    <Card className="p-7 sm:p-9">
+      <h2 className="text-2xl sm:text-3xl">{current === -1 ? "Your photos are ready." : "Analyzing your photos…"}</h2>
+      <ProgressBar value={steps.filter((s) => s.done).length / steps.length} className="my-7" />
+      <ol className="mt-4 flex flex-col gap-6" aria-live="polite">
         {steps.map((s, i) => (
           <li key={s.label} className={`flex items-center gap-3 text-[15px] ${i > current && current !== -1 ? "text-subtle" : "text-ink"}`}>
             {s.done ? <Check className="size-5 text-ink" strokeWidth={2.5} aria-hidden />

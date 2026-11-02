@@ -41,11 +41,11 @@ export function ExportStep({ session, onBack }: { session: ClaimSession; onBack:
         <div className="grid items-center gap-6 md:grid-cols-[1fr_auto]">
           <div className="flex flex-col gap-4">
             <div className="flex items-start gap-4">
-              <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-deco-blue text-white" aria-hidden>
-                <Check className="size-6" strokeWidth={3} />
+              <span className="flex size-16 shrink-0 items-center justify-center rounded-full bg-blue text-pin-ink sm:size-20" aria-hidden>
+                <Check className="size-9" strokeWidth={2.5} />
               </span>
               <div>
-                <h2 className="text-3xl">Your claim is ready.</h2>
+                <h2 className="text-3xl sm:text-5xl">Your claim is ready.</h2>
                 <p className="mt-1 text-muted">
                   {confirmed.length} item{confirmed.length === 1 ? "" : "s"} confirmed with photos
                   {valued.length ? " and estimated values" : ""}.
@@ -53,7 +53,7 @@ export function ExportStep({ session, onBack }: { session: ClaimSession; onBack:
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-4">
-              <div className="flex gap-8 rounded-2xl border border-line px-5 py-3">
+              <div className="grid w-full gap-5 rounded-2xl border border-line bg-surface-2 px-6 py-5 sm:grid-cols-2 sm:divide-x sm:divide-line [&>div+div]:sm:pl-6">
                 <Stat label="Confirmed items" value={confirmed.length} />
                 <Stat label="Estimated value" value={valued.length ? `${money(low)} – ${money(high)}` : "—"}
                   hint={valued.length < confirmed.length ? `${valued.length} of ${confirmed.length} items priced` : "All items priced"} />
@@ -112,10 +112,10 @@ export function ExportStep({ session, onBack }: { session: ClaimSession; onBack:
 // A flat document illustration with blue and coral shapes (decoration only).
 function DocumentArt() {
   return (
-    <svg viewBox="0 0 200 160" className="hidden w-48 md:block" aria-hidden>
+    <svg viewBox="0 0 200 160" className="hidden w-60 lg:block" aria-hidden>
       <path d="M18 120c-8-30 14-58 44-60s40 30 26 52-62 38-70 8z" fill="var(--deco-coral)" />
       <rect x="70" y="18" width="92" height="118" rx="10" transform="rotate(8 116 77)" fill="var(--deco-blue)" />
-      <rect x="58" y="14" width="92" height="118" rx="10" fill="#fff" stroke="var(--ink)" strokeWidth="2" />
+      <rect x="58" y="14" width="92" height="118" rx="10" fill="var(--surface)" stroke="var(--ink)" strokeWidth="2" />
       {[38, 52, 66, 80].map((y, k) => (
         <rect key={y} x="72" y={y} width={k === 3 ? 40 : 64} height="6" rx="3" fill="var(--deco-blue)" opacity={k === 0 ? 1 : 0.45} />
       ))}

@@ -60,12 +60,12 @@ export function ReviewStep({ session, onAddMore, onExport }: {
 
   return (
     <div className="flex flex-col gap-4">
-      <Card className="flex flex-col gap-4 p-5">
+      <Card className="flex flex-col gap-5 p-6 sm:p-8">
         <div className="flex flex-wrap items-center gap-4">
           <div className="min-w-52 flex-1">
-            <h2 className="text-2xl">{all.length} item{all.length === 1 ? "" : "s"} found</h2>
+            <h2 className="text-3xl">{all.length} item{all.length === 1 ? "" : "s"} found</h2>
             <p className="mt-0.5 text-sm text-muted">{confirmedCount} confirmed · {all.length - confirmedCount} to review</p>
-            <ProgressBar value={all.length ? confirmedCount / all.length : 0} className="mt-3 max-w-md" />
+            <ProgressBar value={all.length ? confirmedCount / all.length : 0} className="mt-4 max-w-xl" />
             <p className="mt-2 text-[13px] text-muted">
               Confirm only things you owned. Fix anything the scan got wrong, and remove what isn’t yours.
             </p>
@@ -140,7 +140,7 @@ export function ReviewStep({ session, onAddMore, onExport }: {
           <h2 className="px-1 text-[13px] font-semibold uppercase tracking-wide text-muted">
             {category} <span className="font-normal text-subtle">· {list.length}</span>
           </h2>
-          <div className="flex flex-col gap-2">
+          <div className="overflow-hidden rounded-3xl border border-line bg-surface [&>div+div]:border-t [&>div+div]:border-line">
             <AnimatePresence initial={false}>
               {list.map((item) => {
                 const meta = metaById[item.photos[0]?.photo_id];
@@ -211,10 +211,10 @@ function ItemCard({ item, meta, src, color, selecting, selected, onSelect, onVie
 
   return (
     <motion.div layout initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.98 }}>
-      <Card className={`flex flex-wrap items-center gap-x-4 gap-y-2 p-3 transition sm:flex-nowrap ${selected ? "ring-2 ring-accent" : ""}`}
-        onClick={selecting ? onSelect : undefined} role={selecting ? "checkbox" : undefined} aria-checked={selecting ? selected : undefined}>
-        <button onClick={selecting ? undefined : onView} aria-label="View evidence photos"
-          className="relative size-20 shrink-0 overflow-hidden rounded-xl">
+      <div className={`inventory-row transition ${selected ? "bg-accent-soft" : ""}`}>
+        <button onClick={selecting ? onSelect : onView} aria-label={selecting ? `Select ${item.category} for merge` : `View evidence photos of ${item.category}`}
+          aria-pressed={selecting ? selected : undefined}
+          className="inventory-thumb relative shrink-0 overflow-hidden rounded-xl">
           {meta && <ItemCrop src={src} meta={meta} mask={mask} color={color} />}
           {photoCount > 1 && (
             <span className="absolute bottom-1 right-1 inline-flex items-center gap-0.5 rounded-md bg-black/65 px-1.5 py-0.5 text-[10px] font-semibold text-white">
@@ -244,7 +244,7 @@ function ItemCard({ item, meta, src, color, selecting, selected, onSelect, onVie
             </div>
           ) : (
             <div className="flex items-start gap-2">
-              <p className="min-w-0 flex-1 truncate font-semibold capitalize">
+              <p className="min-w-0 flex-1 truncate font-display text-xl font-bold capitalize sm:text-2xl">
                 {item.category}
                 {(item.brand || item.model) && (
                   <span className="font-normal normal-case text-muted"> · {[item.brand, item.model].filter(Boolean).join(" ")}</span>
@@ -266,19 +266,24 @@ function ItemCard({ item, meta, src, color, selecting, selected, onSelect, onVie
             <span className="text-xs text-subtle tabular-nums" title="How sure the scan is">{Math.round(item.confidence * 100)}%</span>
           </div>
           {earliest && <p className="text-xs text-subtle">Earliest photo {new Date(earliest).toLocaleDateString()}</p>}
-          {item.estimated_replacement_usd && (
-            <p className="text-sm font-semibold tabular-nums">
+        </div>
+
+            <div className="inventory-price tabular-nums">
+          {item.estimated_replacement_usd ? (
+            <p>
               ${item.estimated_replacement_usd.low.toLocaleString()} – ${item.estimated_replacement_usd.high.toLocaleString()}
-              <span className="ml-1 text-xs font-normal text-muted">estimate</span>
+              <span className="block text-xs font-normal text-muted">Replacement estimate</span>
             </p>
-          )}
+          ) : <span className="text-xs font-normal text-muted">Estimate at export</span>}
+            </div>
 
           {!selecting && (
-            <div className="mt-auto flex items-center gap-1 pt-1">
+            <div className="inventory-actions">
               <Button size="sm" variant={item.user_confirmed ? "success" : "primary"} aria-pressed={item.user_confirmed}
                 onClick={() => onPatch({ user_confirmed: !item.user_confirmed })}>
                 <Check className="size-3.5" strokeWidth={3} aria-hidden /> {item.user_confirmed ? "Confirmed" : "Confirm"}
               </Button>
+              <div className="flex items-center gap-1">
               {editing ? (
                 <Button size="sm" variant="ghost" onClick={save}>Save</Button>
               ) : (
@@ -292,10 +297,10 @@ function ItemCard({ item, meta, src, color, selecting, selected, onSelect, onVie
               <Button size="sm" variant="ghost" onClick={onRemove} className="ml-auto hover:text-danger" aria-label="Remove">
                 <Trash2 className="size-3.5" />
               </Button>
+              </div>
             </div>
           )}
-        </div>
-      </Card>
+      </div>
     </motion.div>
   );
 }

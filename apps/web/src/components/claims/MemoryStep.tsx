@@ -17,8 +17,8 @@ import { Badge, Button, Card, EmptyState, Notice } from "@/components/ui";
 
 const W = 900;
 const H = 560;
-const PILL_H = 34;
-const HUB_R = 48;
+const PILL_H = 42;
+const HUB_R = 64;
 const GRADE_LABEL: Record<EvidenceGrade["grade"], string> = { strong: "Strong evidence", fair: "Fair evidence", weak: "Weak evidence" };
 
 // "hub" is the "Your home" centre: drawn only, linked to every room.
@@ -152,8 +152,8 @@ export function MemoryStep({ session, onExport }: { session: ClaimSession; onExp
       </Card>
 
       <div className="grid gap-4 lg:grid-cols-[1fr_340px]">
-        <Card className="overflow-hidden">
-          <svg viewBox={`0 0 ${W} ${H}`} className="block h-auto w-full select-none" role="img"
+        <Card className="memory-graph">
+          <svg viewBox={`0 0 ${W} ${H}`} className="block h-auto w-full select-none" role="group"
             aria-label={`Memory web: ${web.rooms.length} rooms and ${suggestionsLeft} suggestions`}>
             {graph.links.map((l, i) => (
               <line key={i} x1={l.source.x} y1={l.source.y} x2={l.target.x} y2={l.target.y}
@@ -168,7 +168,9 @@ export function MemoryStep({ session, onExport }: { session: ClaimSession; onExp
                   transition={{ delay: Math.min(i, 24) * 0.03, type: "spring", stiffness: 260, damping: 20 }}
                   style={{ x: n.x, y: n.y, cursor: "pointer" }}
                   onClick={() => setSelected(on ? null : { kind: n.kind, id: n.id })}
-                  role="button" aria-label={n.kind === "suggestion" ? ownQuestion(n.label) : n.label}>
+                  role="button" tabIndex={0} aria-pressed={on}
+                  onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSelected(on ? null : { kind: n.kind, id: n.id }); } }}
+                  aria-label={n.kind === "suggestion" ? ownQuestion(n.label) : n.label}>
                   {n.kind === "room" && <RoomNode node={n} on={on} />}
                   {n.kind === "item" && items[n.id] && <ItemNode node={n} on={on} isNew={Object.values(added).includes(n.id)} />}
                   {n.kind === "suggestion" && <SuggestionNode node={n} on={on} />}
@@ -183,7 +185,7 @@ export function MemoryStep({ session, onExport }: { session: ClaimSession; onExp
           </div>
         </Card>
 
-        <Card className="p-4">
+        <Card className="p-6 sm:p-7">
           <SidePanel selected={selected} session={session} web={web} metaById={metaById}
             onClose={() => setSelected(null)}
             onDismiss={(s) => { setDismissed((d) => new Set(d).add(s.id)); setSelected(null); }}
@@ -213,9 +215,9 @@ function Pill({ node, fill, stroke, text, dashed = false, on, children }: {
 function HubNode({ x, y }: { x: number; y: number }) {
   return (
     <g transform={`translate(${x} ${y})`} aria-hidden>
-      <circle r={HUB_R} fill="var(--ink)" />
-      <path d="M-11 -6 L0 -15 L11 -6 V6 H-11 Z" transform="translate(0 -6)" fill="none" stroke="#fff" strokeWidth={2.2} strokeLinejoin="round" />
-      <text textAnchor="middle" y={22} fontSize={13} fontWeight={700} fill="#fff">Your home</text>
+      <circle r={HUB_R} fill="var(--primary)" />
+      <path d="M-11 -6 L0 -15 L11 -6 V6 H-11 Z" transform="translate(0 -6) scale(1.3)" fill="none" stroke="var(--primary-ink)" strokeWidth={2.2} strokeLinejoin="round" />
+      <text textAnchor="middle" y={29} fontSize={15} fontWeight={700} fill="var(--primary-ink)">Your home</text>
     </g>
   );
 }
@@ -226,7 +228,7 @@ function RoomNode({ node, on }: { node: Node; on: boolean }) {
 
 function ItemNode({ node, on, isNew }: { node: Node; on: boolean; isNew: boolean }) {
   return (
-    <Pill node={node} fill={isNew ? "var(--good)" : "var(--accent)"} stroke="transparent" text="#fff" on={on}>
+    <Pill node={node} fill={isNew ? "var(--good)" : "var(--accent)"} stroke="transparent" text={isNew ? "var(--good-ink)" : "var(--accent-ink)"} on={on}>
       <tspan className="capitalize">{node.label}</tspan> {"\u2713"}
     </Pill>
   );

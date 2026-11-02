@@ -40,11 +40,11 @@ export default function ClaimsPage() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6">
+    <div className="mx-auto flex w-full max-w-[1320px] flex-col gap-6 px-5 py-9 sm:px-9 lg:py-12">
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-4xl">Claim inventory</h1>
-          <p className="mt-2 text-lg text-ink">Turn your photos into a claim-ready list of what you owned.</p>
+          <h1 className="page-title">{step === "remember" ? "Memory Web" : "Claim inventory"}</h1>
+          <p className="mt-3 text-lg text-ink sm:text-xl">{step === "remember" ? "Rebuild a complete list of what you owned." : "Turn your photos into a claim-ready list of what you owned."}</p>
           <p className="mt-1 max-w-2xl text-sm text-muted">
             Only photos you pick are processed. Location data is removed before anything reaches the AI model,
             IDs and documents are skipped, and everything is deleted when you finish or close this tab.

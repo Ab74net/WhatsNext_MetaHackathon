@@ -27,10 +27,10 @@ export default function ToolkitPage() {
   }, []);
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 py-6 sm:px-8 lg:py-10">
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-5 py-9 sm:px-9 lg:py-12">
       <header className="flex items-center justify-between gap-6">
         <div>
-          <h1 className="text-3xl">Recovery toolkit</h1>
+          <h1 className="page-title">Recovery toolkit</h1>
           <p className="mt-2 max-w-2xl text-muted">
             Replace lost documents in the right order, and get ready for the call with your insurance company.
           </p>

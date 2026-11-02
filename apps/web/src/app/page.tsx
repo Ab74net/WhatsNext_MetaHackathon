@@ -25,23 +25,22 @@ export default function Home() {
   return (
     <>
       <section className="relative overflow-hidden">
-        <div className="mx-auto grid w-full max-w-7xl items-center gap-10 px-4 pb-14 pt-10 sm:px-6 lg:grid-cols-[1fr_1.05fr] lg:gap-6 lg:pb-20 lg:pt-16">
-          <div className="relative z-10 flex flex-col gap-5">
-            <h1 className="text-[2.7rem] leading-[1.02] tracking-[-0.035em] sm:text-6xl lg:text-[4.2rem]">{brand.tagline}</h1>
-            <p className="font-display text-[2rem] font-medium leading-[1.08] tracking-[-0.03em] sm:text-5xl lg:text-[3.4rem]">
+        <HomeHero>
+          <div className="home-copy">
+            <h1>{brand.tagline}</h1>
+            <p className="home-subtitle">
               We’ll help you with what’s next.
             </p>
-            <p className="max-w-md text-lg text-muted">Find help, document what you lost, and take the next step.</p>
-            <div className="mt-2 flex flex-wrap gap-3">
+            <p className="mt-5 max-w-lg text-base text-muted sm:text-lg">Find help, document what you lost, and take the next step.</p>
+            <div className="mt-7 flex flex-wrap gap-3">
               <ButtonLink href="/agent" variant="primary" size="lg">
                 Talk to {brand.agentName} <ArrowRight className="size-[18px]" aria-hidden />
               </ButtonLink>
               <ButtonLink href="/claims" variant="secondary" size="lg">Build my claim</ButtonLink>
             </div>
-            <p className="text-sm text-subtle">Free and private. No account needed.</p>
+            <p className="mt-4 text-xs text-subtle">Free and private. No account needed.</p>
           </div>
-          <HomeHero />
-        </div>
+        </HomeHero>
       </section>
 
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-16 px-4 py-14 sm:px-8 lg:gap-20 lg:py-20">
@@ -67,7 +66,7 @@ export default function Home() {
 
         <MeetWren />
 
-        <section aria-labelledby="promises">
+        <section id="privacy" className="scroll-mt-28" aria-labelledby="promises">
           <h2 id="promises" className="text-3xl">What we promise</h2>
           <ul className="mt-6 grid gap-8 sm:grid-cols-3 sm:gap-10">
             {PROMISES.map((p) => (
