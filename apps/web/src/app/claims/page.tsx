@@ -1,28 +1,36 @@
 "use client";
 
-// Claims helper: choose photos -> scan -> review. Export is Phase 3.
+// Claims helper: choose photos -> scan -> review -> export.
 
 import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
+import { Camera, Check, FileDown, ListChecks, ScanSearch, Trash2, TriangleAlert } from "lucide-react";
 import { useClaimSession } from "@/lib/useClaimSession";
 import { SelectStep, type Pick } from "@/components/claims/SelectStep";
 import { ScanStep } from "@/components/claims/ScanStep";
 import { ReviewStep } from "@/components/claims/ReviewStep";
+import { ExportStep } from "@/components/claims/ExportStep";
+import { Button, Notice } from "@/components/ui";
 
-type Step = "select" | "scan" | "review";
-const STEPS: { key: Step | "export"; label: string }[] = [
-  { key: "select", label: "Choose photos" },
-  { key: "scan", label: "Scan" },
-  { key: "review", label: "Review" },
-  { key: "export", label: "Export" },
+type Step = "select" | "scan" | "review" | "export";
+const STEPS: { key: Step; label: string; icon: typeof Camera }[] = [
+  { key: "select", label: "Choose photos", icon: Camera },
+  { key: "scan", label: "Scan", icon: ScanSearch },
+  { key: "review", label: "Review", icon: ListChecks },
+  { key: "export", label: "Export", icon: FileDown },
 ];
 
 export default function ClaimsPage() {
   const session = useClaimSession();
   const [step, setStep] = useState<Step>("select");
-  const hasPhotos = session.photos.length > 0;
-  const hasItems = Object.keys(session.items).length > 0;
-  const reachable: Record<string, boolean> = { select: true, scan: hasPhotos, review: hasItems, export: false };
+  const itemList = Object.values(session.items);
+  const reachable: Record<Step, boolean> = {
+    select: true,
+    scan: session.photos.length > 0,
+    review: itemList.length > 0,
+    export: itemList.some((i) => i.user_confirmed),
+  };
+  const currentIndex = STEPS.findIndex((s) => s.key === step);
 
   function startScan(picks: Pick[]) {
     setStep("scan");
@@ -30,63 +38,66 @@ export default function ClaimsPage() {
   }
 
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-col gap-5 px-4 py-6">
-      <header className="flex flex-wrap items-start justify-between gap-3">
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-5 px-4 py-6">
+      <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Build your claim inventory</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Claim inventory</h1>
           <p className="mt-1 max-w-2xl text-sm text-muted">
-            Only photos you pick are processed. Location data is removed before anything reaches the AI
-            model, photos of IDs and documents are skipped, and everything is deleted when you finish or
-            close this tab.
+            Only photos you pick are processed. Location data is removed before anything reaches the AI model,
+            IDs and documents are skipped, and everything is deleted when you finish or close this tab.
           </p>
         </div>
         {session.sessionId && (
-          <button onClick={() => { session.endSession(); setStep("select"); }}
-            className="rounded-full border border-line px-4 py-2 text-sm text-muted hover:text-danger">
-            Finish and delete photos
-          </button>
+          <Button variant="ghost" size="sm" onClick={() => { session.endSession(); setStep("select"); }}>
+            <Trash2 className="size-4" aria-hidden /> Finish and delete photos
+          </Button>
         )}
       </header>
 
       {session.healthError && (
-        <div className="rounded-xl border border-danger/40 bg-danger/10 p-3 text-sm text-danger">
-          Can’t reach the backend ({session.healthError}). Is FastAPI running on port 8000? Try <code>npm run dev</code>.
-        </div>
+        <Notice tone="danger" icon={<TriangleAlert className="size-4" />}>
+          Can’t reach the backend ({session.healthError}). Is it running? Start everything with <code>npm run dev</code>.
+        </Notice>
       )}
       {session.health?.mock && (
-        <div className="rounded-xl border border-warn/40 bg-warn-soft p-3 text-sm text-warn">
-          <strong>Mock mode:</strong> no API key is set, so every photo shows the same fake sofa, lamp and rug.
+        <Notice tone="warn" icon={<TriangleAlert className="size-4" />}>
+          <strong>Mock mode.</strong> No API key is set, so every photo shows the same fake sofa, lamp and rug.
           Add MODEL_API_KEY to .env and restart the backend.
-        </div>
+        </Notice>
       )}
 
-      <ol className="flex gap-1 overflow-x-auto text-sm">
+      <nav aria-label="Progress" className="grid grid-cols-4 gap-2">
         {STEPS.map((s, i) => {
           const current = s.key === step;
-          const enabled = reachable[s.key];
+          const done = i < currentIndex && reachable[s.key];
+          const Icon = done ? Check : s.icon;
           return (
-            <li key={s.key} className="flex flex-1 items-center gap-1">
-              <button disabled={!enabled || current} onClick={() => setStep(s.key as Step)}
-                className={`flex w-full items-center gap-2 rounded-full px-3 py-1.5 whitespace-nowrap ${
-                  current ? "bg-accent text-accent-ink" : enabled ? "bg-surface text-ink hover:bg-surface-2" : "text-muted/60"}`}>
-                <span className={`flex h-5 w-5 items-center justify-center rounded-full text-xs ${
-                  current ? "bg-accent-ink/20" : "bg-surface-2"}`}>{i + 1}</span>
-                {s.label}
-                {s.key === "export" && <span className="text-[10px] opacity-70">(soon)</span>}
-              </button>
-            </li>
+            <button key={s.key} disabled={!reachable[s.key] || current} onClick={() => setStep(s.key)}
+              aria-current={current ? "step" : undefined}
+              className="group flex flex-col gap-2 text-left disabled:cursor-default">
+              <span className={`h-1 rounded-full transition-colors ${current || done ? "bg-accent" : "bg-surface-3"}`} />
+              <span className={`flex items-center gap-2 text-[13px] font-semibold ${
+                current ? "text-accent" : reachable[s.key] ? "text-ink group-hover:text-accent" : "text-subtle"}`}>
+                <Icon className="size-4 shrink-0" aria-hidden />
+                <span className="hidden sm:inline">{s.label}</span>
+                <span className="sm:hidden">{i + 1}</span>
+              </span>
+            </button>
           );
         })}
-      </ol>
+      </nav>
 
       <AnimatePresence mode="wait">
-        <motion.div key={step} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}>
+        <motion.div key={step} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
           {step === "select" && <SelectStep onScan={startScan} scannedCount={session.photos.length} />}
           {step === "scan" && <ScanStep session={session} onReview={() => setStep("review")} />}
-          {step === "review" && <ReviewStep session={session} onAddMore={() => setStep("select")} />}
+          {step === "review" && (
+            <ReviewStep session={session} onAddMore={() => setStep("select")} onExport={() => setStep("export")} />
+          )}
+          {step === "export" && <ExportStep session={session} onBack={() => setStep("review")} />}
         </motion.div>
       </AnimatePresence>
-    </main>
+    </div>
   );
 }

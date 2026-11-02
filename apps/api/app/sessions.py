@@ -23,6 +23,8 @@ class Session:
     photos: dict[str, StoredPhoto] = field(default_factory=dict)
     results: dict[str, PhotoResult] = field(default_factory=dict)
     items: dict[str, InventoryItem] = field(default_factory=dict)  # the inventory; export reads this
+    merged_from: dict[str, list[InventoryItem]] = field(default_factory=dict)  # for undoing merges
+    hashes: dict[str, str] = field(default_factory=dict)  # sha256 of upload -> photo_id (dedup)
 
 
 _sessions: dict[str, Session] = {}

@@ -1,66 +1,93 @@
 @import "tailwindcss";
 
-/* Design tokens: calm and dignified (users have just lost something). Use them as
-   Tailwind classes: bg-surface, text-ink, text-muted, border-line, bg-accent, ... */
+/* Design tokens. Neutral canvas, white cards, one confident blue for primary actions.
+   Use them as Tailwind classes: bg-canvas, bg-surface, text-ink, text-muted, border-line,
+   bg-accent, text-accent, bg-accent-soft, ... */
 :root {
-  --bg: #f6f4ef;
+  --canvas: #f0f2f5;
   --surface: #ffffff;
-  --surface-2: #efece5;
-  --ink: #1b2220;
-  --muted: #5d6763;
-  --line: #e2ddd3;
-  --accent: #0f6e66;
+  --surface-2: #f5f6f7;
+  --surface-3: #e4e6eb;
+  --ink: #1c1e21;
+  --muted: #65676b;
+  --subtle: #8a8d91;
+  --line: #dadde1;
+  --accent: #0866ff;
+  --accent-hover: #0757d9;
   --accent-ink: #ffffff;
-  --accent-soft: #d7ebe7;
-  --warn: #a35a07;
-  --warn-soft: #fbefd9;
-  --danger: #b42318;
-  --good: #1f7a3f;
+  --accent-soft: #e7f0ff;
+  --good: #1a8a3c;
+  --good-soft: #e6f4ea;
+  --warn: #b26b00;
+  --warn-soft: #fff4e0;
+  --danger: #d0312d;
+  --danger-soft: #fdecea;
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.08), 0 0 0 1px rgb(0 0 0 / 0.03);
+  --shadow-pop: 0 12px 28px rgb(0 0 0 / 0.16), 0 2px 4px rgb(0 0 0 / 0.08);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0d1311;
-    --surface: #141c19;
-    --surface-2: #1b2521;
-    --ink: #e7ece9;
-    --muted: #98a49f;
-    --line: #26312d;
-    --accent: #3fb3a3;
-    --accent-ink: #06201c;
-    --accent-soft: #15302b;
-    --warn: #e7a74a;
-    --warn-soft: #2e2312;
-    --danger: #f2756a;
-    --good: #5fc786;
+    --canvas: #18191a;
+    --surface: #242526;
+    --surface-2: #2d2e30;
+    --surface-3: #3a3b3c;
+    --ink: #e4e6eb;
+    --muted: #b0b3b8;
+    --subtle: #8a8d91;
+    --line: #3e4042;
+    --accent: #2d88ff;
+    --accent-hover: #4a99ff;
+    --accent-ink: #ffffff;
+    --accent-soft: #263951;
+    --good: #45bd62;
+    --good-soft: #1f3326;
+    --warn: #f0a83a;
+    --warn-soft: #3a2e19;
+    --danger: #f3625c;
+    --danger-soft: #3d2120;
+    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 0 0 1px rgb(255 255 255 / 0.04);
+    --shadow-pop: 0 12px 28px rgb(0 0 0 / 0.5);
   }
 }
 
 @theme inline {
-  --color-bg: var(--bg);
+  --color-canvas: var(--canvas);
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
   --color-ink: var(--ink);
   --color-muted: var(--muted);
+  --color-subtle: var(--subtle);
   --color-line: var(--line);
   --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
   --color-accent-ink: var(--accent-ink);
   --color-accent-soft: var(--accent-soft);
+  --color-good: var(--good);
+  --color-good-soft: var(--good-soft);
   --color-warn: var(--warn);
   --color-warn-soft: var(--warn-soft);
   --color-danger: var(--danger);
-  --color-good: var(--good);
-  /* kept so existing bg-background / text-foreground classes still work */
-  --color-background: var(--bg);
-  --color-foreground: var(--ink);
-  --font-sans: var(--font-geist-sans);
+  --color-danger-soft: var(--danger-soft);
+  --color-bg: var(--canvas);
+  --shadow-card: var(--shadow-card);
+  --shadow-pop: var(--shadow-pop);
+  --font-sans: var(--font-inter), system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: var(--font-geist-mono);
 }
 
 body {
-  background: var(--bg);
+  background: var(--canvas);
   color: var(--ink);
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 /* --- Scan animations ----------------------------------------------------------- */
@@ -68,11 +95,11 @@ body {
 /* A soft light bar that sweeps down a photo while it is being scanned. */
 @keyframes scan-sweep {
   0% { transform: translateY(-100%); }
-  100% { transform: translateY(100%); }
+  100% { transform: translateY(200%); }
 }
 .scan-sweep {
-  background: linear-gradient(to bottom, transparent 0%, color-mix(in srgb, var(--accent) 35%, transparent) 50%, transparent 100%);
-  animation: scan-sweep 1.8s ease-in-out infinite;
+  background: linear-gradient(to bottom, transparent 0%, color-mix(in srgb, var(--accent) 45%, transparent) 50%, transparent 100%);
+  animation: scan-sweep 1.6s ease-in-out infinite;
 }
 
 /* Mask outlines trace themselves in (paths use pathLength="1"), then the fill fades up. */
@@ -88,7 +115,18 @@ body {
   animation: mask-draw 0.9s ease-out both, mask-fill 0.6s ease-out 0.6s both;
 }
 
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface-3) 50%, var(--surface-2) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .scan-sweep { animation: none; opacity: 0.4; transform: none; }
   .mask-draw { animation: none; stroke-dasharray: none; }
+  .skeleton { animation: none; }
 }

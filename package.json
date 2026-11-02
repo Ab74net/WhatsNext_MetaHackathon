@@ -3,8 +3,9 @@
   "private": true,
   "scripts": {
     "dev": "concurrently -k -n api,web -c blue,green \"npm:dev:api\" \"npm:dev:web\"",
-    "dev:api": "cd apps/api && .venv\\Scripts\\python -m uvicorn app.main:app --reload --port 8000",
+    "dev:api": "cd apps/api && .venv\\Scripts\\watchfiles --filter python \".venv\\Scripts\\python.exe -m uvicorn app.main:app --port 8000\" app",
     "dev:web": "npm --prefix apps/web run dev",
+    "stop": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/stop-dev.ps1",
     "test:api": "cd apps/api && .venv\\Scripts\\python -m pytest -q",
     "setup": "npm install && npm --prefix apps/web install && npm --prefix scripts install && cd apps/api && py -m venv .venv && .venv\\Scripts\\python -m pip install --only-binary=:all: -r requirements.txt"
   },

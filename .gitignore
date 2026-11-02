@@ -6,7 +6,16 @@
 # never commit personal photos or model output derived from them
 scripts/test_photos/*
 !scripts/test_photos/.gitkeep
+scripts/IphonePics/
 scripts/out/
+# any photo anywhere under scripts/, whatever the folder is called
+scripts/**/*.heic
+scripts/**/*.HEIC
+scripts/**/*.jpg
+scripts/**/*.JPG
+scripts/**/*.jpeg
+scripts/**/*.png
+scripts/**/*.webp
 
 node_modules/
 .next/

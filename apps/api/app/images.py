@@ -73,3 +73,17 @@ def process_upload(data: bytes) -> ProcessedPhoto:
     out = io.BytesIO()
     img.save(out, format="JPEG", quality=88)  # no exif= argument, so no metadata is written
     return ProcessedPhoto(out.getvalue(), img.width, img.height, taken_at, gps)
+
+
+def crop_jpeg(jpeg: bytes, bounds, pad: float = 0.15, max_side: int = 512) -> bytes:
+    """Crop an (already EXIF-free) photo to a mask's bounds plus padding."""
+    img = Image.open(io.BytesIO(jpeg))
+    w, h = bounds.right - bounds.left, bounds.bottom - bounds.top
+    p = max(w, h) * pad
+    box = (max(0, int(bounds.left - p)), max(0, int(bounds.top - p)),
+           min(img.width, int(bounds.right + p)), min(img.height, int(bounds.bottom + p)))
+    crop = img.crop(box)
+    crop.thumbnail((max_side, max_side))
+    out = io.BytesIO()
+    crop.save(out, format="JPEG", quality=85)
+    return out.getvalue()

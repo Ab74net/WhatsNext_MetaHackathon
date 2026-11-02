@@ -49,6 +49,8 @@ Checked against the official docs on Oct 30 and with live calls on Oct 31: Spark
 - **Structured output:** Responses `text.format = {type:"json_schema", name, schema, strict}`. Output is always schema-constrained; `strict` only adds server-side validation of the schema itself. Still validate with zod and retry once.
 - **SAM 3.1:** `POST /v1/responses`, `model:"sam-3.1"`, one `input_text` noun phrase plus one `input_image` (or `input_video`), with `stream:true`. **Verified Oct 31:** base64 data URLs in `image_url` work (the Files API fallback stays in the code). Each call takes about 1–4 s. No confidence (`c`) was returned on boxes or masks in testing, so don't rely on it. Output is special-token text, one line per frame (`<0f>0<|box;...|><|mask;...|>,1<|box...`). An empty output means no match. Costs $2.50 per 1,000 images.
 - **SAM parser:** the official one is **npm `@meta-sam/parser`** (`parseImageStream(stream).finalResult`, `recordsOfKind(records,"box"|"mask")`, `decodeMaskToSVGPath` / `decodeMaskToRaster` / `decodeMaskToRLE`), which takes the OpenAI SDK stream directly. A PyPI `meta-sam-parser` package also exists. `decodeMaskToSVGPath` gives frontend mask overlays at no extra cost.
+- **Search grounding (verified Nov 1):** `tools=[{"type":"web_search","search_context_size":"low"}]` plus `include=["web_search_call.results"]`. It works together with `text.format` json_schema. `output_text` joins the model's progress notes with the answer, so parse the **last** `message` item. Sources come back in `web_search_call.results[].url`, `action.url` (opened pages) and `url_citation` annotations. We reject any price whose URL isn't among those, or that points to a search or category page. With the item crop attached, a lookup takes about 10 s.
+- **Reasoning effort:** `reasoning={"effort":"low"}` cuts Spark image calls from about 7 s to 3 s with the same items found.
 - **Voice:** Muse Voice Transcribe for speech-to-text (Spark also accepts audio). **ElevenLabs** (spoken replies) is optional and only allowed if the Official Rules permit it. Text-only must always work first, with browser speech synthesis as the fallback.
 - Use structured output (JSON schema) for every model call whose result feeds code. Validate with a schema library and retry once on failure.
 
@@ -142,6 +144,8 @@ Item schema (keep stable; export and UI depend on it):
 1. One-time setup: `npm run setup` (installs Node packages and creates `apps/api/.venv`). Python 3.15 needs `--only-binary=:all:`, which the setup script already passes.
 2. Copy `.env.example` to `.env` and set `MODEL_API_KEY`. Without a key the backend runs in **mock mode** (fake, clearly labeled results).
 3. `npm run dev` starts FastAPI on :8000 and Next.js on :3000. Open http://localhost:3000/claims. The browser only talks to Next, which forwards `/api/*` to FastAPI.
+   - The backend restarts automatically when a `.py` file changes (via `watchfiles`; uvicorn's own `--reload` hangs on Python 3.15 on Windows). A restart **clears all sessions**, because photos are kept in memory only.
+   - If a port is stuck or the app seems to run old code: `npm run stop`, then `npm run dev`.
 4. Tests: `npm run test:api`. Model check on staged photos: put them in `scripts/test_photos/`, then `cd scripts; npm run day1`.
 
 ## Build order (reconcile with the repo's actual state first)

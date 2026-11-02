@@ -3,7 +3,7 @@
 
 export type Condition = "good" | "worn" | "damaged" | "unknown";
 export type Evidence = "seen_in_photo" | "inferred";
-export type PhotoKind = "room_or_belongings" | "id_or_document" | "screenshot" | "other";
+export type PhotoKind = "room_or_belongings" | "id_or_document" | "screenshot" | "public_or_workplace" | "other";
 
 export interface MaskBounds {
   left: number;
@@ -27,7 +27,10 @@ export interface PhotoEvidence {
 export interface ValueEstimate {
   low: number;
   high: number;
-  source_url: string;
+  source_url: string; // verified: it appeared in the model's own web-search results
+  source_title: string | null;
+  basis: string;
+  checked_at: string; // ISO-8601
 }
 
 export interface InventoryItem {
@@ -50,6 +53,7 @@ export interface PhotoMeta {
   height: number;
   taken_at: string | null;
   has_gps: boolean;
+  duplicate_of: string | null; // set when the same file was already uploaded this session
 }
 
 export interface PhotoResult {
@@ -59,6 +63,18 @@ export interface PhotoResult {
   items: InventoryItem[];
   timings_ms: Record<string, number>;
   warnings: string[];
+}
+
+export interface MergeGroup {
+  kept_id: string;
+  merged_ids: string[];
+  category: string;
+  reason: string;
+}
+
+export interface MergeResult {
+  items: InventoryItem[];
+  merges: MergeGroup[];
 }
 
 export interface Health {

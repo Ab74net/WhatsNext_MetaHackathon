@@ -1,13 +1,14 @@
 "use client";
 
 // All claims-session state in one place: the backend session, each photo's progress,
-// and the inventory (the server's copy is the source of truth; edits are optimistic).
+// the inventory (the server's copy is the source of truth; edits are optimistic),
+// cross-photo merges, and price lookups.
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { Health, InventoryItem, PhotoMeta, PhotoResult } from "@shared/types";
-import { api, pool, type ItemPatch } from "./api";
+import type { Health, InventoryItem, MergeGroup, PhotoMeta, PhotoResult } from "@shared/types";
+import { api, pool, type ExportFormat, type ItemPatch } from "./api";
 
-export type ScanStatus = "queued" | "uploading" | "scanning" | "done" | "error";
+export type ScanStatus = "queued" | "uploading" | "scanning" | "done" | "duplicate" | "error";
 
 export interface ScanPhoto {
   key: string;
@@ -19,18 +20,24 @@ export interface ScanPhoto {
   error?: string;
 }
 
-const PARALLEL = 3;
+export type MergeState = { status: "idle" } | { status: "running" } | { status: "done"; merges: MergeGroup[] } | { status: "error"; error: string };
+export type ValueState = { status: "loading" } | { status: "error"; error: string };
+
+const PARALLEL = 6;
+const message = (e: unknown) => (e instanceof Error ? e.message : String(e));
 
 export function useClaimSession() {
   const [health, setHealth] = useState<Health | null>(null);
   const [healthError, setHealthError] = useState<string | null>(null);
   const [photos, setPhotos] = useState<ScanPhoto[]>([]);
   const [items, setItems] = useState<Record<string, InventoryItem>>({});
+  const [merge, setMerge] = useState<MergeState>({ status: "idle" });
+  const [valuing, setValuing] = useState<Record<string, ValueState>>({});
   const [sessionId, setSessionId] = useState<string | null>(null);
   const sessionRef = useRef<string | null>(null);
 
   useEffect(() => {
-    api.health().then(setHealth).catch((e) => setHealthError(e instanceof Error ? e.message : String(e)));
+    api.health().then(setHealth).catch((e) => setHealthError(message(e)));
     // Delete the session's photos when the tab closes.
     const onLeave = () => sessionRef.current && api.endSessionBeacon(sessionRef.current);
     window.addEventListener("pagehide", onLeave);
@@ -40,6 +47,21 @@ export function useClaimSession() {
   const update = (key: string, patch: Partial<ScanPhoto>) =>
     setPhotos((prev) => prev.map((p) => (p.key === key ? { ...p, ...patch } : p)));
 
+  const replaceItems = (list: InventoryItem[]) => setItems(Object.fromEntries(list.map((it) => [it.id, it])));
+
+  const runMerge = useCallback(async () => {
+    const sid = sessionRef.current;
+    if (!sid) return;
+    setMerge({ status: "running" });
+    try {
+      const res = await api.autoMerge(sid);
+      replaceItems(res.items);
+      setMerge({ status: "done", merges: res.merges });
+    } catch (e) {
+      setMerge({ status: "error", error: message(e) });
+    }
+  }, []);
+
   const scan = useCallback(async (files: { key: string; file: File; localUrl: string }[]) => {
     if (!sessionRef.current) {
       const { session_id } = await api.createSession();
@@ -47,6 +69,7 @@ export function useClaimSession() {
       setSessionId(session_id);
     }
     const sid = sessionRef.current;
+    setMerge({ status: "idle" });
     setPhotos((prev) => [
       ...prev,
       ...files.map((f) => ({ key: f.key, filename: f.file.name, localUrl: f.localUrl, status: "queued" as const })),
@@ -55,15 +78,22 @@ export function useClaimSession() {
       try {
         update(key, { status: "uploading" });
         const meta = await api.uploadPhoto(sid, file);
+        if (meta.duplicate_of) {
+          // Same file already in this session: scanning it again would double-count items.
+          update(key, { meta, status: "duplicate" });
+          return;
+        }
         update(key, { meta, status: "scanning" });
         const result = await api.extract(sid, meta.photo_id);
         update(key, { result, status: "done" });
         setItems((prev) => ({ ...prev, ...Object.fromEntries(result.items.map((it) => [it.id, it])) }));
       } catch (e) {
-        update(key, { status: "error", error: e instanceof Error ? e.message : String(e) });
+        update(key, { status: "error", error: message(e) });
       }
     });
-  }, []);
+    // Look for the same belongings across photos as soon as the scan finishes.
+    await runMerge();
+  }, [runMerge]);
 
   const patchItem = useCallback(async (id: string, patch: ItemPatch) => {
     const sid = sessionRef.current;
@@ -90,6 +120,48 @@ export function useClaimSession() {
     await api.deleteItem(sid, id).catch(() => {});
   }, []);
 
+  const mergeItems = useCallback(async (ids: string[]) => {
+    const sid = sessionRef.current;
+    if (!sid || ids.length < 2) return;
+    const merged = await api.mergeItems(sid, ids);
+    setItems((prev) => {
+      const next = { ...prev };
+      ids.forEach((id) => delete next[id]);
+      next[merged.id] = merged;
+      return next;
+    });
+  }, []);
+
+  const splitItem = useCallback(async (id: string) => {
+    const sid = sessionRef.current;
+    if (!sid) return;
+    const parts = await api.splitItem(sid, id);
+    setItems((prev) => {
+      const next = { ...prev };
+      delete next[id];
+      parts.forEach((p) => (next[p.id] = p));
+      return next;
+    });
+    setMerge((m) => (m.status === "done" ? { ...m, merges: m.merges.filter((g) => g.kept_id !== id) } : m));
+  }, []);
+
+  const valueItem = useCallback(async (id: string) => {
+    const sid = sessionRef.current;
+    if (!sid) return;
+    setValuing((v) => ({ ...v, [id]: { status: "loading" } }));
+    try {
+      const updated = await api.valueItem(sid, id);
+      setItems((prev) => ({ ...prev, [id]: updated }));
+      setValuing((v) => {
+        const next = { ...v };
+        delete next[id];
+        return next;
+      });
+    } catch (e) {
+      setValuing((v) => ({ ...v, [id]: { status: "error", error: message(e).replace(/^\d+: /, "") } }));
+    }
+  }, []);
+
   const endSession = useCallback(async () => {
     if (sessionRef.current) await api.endSession(sessionRef.current).catch(() => {});
     sessionRef.current = null;
@@ -99,11 +171,17 @@ export function useClaimSession() {
       return [];
     });
     setItems({});
+    setMerge({ status: "idle" });
+    setValuing({});
   }, []);
 
   const photoUrl = (pid: string) => (sessionId ? api.photoUrl(sessionId, pid) : "");
+  const exportUrl = (fmt: ExportFormat) => (sessionId ? api.exportUrl(sessionId, fmt) : "#");
 
-  return { health, healthError, sessionId, photos, items, scan, patchItem, removeItem, endSession, photoUrl };
+  return {
+    health, healthError, sessionId, photos, items, merge, valuing,
+    scan, patchItem, removeItem, runMerge, mergeItems, splitItem, valueItem, endSession, photoUrl, exportUrl,
+  };
 }
 
 export type ClaimSession = ReturnType<typeof useClaimSession>;

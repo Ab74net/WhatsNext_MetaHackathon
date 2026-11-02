@@ -5,7 +5,12 @@
       "Bash(./.venv/Scripts/python -)",
       "Bash(npx --yes create-next-app@latest web --ts --tailwind --eslint --app --src-dir --import-alias \"@/*\" --use-npm --disable-git --yes)",
       "Bash(./.venv/Scripts/python -m pip install -q --only-binary=:all: -r requirements.txt)",
-      "Bash(./.venv/Scripts/python -m pytest -q)"
+      "Bash(./.venv/Scripts/python -m pytest -q)",
+      "Bash(npx tsc *)",
+      "Bash(npx eslint *)",
+      "Bash(./.venv/Scripts/python -m pip install -q --only-binary=:all: --target __TRACKED_VAR__/tools playwright)",
+      "Read(//c/Program Files \\\\\\(x86\\\\\\)/Microsoft/Edge/Application/**)",
+      "Bash(npx next *)"
     ]
   }
 }

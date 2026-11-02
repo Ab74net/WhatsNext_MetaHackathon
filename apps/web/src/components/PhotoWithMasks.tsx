@@ -40,6 +40,7 @@ export function PhotoWithMasks({
   items,
   highlightId = null,
   animate = false,
+  fit = false,
   className = "",
 }: {
   src: string;
@@ -47,12 +48,14 @@ export function PhotoWithMasks({
   items: InventoryItem[];
   highlightId?: string | null;
   animate?: boolean;
+  fit?: boolean; // scale the whole photo to fit the screen height (viewer) instead of filling the width
   className?: string;
 }) {
   return (
-    <div className={`relative overflow-hidden bg-surface-2 ${className}`}>
+    <div className={`relative overflow-hidden bg-surface-2 ${fit ? "mx-auto w-fit" : ""} ${className}`}>
       {/* eslint-disable-next-line @next/next/no-img-element -- session photo, not a static asset */}
-      <img src={src} alt={meta.filename} className="block h-auto w-full" />
+      <img src={src} alt={meta.filename}
+        className={fit ? "block max-h-[72vh] w-auto max-w-full" : "block h-auto w-full"} />
       <svg viewBox={`0 0 ${meta.width} ${meta.height}`} className="pointer-events-none absolute inset-0 h-full w-full">
         {items.map((item, i) => {
           const mask = item.photos.find((p) => p.photo_id === meta.photo_id)?.mask;

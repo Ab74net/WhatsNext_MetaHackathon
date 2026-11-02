@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field
 
 Condition = Literal["good", "worn", "damaged", "unknown"]
 Evidence = Literal["seen_in_photo", "inferred"]
-PhotoKind = Literal["room_or_belongings", "id_or_document", "screenshot", "other"]
+PhotoKind = Literal["room_or_belongings", "id_or_document", "screenshot", "public_or_workplace", "other"]
 
 
 # --- Inventory item (stable schema) -------------------------------------------
@@ -37,7 +37,10 @@ class PhotoEvidence(BaseModel):
 class ValueEstimate(BaseModel):
     low: float
     high: float
-    source_url: str
+    source_url: str  # verified: it appeared in the model's own web-search results
+    source_title: str | None = None
+    basis: str = ""  # one line on what the estimate is based on
+    checked_at: str = ""  # ISO-8601 time the price was looked up
 
 
 class InventoryItem(BaseModel):
@@ -80,6 +83,23 @@ class PhotoIdentification(BaseModel):
     items: list[IdentifiedItem]
 
 
+class SameItemGroup(BaseModel):
+    images: list[int]  # 0-based crop indices (the model sees them 1-based)
+    reason: str
+
+
+class SameItemDecision(BaseModel):
+    groups: list[SameItemGroup]
+
+
+class PriceEstimate(BaseModel):
+    low: float = Field(gt=0)
+    high: float = Field(gt=0)
+    source_url: str | None
+    source_title: str | None
+    basis: str
+
+
 # --- API responses -----------------------------------------------------------------------
 
 
@@ -89,16 +109,33 @@ class PhotoMeta(BaseModel):
     width: int
     height: int
     taken_at: str | None
-    has_gps: bool  # GPS itself stays server-side in memory (for merging in Phase 3)
+    has_gps: bool  # GPS itself stays server-side in memory
+    duplicate_of: str | None = None  # set when the same file was already uploaded this session
 
 
 class PhotoResult(BaseModel):
     photo_id: str
     photo_kind: PhotoKind
-    skipped: bool  # true for IDs, documents and screenshots
+    skipped: bool  # true for IDs, documents, screenshots and public spaces
     items: list[InventoryItem]
     timings_ms: dict[str, int]
     warnings: list[str] = []
+
+
+class MergeGroup(BaseModel):
+    kept_id: str
+    merged_ids: list[str]
+    category: str
+    reason: str
+
+
+class MergeResult(BaseModel):
+    items: list[InventoryItem]
+    merges: list[MergeGroup]
+
+
+class ManualMerge(BaseModel):
+    ids: list[str] = Field(min_length=2)
 
 
 class Health(BaseModel):

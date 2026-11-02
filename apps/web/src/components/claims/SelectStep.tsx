@@ -5,6 +5,8 @@
 
 import { useMemo, useState } from "react";
 import { motion } from "motion/react";
+import { Calendar, Check, ImageUp, LoaderCircle, ScanSearch } from "lucide-react";
+import { Button, Card } from "@/components/ui";
 
 export interface Pick {
   key: string;
@@ -27,7 +29,7 @@ async function readDate(file: File): Promise<Date | null> {
 }
 
 const toInput = (d: Date) => d.toISOString().slice(0, 10);
-const fmt = (d: Date) => d.toLocaleDateString(undefined, { month: "short", year: "numeric" });
+const fmt = (d: Date) => d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
 
 export function SelectStep({ onScan, scannedCount }: { onScan: (picks: Pick[]) => void; scannedCount: number }) {
   const [picks, setPicks] = useState<Pick[]>([]);
@@ -69,101 +71,111 @@ export function SelectStep({ onScan, scannedCount }: { onScan: (picks: Pick[]) =
   const chosen = picks.filter((p) => p.selected && inRange(p));
   const setAll = (selected: boolean) => setPicks((prev) => prev.map((p) => ({ ...p, selected })));
 
-  return (
-    <div className="flex flex-col gap-5">
-      <label
-        onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
-        onDragLeave={() => setDragging(false)}
-        onDrop={(e) => { e.preventDefault(); setDragging(false); addFiles(e.dataTransfer.files); }}
-        className={`flex cursor-pointer flex-col items-center gap-2 rounded-2xl border-2 border-dashed px-6 py-10 text-center transition-colors ${
-          dragging ? "border-accent bg-accent-soft" : "border-line bg-surface hover:border-accent/60"}`}
-      >
-        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="text-accent" aria-hidden>
-          <rect x="3" y="5" width="18" height="14" rx="2" />
-          <circle cx="9" cy="10" r="1.6" />
-          <path d="M21 16l-5-5-8 8" />
-        </svg>
-        <span className="text-lg font-medium">Choose photos from your camera roll</span>
+  const dropzone = (
+    <label
+      onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+      onDragLeave={() => setDragging(false)}
+      onDrop={(e) => { e.preventDefault(); setDragging(false); addFiles(e.dataTransfer.files); }}
+      className={`flex cursor-pointer flex-col items-center gap-3 rounded-xl border-2 border-dashed text-center transition-colors ${
+        picks.length ? "px-4 py-5 sm:flex-row sm:text-left" : "px-6 py-14"} ${
+        dragging ? "border-accent bg-accent-soft" : "border-line hover:border-accent/60 hover:bg-surface-2"}`}
+    >
+      <span className={`flex shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent ${picks.length ? "size-10" : "size-14"}`}>
+        {reading ? <LoaderCircle className="size-6 animate-spin" aria-hidden /> : <ImageUp className="size-6" aria-hidden />}
+      </span>
+      <span className="flex flex-col gap-1">
+        <span className="font-semibold">{picks.length ? "Add more photos" : "Choose photos from your camera roll"}</span>
         <span className="max-w-md text-sm text-muted">
-          Birthdays, holidays, move-in day: any photo where your things are in the background. On a
-          computer you can drag photos here.
+          {reading ? "Reading photo dates on your device…"
+            : "Birthdays, holidays, move-in day: any photo with your things in the background. You can also drag photos here."}
         </span>
-        <span className="mt-2 rounded-full bg-accent px-5 py-2 text-sm font-medium text-accent-ink">
-          {reading ? "Reading photo dates…" : picks.length ? "Add more photos" : "Choose photos"}
-        </span>
-        <input type="file" accept="image/*,.heic,.heif" multiple className="hidden"
-          onChange={(e) => { addFiles(e.target.files); e.target.value = ""; }} />
-      </label>
+      </span>
+      {!picks.length && <span className="mt-1 inline-flex h-9 items-center rounded-lg bg-accent px-4 text-sm font-semibold text-accent-ink">Choose photos</span>}
+      <input type="file" accept="image/*,.heic,.heif" multiple className="hidden"
+        onChange={(e) => { addFiles(e.target.files); e.target.value = ""; }} />
+    </label>
+  );
+
+  return (
+    <div className="flex flex-col gap-4">
+      <Card className="p-3">{dropzone}</Card>
 
       {picks.length > 0 && (
         <>
-          <div className="flex flex-wrap items-end gap-4 rounded-xl border border-line bg-surface p-4 text-sm">
-            <div className="flex flex-col gap-1">
-              <span className="text-muted">
-                {range ? `Photos from ${fmt(range[0])} to ${fmt(range[1])}` : "None of these photos has a date"}
-              </span>
-              <div className="flex items-center gap-2">
+          <Card className="flex flex-wrap items-center gap-x-5 gap-y-3 px-4 py-3 text-sm">
+            <span className="flex items-center gap-2 font-medium">
+              <Calendar className="size-4 text-muted" aria-hidden />
+              {range ? `${fmt(range[0])} – ${fmt(range[1])}` : "No photo dates found"}
+            </span>
+            {range && (
+              <span className="flex items-center gap-2">
                 <input type="date" value={from} onChange={(e) => setFrom(e.target.value)}
-                  min={range ? toInput(range[0]) : undefined} max={range ? toInput(range[1]) : undefined}
-                  disabled={!range} className="rounded-md border border-line bg-bg px-2 py-1" aria-label="From date" />
+                  min={toInput(range[0])} max={toInput(range[1])} aria-label="From date"
+                  className="h-8 rounded-lg border border-line bg-surface px-2 text-[13px]" />
                 <span className="text-muted">to</span>
                 <input type="date" value={to} onChange={(e) => setTo(e.target.value)}
-                  min={range ? toInput(range[0]) : undefined} max={range ? toInput(range[1]) : undefined}
-                  disabled={!range} className="rounded-md border border-line bg-bg px-2 py-1" aria-label="To date" />
-              </div>
-            </div>
-            <label className="flex items-center gap-2">
-              <input type="checkbox" checked={includeUndated} onChange={(e) => setIncludeUndated(e.target.checked)} />
-              Include photos with no date
+                  min={toInput(range[0])} max={toInput(range[1])} aria-label="To date"
+                  className="h-8 rounded-lg border border-line bg-surface px-2 text-[13px]" />
+              </span>
+            )}
+            <label className="flex items-center gap-2 text-muted">
+              <input type="checkbox" checked={includeUndated} onChange={(e) => setIncludeUndated(e.target.checked)}
+                className="size-4 accent-[var(--accent)]" />
+              Include undated photos
             </label>
-            <div className="ml-auto flex gap-3 text-accent">
-              <button onClick={() => setAll(true)} className="hover:underline">Select all</button>
-              <button onClick={() => setAll(false)} className="hover:underline">Select none</button>
-            </div>
-          </div>
+            <span className="ml-auto flex gap-1">
+              <Button variant="ghost" size="sm" onClick={() => setAll(true)}>Select all</Button>
+              <Button variant="ghost" size="sm" onClick={() => setAll(false)}>Clear</Button>
+            </span>
+          </Card>
 
-          <div className="grid grid-cols-3 gap-2 sm:grid-cols-5 lg:grid-cols-6">
+          <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-5 lg:grid-cols-7">
             {picks.map((p, i) => {
-              const on = p.selected && inRange(p);
+              const allowed = inRange(p);
+              const on = p.selected && allowed;
               return (
                 <motion.button
                   key={p.key}
-                  initial={{ opacity: 0, scale: 0.94 }}
-                  animate={{ opacity: inRange(p) ? 1 : 0.25, scale: 1 }}
-                  transition={{ delay: Math.min(i, 30) * 0.02 }}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: allowed ? 1 : 0.3, scale: 1 }}
+                  transition={{ delay: Math.min(i, 30) * 0.015 }}
                   onClick={() => setPicks((prev) => prev.map((x) => (x.key === p.key ? { ...x, selected: !x.selected } : x)))}
-                  disabled={!inRange(p)}
-                  className={`relative aspect-square overflow-hidden rounded-lg bg-surface-2 ring-2 ring-offset-2 ring-offset-bg transition ${
-                    on ? "ring-accent" : "ring-transparent opacity-50"}`}
+                  disabled={!allowed}
+                  aria-pressed={on}
+                  className="group relative aspect-square overflow-hidden rounded-lg bg-surface-3"
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element -- local preview */}
-                  <img src={p.localUrl} alt={p.file.name} className="h-full w-full object-cover"
-                    onError={(e) => { e.currentTarget.style.display = "none"; }} />
-                  <span className="absolute inset-x-0 bottom-0 truncate bg-black/45 px-1.5 py-0.5 text-left text-[10px] text-white">
-                    {p.takenAt ? p.takenAt.toLocaleDateString() : "no date"}
+                  <img src={p.localUrl} alt={p.file.name}
+                    className={`h-full w-full object-cover transition ${on ? "" : "opacity-50 saturate-50"}`}
+                    onError={(e) => { e.currentTarget.style.visibility = "hidden"; }} />
+                  <span className={`absolute inset-0 rounded-lg ring-inset transition ${on ? "ring-[3px] ring-accent" : "ring-0"}`} />
+                  <span className={`absolute right-1.5 top-1.5 flex size-5 items-center justify-center rounded-full border-2 transition ${
+                    on ? "border-accent bg-accent text-accent-ink" : "border-white/90 bg-black/20"}`}>
+                    {on && <Check className="size-3" strokeWidth={3} aria-hidden />}
                   </span>
-                  {on && (
-                    <span className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-xs text-accent-ink">✓</span>
-                  )}
+                  <span className="absolute inset-x-0 bottom-0 truncate bg-gradient-to-t from-black/60 to-transparent px-1.5 pb-1 pt-4 text-left text-[10px] font-medium text-white">
+                    {p.takenAt ? p.takenAt.toLocaleDateString() : "No date"}
+                  </span>
                 </motion.button>
               );
             })}
           </div>
 
-          <div className="sticky bottom-20 z-10 flex items-center justify-between gap-3 rounded-2xl border border-line bg-surface/95 p-3 shadow-lg backdrop-blur sm:bottom-4">
-            <span className="text-sm text-muted">
-              {chosen.length} of {picks.length} selected{scannedCount ? ` · ${scannedCount} already scanned` : ""}
-            </span>
-            <button
-              disabled={!chosen.length || reading}
-              onClick={() => {
-                onScan(chosen);
-                setPicks((prev) => prev.filter((p) => !chosen.includes(p)));
-              }}
-              className="rounded-full bg-accent px-5 py-2.5 font-medium text-accent-ink disabled:opacity-40"
-            >
-              Scan {chosen.length} photo{chosen.length === 1 ? "" : "s"}
-            </button>
+          <div className="sticky bottom-20 z-10 lg:bottom-4">
+            <Card className="flex items-center justify-between gap-3 px-4 py-3 shadow-pop">
+              <span className="text-sm text-muted">
+                <strong className="text-ink">{chosen.length}</strong> of {picks.length} selected
+                {scannedCount ? ` · ${scannedCount} already scanned` : ""}
+              </span>
+              <Button variant="primary" disabled={!chosen.length || reading}
+                onClick={() => {
+                  onScan(chosen);
+                  setPicks((prev) => prev.filter((p) => !chosen.includes(p)));
+                }}>
+                <ScanSearch className="size-4" aria-hidden />
+                Scan {chosen.length} photo{chosen.length === 1 ? "" : "s"}
+              </Button>
+            </Card>
           </div>
         </>
       )}

@@ -1,16 +1,20 @@
 """FastAPI backend. Run: uvicorn app.main:app --reload --port 8000 (from apps/api)."""
 
+import hashlib
 import logging
 import secrets
+from datetime import date
 
 from fastapi import FastAPI, HTTPException, UploadFile
 from fastapi.responses import Response
 
-from . import config, sessions
+from . import config, export, merge, sessions
 from .images import NotAnImageError, process_upload
 from .model_client import make_client
 from .pipeline import process_photo
-from .schemas import Health, InventoryItem, ItemPatch, PhotoMeta, PhotoResult
+from .schemas import (Health, InventoryItem, ItemPatch, ManualMerge, MergeResult, PhotoMeta,
+                      PhotoResult)
+from .valuation import ValuationUnavailable, value_item
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("api")
@@ -58,12 +62,22 @@ async def upload_photos(sid: str, files: list[UploadFile]) -> list[PhotoMeta]:
         data = await f.read()
         if len(data) > MAX_UPLOAD_BYTES:
             raise HTTPException(413, f"{f.filename}: larger than 50 MB")
+        # The same file picked twice would count its items twice; return the original instead.
+        digest = hashlib.sha256(data).hexdigest()
+        if digest in session.hashes:
+            original = session.hashes[digest]
+            p = session.photos[original].photo
+            metas.append(PhotoMeta(photo_id=original, filename=f.filename or original, width=p.width,
+                                   height=p.height, taken_at=p.taken_at, has_gps=p.gps is not None,
+                                   duplicate_of=original))
+            continue
         try:
             photo = process_upload(data)
         except NotAnImageError:
             raise HTTPException(415, f"{f.filename}: not a supported photo")
         pid = "p_" + secrets.token_hex(4)
         session.photos[pid] = sessions.StoredPhoto(filename=f.filename or pid, photo=photo)
+        session.hashes[digest] = pid
         metas.append(PhotoMeta(photo_id=pid, filename=f.filename or pid, width=photo.width,
                                height=photo.height, taken_at=photo.taken_at, has_gps=photo.gps is not None))
     return metas
@@ -118,4 +132,85 @@ def edit_item(sid: str, iid: str, patch: ItemPatch) -> InventoryItem:
 
 @app.delete("/api/sessions/{sid}/items/{iid}")
 def delete_item(sid: str, iid: str) -> dict:
-    return {"deleted": _session(sid).items.pop(iid, None) is not None}
+    session = _session(sid)
+    session.merged_from.pop(iid, None)
+    return {"deleted": session.items.pop(iid, None) is not None}
+
+
+# --- Merge across photos -----------------------------------------------------------
+
+
+@app.post("/api/sessions/{sid}/merge", response_model=MergeResult)
+async def auto_merge(sid: str) -> MergeResult:
+    """Ask Spark which same-category items in different photos are the same object."""
+    session = _session(sid)
+    try:
+        merges = await merge.auto_merge(client, session)
+    except Exception as err:
+        log.warning("merge failed: %s", type(err).__name__)
+        raise HTTPException(502, f"Merge failed: {type(err).__name__}: {str(err)[:300]}")
+    return MergeResult(items=list(session.items.values()), merges=merges)
+
+
+@app.post("/api/sessions/{sid}/items/merge", response_model=InventoryItem)
+def manual_merge(sid: str, body: ManualMerge) -> InventoryItem:
+    """The user says these items are one object (fallback when auto-merge misses)."""
+    session = _session(sid)
+    members = [session.items.get(i) for i in dict.fromkeys(body.ids)]
+    if any(m is None for m in members) or len(members) < 2:
+        raise HTTPException(404, "Item not found")
+    group = merge.apply_merge(session, members, members[0].category, "merged by you")
+    return session.items[group.kept_id]
+
+
+@app.post("/api/sessions/{sid}/items/{iid}/split", response_model=list[InventoryItem])
+def split_item(sid: str, iid: str) -> list[InventoryItem]:
+    """Undo a merge: the item goes back to one item per sighting."""
+    session = _session(sid)
+    if iid not in session.items:
+        raise HTTPException(404, "Item not found")
+    return merge.split(session, iid)
+
+
+# --- Valuation and export ---------------------------------------------------------------
+
+
+@app.post("/api/sessions/{sid}/items/{iid}/value", response_model=InventoryItem)
+async def value(sid: str, iid: str) -> InventoryItem:
+    session = _session(sid)
+    item = session.items.get(iid)
+    if not item:
+        raise HTTPException(404, "Item not found")
+    try:
+        estimate = await value_item(client, item, export.evidence_crop(session, item, 512))
+    except ValuationUnavailable as err:
+        raise HTTPException(422, str(err))
+    except Exception as err:
+        log.warning("valuation failed: %s", type(err).__name__)
+        raise HTTPException(502, f"Price lookup failed: {type(err).__name__}")
+    # The item may have been edited or merged while the lookup ran.
+    current = session.items.get(iid)
+    if not current:
+        raise HTTPException(409, "Item changed while it was being valued")
+    session.items[iid] = current.model_copy(update={"estimated_replacement_usd": estimate})
+    return session.items[iid]
+
+
+EXPORTS = {
+    "xlsx": (export.build_xlsx, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
+    "csv": (export.build_csv, "text/csv; charset=utf-8"),
+    "pdf": (export.build_pdf, "application/pdf"),
+}
+
+
+@app.get("/api/sessions/{sid}/export.{fmt}")
+def download_export(sid: str, fmt: str) -> Response:
+    session = _session(sid)
+    if fmt not in EXPORTS:
+        raise HTTPException(404, "Unknown export format")
+    if not export.confirmed_items(session):
+        raise HTTPException(409, "Confirm at least one item before exporting")
+    build, media_type = EXPORTS[fmt]
+    filename = f"claim-inventory-{date.today().isoformat()}.{fmt}"
+    return Response(build(session), media_type=media_type,
+                    headers={"Content-Disposition": f'attachment; filename="{filename}"', "Cache-Control": "no-store"})

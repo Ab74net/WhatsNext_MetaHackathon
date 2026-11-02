@@ -41,7 +41,7 @@ SPARK_IDENTIFY_EFFORT = os.environ.get("SPARK_IDENTIFY_EFFORT", "low")
 SESSION_TTL_MINUTES = int(os.environ.get("SESSION_TTL_MINUTES", "60"))
 MAX_IMAGE_SIDE = 2048  # downscale before sending to models: cheaper and faster
 SAM_PROMPTS_PER_PHOTO = 12  # SAM is cheap ($2.50 / 1,000 images) and ~1 s per call
-MAX_PARALLEL_SPARK_CALLS = 4
+MAX_PARALLEL_SPARK_CALLS = 8  # rate limit is 3,000 RPM; this only smooths bursts
 MAX_PARALLEL_SAM_CALLS = 12
 
 BRAND = json.loads((REPO_ROOT / "packages" / "shared" / "brand.json").read_text(encoding="utf-8"))

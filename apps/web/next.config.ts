@@ -7,6 +7,12 @@ const nextConfig: NextConfig = {
   /* config options here */
   cacheComponents: true,
   partialPrefetching: true,
+  // The floating dev badge covers the mobile tab bar; error overlays still show.
+  devIndicators: false,
+  experimental: {
+    // Model calls (scan queues, merge, price lookups) can take over the 30 s default.
+    proxyTimeout: 300_000,
+  },
   turbopack: {
     // Repo root, so the app can import packages/shared.
     root: path.join(__dirname, "../.."),
