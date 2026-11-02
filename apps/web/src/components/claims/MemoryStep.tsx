@@ -17,11 +17,12 @@ import { Badge, Button, Card, EmptyState, Notice } from "@/components/ui";
 
 const W = 900;
 const H = 560;
-const R = { room: 36, item: 26, suggestion: 19 };
-const GRADE_COLOR: Record<EvidenceGrade["grade"], string> = { strong: "#9dbb98", fair: "#e3a548", weak: "#9a9184" };
+const PILL_H = 34;
+const HUB_R = 48;
 const GRADE_LABEL: Record<EvidenceGrade["grade"], string> = { strong: "Strong evidence", fair: "Fair evidence", weak: "Weak evidence" };
 
-type Kind = "room" | "item" | "suggestion";
+// "hub" is the "Your home" centre: drawn only, linked to every room.
+type Kind = "hub" | "room" | "item" | "suggestion";
 
 // "Did you own a lamp / an alarm clock / any bed sheets?"
 function ownQuestion(name: string) {
@@ -29,29 +30,36 @@ function ownQuestion(name: string) {
   return `Did you own ${article} ${name}?`;
 }
 interface Node extends SimulationNodeDatum { id: string; kind: Kind; label: string }
-type Link = SimulationLinkDatum<Node> & { kind: "owns" | "suggests" };
+type Link = SimulationLinkDatum<Node> & { kind: "home" | "owns" | "suggests" };
 type Selection = { kind: Kind; id: string } | null;
 type AskState = { status: "idle" } | { status: "checking" } | { status: "found"; item: InventoryItem } | { status: "error"; error: string };
+
+// Nodes are pills; half their width comes from the label length (used for spacing and clamping).
+function halfWidth(n: Pick<Node, "kind" | "label">) {
+  if (n.kind === "hub") return HUB_R;
+  return Math.min(96, Math.round(n.label.length * 3.9) + (n.kind === "room" ? 34 : 30));
+}
 
 function layout(nodes: Node[], links: Link[]) {
   // Run the physics once, synchronously: the graph appears settled rather than wobbling.
   const sim = forceSimulation(nodes)
-    .force("link", forceLink<Node, Link>(links).id((d) => d.id).distance((l) => (l.kind === "owns" ? 95 : 80)).strength(0.7))
+    .force("link", forceLink<Node, Link>(links).id((d) => d.id).distance((l) => (l.kind === "home" ? 150 : l.kind === "owns" ? 110 : 95)).strength(0.7))
     .force("charge", forceManyBody().strength(-320))
     .force("center", forceCenter(W / 2, H / 2))
     .force("x", forceX(W / 2).strength(0.04))
     .force("y", forceY(H / 2).strength(0.07))
-    .force("collide", forceCollide<Node>((d) => R[d.kind] + 22))
+    .force("collide", forceCollide<Node>((d) => halfWidth(d) + 10))
     .stop();
   for (let i = 0; i < 320; i++) sim.tick();
   for (const n of nodes) {
-    n.x = Math.max(R[n.kind] + 10, Math.min(W - R[n.kind] - 10, n.x ?? W / 2));
-    n.y = Math.max(R[n.kind] + 10, Math.min(H - R[n.kind] - 28, n.y ?? H / 2));
+    const hw = halfWidth(n), hh = n.kind === "hub" ? HUB_R : PILL_H / 2;
+    n.x = Math.max(hw + 8, Math.min(W - hw - 8, n.x ?? W / 2));
+    n.y = Math.max(hh + 8, Math.min(H - hh - 8, n.y ?? H / 2));
   }
 }
 
 export function MemoryStep({ session, onExport }: { session: ClaimSession; onExport: () => void }) {
-  const { memory, loadMemoryWeb, items, photos, photoUrl } = session;
+  const { memory, loadMemoryWeb, items, photos } = session;
   const [selected, setSelected] = useState<Selection>(null);
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
   const [added, setAdded] = useState<Record<string, string>>({}); // suggestion id -> new item id
@@ -70,10 +78,11 @@ export function MemoryStep({ session, onExport }: { session: ClaimSession; onExp
 
   const graph = useMemo(() => {
     if (!web) return null;
-    const nodes: Node[] = [];
+    const nodes: Node[] = [{ id: "__home", kind: "hub", label: "Your home", fx: W / 2, fy: H / 2 }];
     const links: Link[] = [];
     for (const room of web.rooms) {
       nodes.push({ id: room.id, kind: "room", label: room.name });
+      links.push({ source: "__home", target: room.id, kind: "home" });
       for (const iid of room.item_ids) {
         if (!items[iid]) continue;
         nodes.push({ id: iid, kind: "item", label: items[iid].category });
@@ -146,38 +155,31 @@ export function MemoryStep({ session, onExport }: { session: ClaimSession; onExp
         <Card className="overflow-hidden">
           <svg viewBox={`0 0 ${W} ${H}`} className="block h-auto w-full select-none" role="img"
             aria-label={`Memory web: ${web.rooms.length} rooms and ${suggestionsLeft} suggestions`}>
-            <defs>
-              {graph.nodes.filter((n) => n.kind === "item").map((n) => (
-                <clipPath key={n.id} id={`clip-${n.id}`}><circle r={R.item} /></clipPath>
-              ))}
-            </defs>
             {graph.links.map((l, i) => (
               <line key={i} x1={l.source.x} y1={l.source.y} x2={l.target.x} y2={l.target.y}
-                stroke={l.kind === "owns" ? "var(--line)" : "var(--accent)"} strokeWidth={l.kind === "owns" ? 2 : 1.5}
-                strokeDasharray={l.kind === "suggests" ? "5 5" : undefined} opacity={l.kind === "suggests" ? 0.55 : 1} />
+                stroke={l.kind === "suggests" ? "var(--line-strong)" : "var(--ink)"} strokeWidth={l.kind === "home" ? 1.75 : 1.25}
+                strokeDasharray={l.kind === "suggests" ? "4 4" : undefined} opacity={l.kind === "suggests" ? 0.9 : 0.55} />
             ))}
             {graph.nodes.map((n, i) => {
               const on = selected?.id === n.id;
+              if (n.kind === "hub") return <HubNode key={n.id} x={n.x ?? 0} y={n.y ?? 0} />;
               return (
                 <motion.g key={n.id} initial={{ opacity: 0, scale: 0.6 }} animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: Math.min(i, 24) * 0.03, type: "spring", stiffness: 260, damping: 20 }}
                   style={{ x: n.x, y: n.y, cursor: "pointer" }}
                   onClick={() => setSelected(on ? null : { kind: n.kind, id: n.id })}
                   role="button" aria-label={n.kind === "suggestion" ? ownQuestion(n.label) : n.label}>
-                  {n.kind === "room" && <RoomNode label={n.label} on={on} />}
-                  {n.kind === "item" && items[n.id] && (
-                    <ItemNode item={items[n.id]} meta={metaById[items[n.id].photos[0]?.photo_id]} src={photoUrl(items[n.id].photos[0]?.photo_id ?? "")}
-                      grade={web.grades[n.id]?.grade} on={on} isNew={Object.values(added).includes(n.id)} />
-                  )}
-                  {n.kind === "suggestion" && <SuggestionNode label={n.label} on={on} />}
+                  {n.kind === "room" && <RoomNode node={n} on={on} />}
+                  {n.kind === "item" && items[n.id] && <ItemNode node={n} on={on} isNew={Object.values(added).includes(n.id)} />}
+                  {n.kind === "suggestion" && <SuggestionNode node={n} on={on} />}
                 </motion.g>
               );
             })}
           </svg>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-line px-4 py-2.5 text-xs text-muted">
-            <span className="flex items-center gap-1.5"><span className="size-3 rounded-full bg-accent" /> Room</span>
-            <span className="flex items-center gap-1.5"><span className="size-3 rounded-full border-2" style={{ borderColor: GRADE_COLOR.strong }} /> Item (ring = evidence)</span>
-            <span className="flex items-center gap-1.5"><span className="size-3 rounded-full border-2 border-dashed border-accent" /> Did you own this?</span>
+            <span className="flex items-center gap-1.5"><span className="h-3 w-5 rounded-full border border-ink" /> Room</span>
+            <span className="flex items-center gap-1.5"><span className="h-3 w-5 rounded-full bg-accent" /> Confirmed item</span>
+            <span className="flex items-center gap-1.5"><span className="h-3 w-5 rounded-full border border-dashed border-line-strong" /> Did you own this?</span>
           </div>
         </Card>
 
@@ -193,56 +195,48 @@ export function MemoryStep({ session, onExport }: { session: ClaimSession; onExp
   );
 }
 
-// Room names on up to two lines so they fit inside the circle ("Living" / "room").
-function roomLines(label: string) {
-  const words = label.split(" ");
-  if (words.length === 1) return [label.length > 10 ? `${label.slice(0, 9)}…` : label];
-  const first = words[0];
-  const rest = words.slice(1).join(" ");
-  return [first.length > 10 ? `${first.slice(0, 9)}…` : first, rest.length > 10 ? `${rest.slice(0, 9)}…` : rest];
-}
-
-function RoomNode({ label, on }: { label: string; on: boolean }) {
-  return (
-    <>
-      <circle r={R.room + (on ? 4 : 0)} fill="var(--accent)" stroke="var(--surface)" strokeWidth={4} />
-      <text textAnchor="middle" fill="var(--accent-ink)" fontSize={12} fontWeight={700}>
-        {roomLines(label).map((line, i, all) => (
-          <tspan key={i} x={0} dy={i === 0 ? `${0.35 - (all.length - 1) * 0.55}em` : "1.1em"}>{line}</tspan>
-        ))}
-      </text>
-    </>
-  );
-}
-
-function ItemNode({ item, meta, src, grade, on, isNew }: {
-  item: InventoryItem; meta?: PhotoMeta; src: string; grade?: EvidenceGrade["grade"]; on: boolean; isNew: boolean;
+// Node renderers: a black "Your home" hub, outlined room pills, coral confirmed-item pills with a
+// check, and dashed "?" pills for suggestions. The selected node gets a thicker ink outline.
+function Pill({ node, fill, stroke, text, dashed = false, on, children }: {
+  node: Node; fill: string; stroke: string; text: string; dashed?: boolean; on: boolean; children: React.ReactNode;
 }) {
-  const r = R.item + (on ? 3 : 0);
+  const hw = halfWidth(node);
   return (
     <>
-      <circle r={r + 4} fill={isNew ? "var(--good)" : grade ? GRADE_COLOR[grade] : "var(--line)"} />
-      <g clipPath={`url(#clip-${item.id})`} transform={on ? "scale(1.12)" : undefined}>
-        <circle r={R.item} fill="var(--surface-3)" />
-        {meta && (
-          <svg x={-R.item} y={-R.item} width={R.item * 2} height={R.item * 2} overflow="hidden">
-            <ItemCrop src={src} meta={meta} mask={item.photos[0]?.mask ?? null} color="transparent" />
-          </svg>
-        )}
-      </g>
-      <text textAnchor="middle" y={r + 18} fontSize={12} fontWeight={600} fill="var(--ink)" className="capitalize">{item.category}</text>
+      <rect x={-hw} y={-PILL_H / 2} width={hw * 2} height={PILL_H} rx={PILL_H / 2} fill={fill}
+        stroke={on ? "var(--ink)" : stroke} strokeWidth={on ? 2.5 : 1.25} strokeDasharray={dashed && !on ? "4 3" : undefined} />
+      <text textAnchor="middle" dy="0.35em" fontSize={13} fontWeight={600} fill={text}>{children}</text>
     </>
   );
 }
 
-function SuggestionNode({ label, on }: { label: string; on: boolean }) {
+function HubNode({ x, y }: { x: number; y: number }) {
   return (
-    <>
-      <circle r={R.suggestion + (on ? 3 : 0)} fill={on ? "var(--accent-soft)" : "var(--surface)"} stroke="var(--accent)"
-        strokeWidth={2} strokeDasharray="4 3" />
-      <text textAnchor="middle" dy="0.35em" fontSize={16} fontWeight={700} fill="var(--accent)">?</text>
-      <text textAnchor="middle" y={R.suggestion + 16} fontSize={11.5} fill="var(--muted)">{label}</text>
-    </>
+    <g transform={`translate(${x} ${y})`} aria-hidden>
+      <circle r={HUB_R} fill="var(--ink)" />
+      <path d="M-11 -6 L0 -15 L11 -6 V6 H-11 Z" transform="translate(0 -6)" fill="none" stroke="#fff" strokeWidth={2.2} strokeLinejoin="round" />
+      <text textAnchor="middle" y={22} fontSize={13} fontWeight={700} fill="#fff">Your home</text>
+    </g>
+  );
+}
+
+function RoomNode({ node, on }: { node: Node; on: boolean }) {
+  return <Pill node={node} fill="var(--surface)" stroke="var(--ink)" text="var(--ink)" on={on}>{node.label}</Pill>;
+}
+
+function ItemNode({ node, on, isNew }: { node: Node; on: boolean; isNew: boolean }) {
+  return (
+    <Pill node={node} fill={isNew ? "var(--good)" : "var(--accent)"} stroke="transparent" text="#fff" on={on}>
+      <tspan className="capitalize">{node.label}</tspan> {"\u2713"}
+    </Pill>
+  );
+}
+
+function SuggestionNode({ node, on }: { node: Node; on: boolean }) {
+  return (
+    <Pill node={node} fill={on ? "var(--accent-soft)" : "var(--surface)"} stroke="var(--line-strong)" text="var(--muted)" dashed on={on}>
+      {node.label} ?
+    </Pill>
   );
 }
 
@@ -267,7 +261,7 @@ function SidePanel({ selected, session, web, metaById, onClose, onDismiss, onAdd
   }
   const header = (title: string) => (
     <div className="mb-3 flex items-start gap-2">
-      <p className="flex-1 font-semibold first-letter:uppercase">{title}</p>
+      <h3 className="flex-1 text-2xl first-letter:uppercase">{title}</h3>
       <button onClick={onClose} aria-label="Close" className="text-muted hover:text-ink"><X className="size-4" /></button>
     </div>
   );
@@ -397,10 +391,19 @@ function AskPanel({ suggestion: s, session, metaById, header, onDismiss, onAdded
       {state.status === "error" && <Notice tone="warn">{state.error}</Notice>}
       <input ref={fileRef} type="file" accept="image/*,.heic,.heif" className="hidden"
         onChange={(e) => { onFile(e.target.files?.[0]); e.target.value = ""; }} />
-      <Button variant="primary" onClick={() => fileRef.current?.click()}>
-        <ImagePlus className="size-4" aria-hidden /> {state.status === "error" ? "Try another photo" : "Yes, add a photo of it"}
-      </Button>
-      <Button variant="ghost" onClick={onDismiss}>No, I didn’t own one</Button>
+      <div className="flex gap-2">
+        <Button variant="primary" className="flex-1" onClick={() => fileRef.current?.click()}>
+          <Check className="size-4" aria-hidden /> {state.status === "error" ? "Try another photo" : "Yes, add it"}
+        </Button>
+        <Button variant="secondary" className="flex-1" onClick={onDismiss}>No</Button>
+      </div>
+      <p className="mt-1 text-sm font-semibold">Add photo evidence</p>
+      <button type="button" onClick={() => fileRef.current?.click()}
+        className="flex flex-col items-center gap-1.5 rounded-2xl border border-dashed border-line-strong px-4 py-6 text-center text-sm text-muted hover:bg-surface-2">
+        <ImagePlus className="size-5 text-ink" aria-hidden />
+        <span className="font-semibold text-ink">Upload a photo</span>
+        <span className="text-xs">One that shows the {s.name}. JPG, PNG or HEIC.</span>
+      </button>
     </div>
   );
 }

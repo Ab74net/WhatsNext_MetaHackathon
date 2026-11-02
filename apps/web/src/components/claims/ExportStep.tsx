@@ -4,7 +4,7 @@
 // claim downloads. Only confirmed items are exported.
 
 import { useMemo, useState } from "react";
-import { ArrowLeft, CircleDollarSign, ExternalLink, FileSpreadsheet, FileText, Info, Sheet } from "lucide-react";
+import { ArrowLeft, Check, CircleDollarSign, ExternalLink, FileSpreadsheet, FileText, Info, Sheet } from "lucide-react";
 import type { InventoryItem, PhotoMeta } from "@shared/types";
 import type { ClaimSession } from "@/lib/useClaimSession";
 import { pool, type ExportFormat } from "@/lib/api";
@@ -37,15 +37,36 @@ export function ExportStep({ session, onBack }: { session: ClaimSession; onBack:
 
   return (
     <div className="flex flex-col gap-4">
-      <Card className="flex flex-wrap items-center gap-x-10 gap-y-4 p-5">
-        <Stat label="Confirmed items" value={confirmed.length} />
-        <Stat label="Estimated replacement cost" value={valued.length ? `${money(low)} – ${money(high)}` : "—"}
-          hint={valued.length < confirmed.length ? `${valued.length} of ${confirmed.length} items priced` : "All items priced"} />
-        <div className="ml-auto flex gap-2">
-          <Button size="sm" variant="ghost" onClick={onBack}><ArrowLeft className="size-4" aria-hidden /> Review</Button>
-          <Button size="sm" variant="primary" disabled={!pending.length} loading={valuingAll} onClick={valueAll}>
-            <CircleDollarSign className="size-4" aria-hidden /> Estimate {pending.length ? `${pending.length} ` : ""}price{pending.length === 1 ? "" : "s"}
-          </Button>
+      <Card className="relative overflow-hidden p-6 sm:p-8">
+        <div className="grid items-center gap-6 md:grid-cols-[1fr_auto]">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-start gap-4">
+              <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-deco-blue text-white" aria-hidden>
+                <Check className="size-6" strokeWidth={3} />
+              </span>
+              <div>
+                <h2 className="text-3xl">Your claim is ready.</h2>
+                <p className="mt-1 text-muted">
+                  {confirmed.length} item{confirmed.length === 1 ? "" : "s"} confirmed with photos
+                  {valued.length ? " and estimated values" : ""}.
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-4">
+              <div className="flex gap-8 rounded-2xl border border-line px-5 py-3">
+                <Stat label="Confirmed items" value={confirmed.length} />
+                <Stat label="Estimated value" value={valued.length ? `${money(low)} – ${money(high)}` : "—"}
+                  hint={valued.length < confirmed.length ? `${valued.length} of ${confirmed.length} items priced` : "All items priced"} />
+              </div>
+              <div className="flex gap-2">
+                <Button size="sm" variant="ghost" onClick={onBack}><ArrowLeft className="size-4" aria-hidden /> Back</Button>
+                <Button size="sm" variant="secondary" disabled={!pending.length} loading={valuingAll} onClick={valueAll}>
+                  <CircleDollarSign className="size-4" aria-hidden /> Estimate {pending.length ? `${pending.length} ` : ""}price{pending.length === 1 ? "" : "s"}
+                </Button>
+              </div>
+            </div>
+          </div>
+          <DocumentArt />
         </div>
       </Card>
 
@@ -59,28 +80,47 @@ export function ExportStep({ session, onBack }: { session: ClaimSession; onBack:
         })}
       </Card>
 
-      <Card className="flex flex-col gap-4 p-5">
-        <div>
-          <p className="font-semibold">Download your claim</p>
-          <p className="mt-1 text-sm text-muted">
-            Each file lists your {confirmed.length} confirmed item{confirmed.length === 1 ? "" : "s"} with an evidence photo, photo
-            dates and price sources. Photo location data is never included.
-          </p>
-        </div>
-        <div className="grid gap-2 sm:grid-cols-3">
-          <Download href={exportUrl("pdf")} fmt="pdf" icon={<FileText className="size-5" />} title="PDF report"
-            body="For your adjuster. Evidence photo beside every item." primary />
-          <Download href={exportUrl("xlsx")} fmt="xlsx" icon={<FileSpreadsheet className="size-5" />} title="Excel spreadsheet"
-            body="Editable, with thumbnails and totals." />
-          <Download href={exportUrl("csv")} fmt="csv" icon={<Sheet className="size-5" />} title="CSV"
-            body="Plain data for insurer upload portals." />
-        </div>
-        <Notice icon={<Info className="size-4" />}>
-          Prices are estimates from public retail listings for a comparable new item, not appraisals. Check them before you
-          submit. This is not insurance or legal advice.
-        </Notice>
-      </Card>
+      <div className="grid gap-4 md:grid-cols-[1.4fr_1fr]">
+        <Card className="flex flex-col gap-4 p-6">
+          <div>
+            <h3 className="text-xl">Download your claim</h3>
+            <p className="mt-1 text-sm text-muted">A file with your items, photos and price estimates. Photo location data is never included.</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Download href={exportUrl("pdf")} fmt="pdf" icon={<FileText className="size-4" />} title="PDF report" primary />
+            <Download href={exportUrl("xlsx")} fmt="xlsx" icon={<FileSpreadsheet className="size-4" />} title="Excel spreadsheet" />
+            <Download href={exportUrl("csv")} fmt="csv" icon={<Sheet className="size-4" />} title="CSV" />
+          </div>
+          <Notice icon={<Info className="size-4" />}>
+            Prices are estimates from public retail listings for a comparable new item, not appraisals. Check them before you
+            submit. This is not insurance or legal advice.
+          </Notice>
+        </Card>
+        <Card className="p-6">
+          <h3 className="text-xl">What’s included</h3>
+          <ul className="mt-3 flex flex-col gap-2 text-[15px]">
+            {["Item list with estimated values", "Evidence photos (with dates)", "Condition of each item", "Price sources and when they were checked"].map((t) => (
+              <li key={t} className="flex items-center gap-2"><Check className="size-4 shrink-0 text-ink" strokeWidth={2.5} aria-hidden /> {t}</li>
+            ))}
+          </ul>
+        </Card>
+      </div>
     </div>
+  );
+}
+
+// A flat document illustration with blue and coral shapes (decoration only).
+function DocumentArt() {
+  return (
+    <svg viewBox="0 0 200 160" className="hidden w-48 md:block" aria-hidden>
+      <path d="M18 120c-8-30 14-58 44-60s40 30 26 52-62 38-70 8z" fill="var(--deco-coral)" />
+      <rect x="70" y="18" width="92" height="118" rx="10" transform="rotate(8 116 77)" fill="var(--deco-blue)" />
+      <rect x="58" y="14" width="92" height="118" rx="10" fill="#fff" stroke="var(--ink)" strokeWidth="2" />
+      {[38, 52, 66, 80].map((y, k) => (
+        <rect key={y} x="72" y={y} width={k === 3 ? 40 : 64} height="6" rx="3" fill="var(--deco-blue)" opacity={k === 0 ? 1 : 0.45} />
+      ))}
+      <path d="M170 30l10-8M174 44h12M168 18l4-12" stroke="var(--ink)" strokeWidth="2.5" strokeLinecap="round" />
+    </svg>
   );
 }
 
@@ -129,17 +169,14 @@ function PriceRow({ item, meta, src, state, onValue }: {
   );
 }
 
-function Download({ href, fmt, icon, title, body, primary = false }: {
-  href: string; fmt: ExportFormat; icon: React.ReactNode; title: string; body: string; primary?: boolean;
+function Download({ href, fmt, icon, title, primary = false }: {
+  href: string; fmt: ExportFormat; icon: React.ReactNode; title: string; primary?: boolean;
 }) {
   return (
-    <a href={href} download className={`flex items-start gap-3 rounded-lg border p-4 transition hover:shadow-card ${
-      primary ? "border-accent bg-accent-soft" : "border-line hover:bg-surface-2"}`}>
-      <span className={`flex size-10 shrink-0 items-center justify-center rounded-lg ${primary ? "bg-accent text-accent-ink" : "bg-surface-3"}`}>{icon}</span>
-      <span className="flex flex-col gap-0.5">
-        <span className="text-sm font-semibold">{title} <span className="font-normal uppercase text-subtle">.{fmt}</span></span>
-        <span className="text-xs text-muted">{body}</span>
-      </span>
+    <a href={href} download aria-label={`Download ${title} (.${fmt})`}
+      className={`inline-flex h-12 items-center gap-2 rounded-full px-5 text-sm font-semibold transition ${
+        primary ? "bg-ink text-white hover:bg-[#2b2b2b]" : "border border-ink bg-surface text-ink hover:bg-surface-2"}`}>
+      {icon} {title}
     </a>
   );
 }

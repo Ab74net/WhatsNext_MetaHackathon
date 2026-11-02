@@ -22,7 +22,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <TourProvider>
     <div className="flex min-h-full flex-col">
-      <header className="sticky top-0 z-30 border-b border-line bg-canvas/95">
+      <header className="sticky top-0 z-30 border-b border-line bg-canvas">
         <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-3 px-4 sm:px-6">
           <Link href="/" className="flex min-w-0 items-center gap-2.5">
             <Mark />

@@ -28,13 +28,14 @@ export function ScanStep({ session, onReview }: { session: ClaimSession; onRevie
 
   return (
     <div className="flex flex-col gap-4">
-      <Card className="flex flex-col gap-4 p-5">
+      <div className="grid gap-4 lg:grid-cols-[1fr_360px]">
+      <Card className="flex flex-col gap-4 p-6">
         <div className="flex flex-wrap items-center gap-x-10 gap-y-4">
           <div className="flex items-center gap-3">
             {/* eslint-disable-next-line @next/next/no-img-element -- static illustration */}
             <img src={allDone && merge.status !== "running" ? "/wren/scene-checklist.webp" : "/wren/scene-scan.webp"}
               alt="" width={480} height={325} className="w-24 object-contain" />
-            <p className="max-w-36 text-sm font-semibold leading-snug">
+            <p className="max-w-40 font-display text-lg font-bold leading-snug">
               {!allDone ? "Wren is searching your photos…" : merge.status === "running" ? "Matching items across photos…" : "All done."}
             </p>
           </div>
@@ -69,6 +70,8 @@ export function ScanStep({ session, onReview }: { session: ClaimSession; onRevie
           </p>
         )}
       </Card>
+      <ScanChecklist photos={photos} allDone={allDone} merge={merge.status} />
+      </div>
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
         {photos.map((p) => (
@@ -145,7 +148,7 @@ function ConfirmAll({ found, onConfirmAll }: { found: InventoryItem[]; onConfirm
       <p className="text-xs capitalize text-muted">{names}</p>
       {left ? (
         <button type="button" onClick={onConfirmAll}
-          className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-md bg-surface-3 px-3 text-[13px] font-semibold text-ink transition-colors hover:bg-good hover:text-good-ink">
+          className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-full bg-ink px-4 text-[13px] font-semibold text-white transition-colors hover:bg-[#2b2b2b]">
           <Check className="size-3.5" strokeWidth={3} aria-hidden /> Yes, I’ve owned all of these
         </button>
       ) : (
@@ -154,5 +157,34 @@ function ConfirmAll({ found, onConfirmAll }: { found: InventoryItem[]; onConfirm
         </p>
       )}
     </div>
+  );
+}
+
+// Where the scan is: done steps have a check, the current one a coral ring, upcoming ones are muted.
+function ScanChecklist({ photos, allDone, merge }: { photos: ScanPhoto[]; allDone: boolean; merge: string }) {
+  const uploaded = photos.length > 0 && photos.every((p) => p.status !== "queued" && p.status !== "uploading");
+  const matched = merge === "done" || merge === "error";
+  const steps = [
+    { label: "Uploading photos", done: uploaded },
+    { label: "Finding items", done: allDone },
+    { label: "Matching across photos", done: matched },
+    { label: "Ready for review", done: allDone && matched },
+  ];
+  const current = steps.findIndex((s) => !s.done);
+  return (
+    <Card className="p-6">
+      <h2 className="text-xl">{current === -1 ? "Your photos are ready." : "Analyzing your photos…"}</h2>
+      <ol className="mt-4 flex flex-col gap-3" aria-live="polite">
+        {steps.map((s, i) => (
+          <li key={s.label} className={`flex items-center gap-3 text-[15px] ${i > current && current !== -1 ? "text-subtle" : "text-ink"}`}>
+            {s.done ? <Check className="size-5 text-ink" strokeWidth={2.5} aria-hidden />
+              : i === current ? <span className="size-5 rounded-full border-[2.5px] border-accent" aria-hidden />
+              : <span className="size-5 rounded-full border-2 border-line-strong" aria-hidden />}
+            <span>{s.label}</span>
+            <span className="sr-only">{s.done ? "(done)" : i === current ? "(in progress)" : "(not started)"}</span>
+          </li>
+        ))}
+      </ol>
+    </Card>
   );
 }

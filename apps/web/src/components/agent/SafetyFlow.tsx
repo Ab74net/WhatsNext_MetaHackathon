@@ -49,7 +49,7 @@ export function SafetyFlowView({ card }: { card: SafetyFlowCard }) {
           <p className="text-sm font-semibold">{card.question}</p>
           {card.branches.map((b) => (
             <button key={b.id} onClick={() => setBranchId(b.id)}
-              className={`flex items-center gap-3 rounded-lg border px-3.5 py-2.5 text-left transition ${TONE[b.tone]}`}>
+              className={`flex items-center gap-3 rounded-2xl border px-4 py-3 text-left transition ${TONE[b.tone]}`}>
               <span className="flex-1">
                 <span className="block text-sm font-semibold">{b.label}</span>
                 <span className="block text-xs text-muted">{b.hint}</span>
@@ -109,7 +109,7 @@ function StepPlayer({ branch, card }: { branch: SafetyBranch; card: SafetyFlowCa
         <AnimatePresence mode="wait">
           <motion.div key={i} initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -24 }}
             transition={{ duration: reduced ? 0 : 0.25 }}
-            className={`flex flex-col gap-2.5 rounded-lg p-4 ${branch.emergency && i === 0 ? "bg-danger-solid text-white" : "bg-surface-2"}`}
+            className={`flex flex-col gap-2.5 rounded-2xl p-4 ${branch.emergency && i === 0 ? "bg-danger-solid text-white" : "bg-surface-2"}`}
             aria-live="polite">
             <motion.span initial={{ scale: 0.6, rotate: -8 }} animate={{ scale: 1, rotate: 0 }}
               transition={{ type: "spring", stiffness: 300, damping: 14, delay: 0.05 }}
@@ -140,10 +140,10 @@ function StepPlayer({ branch, card }: { branch: SafetyBranch; card: SafetyFlowCa
 
       <div className="flex items-center gap-1.5">
         <button onClick={() => go(Math.max(0, i - 1))} disabled={i === 0} aria-label="Previous step"
-          className="flex size-8 items-center justify-center rounded-lg bg-surface-3 disabled:opacity-40"><ChevronLeft className="size-4" /></button>
+          className="flex size-10 items-center justify-center rounded-full border border-line bg-surface disabled:opacity-40"><ChevronLeft className="size-4" /></button>
         {!last && (
           <button onClick={() => setPlaying((p) => !p)} aria-label={playing ? "Pause" : "Play"}
-            className="flex size-8 items-center justify-center rounded-lg bg-surface-3">{playing ? <Pause className="size-4" /> : <Play className="size-4" />}</button>
+            className="flex size-10 items-center justify-center rounded-full border border-line bg-surface">{playing ? <Pause className="size-4" /> : <Play className="size-4" />}</button>
         )}
         <button onClick={() => go(Math.min(branch.steps.length - 1, i + 1))} disabled={last}
           className="ml-auto inline-flex h-8 items-center gap-1 rounded-lg bg-accent px-3 text-[13px] font-semibold text-accent-ink disabled:opacity-40">

@@ -173,7 +173,7 @@ export function MapPanel({ scenario, replayLabel, resources, liveAlerts, replay,
   const kindsShown = [...new Set(resources.map((r) => r.kind))];
 
   return (
-    <div className="map-shell relative h-full w-full overflow-hidden rounded-lg bg-surface-3 shadow-card">
+    <div className="map-shell relative h-full w-full overflow-hidden rounded-2xl border border-line bg-surface-3">
       {/* h-full, not absolute: maplibre-gl.css forces .maplibregl-map to position: relative */}
       <div ref={container} className="h-full w-full" />
 

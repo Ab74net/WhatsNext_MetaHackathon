@@ -63,10 +63,9 @@ export function ReviewStep({ session, onAddMore, onExport }: {
       <Card className="flex flex-col gap-4 p-5">
         <div className="flex flex-wrap items-center gap-4">
           <div className="min-w-52 flex-1">
-            <p className="font-semibold">
-              {confirmedCount} of {all.length} items confirmed
-            </p>
-            <ProgressBar value={all.length ? confirmedCount / all.length : 0} tone="good" className="mt-2" />
+            <h2 className="text-2xl">{all.length} item{all.length === 1 ? "" : "s"} found</h2>
+            <p className="mt-0.5 text-sm text-muted">{confirmedCount} confirmed · {all.length - confirmedCount} to review</p>
+            <ProgressBar value={all.length ? confirmedCount / all.length : 0} className="mt-3 max-w-md" />
             <p className="mt-2 text-[13px] text-muted">
               Confirm only things you owned. Fix anything the scan got wrong, and remove what isn’t yours.
             </p>
@@ -80,11 +79,11 @@ export function ReviewStep({ session, onAddMore, onExport }: {
           </div>
         </div>
 
-        <div className="flex gap-1 border-t border-line pt-3" role="tablist">
+        <div className="flex flex-wrap gap-1.5 border-t border-line pt-4" role="tablist">
           {([["all", "All"], ["todo", "To review"], ["confirmed", "Confirmed"]] as const).map(([key, label]) => (
             <button key={key} role="tab" aria-selected={filter === key} onClick={() => setFilter(key)}
-              className={`h-8 rounded-lg px-3 text-[13px] font-semibold transition ${
-                filter === key ? "bg-accent-soft text-accent" : "text-muted hover:bg-surface-2"}`}>
+              className={`min-h-9 rounded-full px-4 text-[13px] font-semibold transition ${
+                filter === key ? "bg-ink text-white" : "border border-line text-muted hover:text-ink"}`}>
               {label} <span className="ml-1 tabular-nums opacity-70">{counts[key]}</span>
             </button>
           ))}
@@ -141,7 +140,7 @@ export function ReviewStep({ session, onAddMore, onExport }: {
           <h2 className="px-1 text-[13px] font-semibold uppercase tracking-wide text-muted">
             {category} <span className="font-normal text-subtle">· {list.length}</span>
           </h2>
-          <div className="grid gap-2 md:grid-cols-2">
+          <div className="flex flex-col gap-2">
             <AnimatePresence initial={false}>
               {list.map((item) => {
                 const meta = metaById[item.photos[0]?.photo_id];
@@ -212,10 +211,10 @@ function ItemCard({ item, meta, src, color, selecting, selected, onSelect, onVie
 
   return (
     <motion.div layout initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.98 }}>
-      <Card className={`flex gap-3 p-3 transition ${selected ? "ring-2 ring-accent" : item.user_confirmed ? "ring-1 ring-good/50" : ""}`}
+      <Card className={`flex flex-wrap items-center gap-x-4 gap-y-2 p-3 transition sm:flex-nowrap ${selected ? "ring-2 ring-accent" : ""}`}
         onClick={selecting ? onSelect : undefined} role={selecting ? "checkbox" : undefined} aria-checked={selecting ? selected : undefined}>
         <button onClick={selecting ? undefined : onView} aria-label="View evidence photos"
-          className="relative size-24 shrink-0 overflow-hidden rounded-lg">
+          className="relative size-20 shrink-0 overflow-hidden rounded-xl">
           {meta && <ItemCrop src={src} meta={meta} mask={mask} color={color} />}
           {photoCount > 1 && (
             <span className="absolute bottom-1 right-1 inline-flex items-center gap-0.5 rounded-md bg-black/65 px-1.5 py-0.5 text-[10px] font-semibold text-white">
@@ -261,18 +260,24 @@ function ItemCard({ item, meta, src, color, selecting, selected, onSelect, onVie
             {photoCount > 1 && <Badge tone="good" icon={<Layers className="size-3" />}>{photoCount} photos</Badge>}
             <select value={item.condition} onChange={(e) => onPatch({ condition: e.target.value as Condition })}
               onClick={(e) => e.stopPropagation()} aria-label="Condition"
-              className="h-6 rounded-md bg-surface-2 px-1 text-xs font-semibold text-muted">
+              className="h-8 rounded-full border border-line bg-surface px-2 text-xs font-semibold text-ink">
               {CONDITIONS.map((c) => <option key={c} value={c}>{c === "unknown" ? "Condition?" : c[0].toUpperCase() + c.slice(1)}</option>)}
             </select>
             <span className="text-xs text-subtle tabular-nums" title="How sure the scan is">{Math.round(item.confidence * 100)}%</span>
           </div>
           {earliest && <p className="text-xs text-subtle">Earliest photo {new Date(earliest).toLocaleDateString()}</p>}
+          {item.estimated_replacement_usd && (
+            <p className="text-sm font-semibold tabular-nums">
+              ${item.estimated_replacement_usd.low.toLocaleString()} – ${item.estimated_replacement_usd.high.toLocaleString()}
+              <span className="ml-1 text-xs font-normal text-muted">estimate</span>
+            </p>
+          )}
 
           {!selecting && (
             <div className="mt-auto flex items-center gap-1 pt-1">
-              <Button size="sm" variant={item.user_confirmed ? "success" : "secondary"}
+              <Button size="sm" variant={item.user_confirmed ? "success" : "primary"} aria-pressed={item.user_confirmed}
                 onClick={() => onPatch({ user_confirmed: !item.user_confirmed })}>
-                <Check className="size-3.5" strokeWidth={3} aria-hidden /> {item.user_confirmed ? "Confirmed" : "I owned this"}
+                <Check className="size-3.5" strokeWidth={3} aria-hidden /> {item.user_confirmed ? "Confirmed" : "Confirm"}
               </Button>
               {editing ? (
                 <Button size="sm" variant="ghost" onClick={save}>Save</Button>
@@ -308,7 +313,7 @@ function PhotoViewer({ item, metaById, photoUrl, onClose }: {
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" role="dialog" aria-modal="true">
       <motion.div initial={{ scale: 0.97, y: 8 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.97 }}
-        onClick={(e) => e.stopPropagation()} className="flex max-h-full w-full max-w-3xl flex-col overflow-hidden rounded-lg bg-surface shadow-pop">
+        onClick={(e) => e.stopPropagation()} className="flex max-h-full w-full max-w-3xl flex-col overflow-hidden rounded-2xl bg-surface shadow-pop">
         <div className="flex items-center gap-3 border-b border-line px-4 py-3">
           <div className="min-w-0 flex-1">
             <p className="truncate font-semibold capitalize">{item.category}</p>

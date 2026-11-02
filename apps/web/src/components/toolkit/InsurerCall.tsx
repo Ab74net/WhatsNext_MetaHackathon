@@ -158,7 +158,7 @@ function Questions({ hazard, setHazard, hasInventory, setHasInventory, asked, se
         <label className="flex flex-col gap-1.5 text-sm text-muted">
           What happened
           <select value={hazard} onChange={(e) => { setData(null); setHazard(e.target.value as Hazard); }}
-            className="h-12 rounded-md bg-surface-2 px-3 text-[15px] text-ink">
+            className="h-12 rounded-xl border border-line bg-surface px-3 text-[15px] text-ink">
             {HAZARDS.map((h) => <option key={h.value} value={h.value}>{h.label}</option>)}
           </select>
         </label>
@@ -209,7 +209,7 @@ function Questions({ hazard, setHazard, hasInventory, setHasInventory, asked, se
             setDraft("");
           }}>
             <input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="Add your own question" aria-label="Add your own question"
-              maxLength={200} className="h-12 min-w-0 flex-1 rounded-md bg-surface-2 px-3 text-[15px] placeholder:text-subtle" />
+              maxLength={200} className="h-12 min-w-0 flex-1 rounded-xl border border-line bg-surface px-3 text-[15px] placeholder:text-subtle" />
             <Button type="submit" size="lg" disabled={!draft.trim()}><Plus className="size-4" aria-hidden /> Add</Button>
           </form>
         </>
@@ -275,7 +275,7 @@ function FollowUp({ prep, notes }: { prep: PrepDetails; notes: CallNotes }) {
               {copied ? <><Check className="size-4" aria-hidden /> Copied</> : <><Copy className="size-4" aria-hidden /> Copy email</>}
             </Button>
             <a href={`mailto:?subject=${encodeURIComponent(draft.subject)}&body=${encodeURIComponent(draft.body)}`}
-              className="inline-flex h-9 items-center gap-2 rounded-lg bg-surface-3 px-3.5 text-sm font-semibold text-ink hover:brightness-110">
+              className="inline-flex h-10 items-center gap-2 rounded-full border border-ink bg-surface px-4 text-sm font-semibold text-ink hover:bg-surface-2">
               <Mail className="size-4" aria-hidden /> Open in my email app
             </a>
           </div>
@@ -304,7 +304,7 @@ function Field({ label, value, onChange, type = "text", large = false }: {
     <div className="flex min-w-0 flex-1 flex-col gap-1.5">
       <label htmlFor={id} className="text-sm text-muted">{label}</label>
       <input id={id} type={type} value={value} onChange={(e) => onChange(e.target.value)} autoComplete="off"
-        className={`h-12 rounded-md bg-surface-2 px-3 text-ink placeholder:text-subtle print:border print:border-black ${large ? "text-lg" : "text-[15px]"}`} />
+        className={`h-12 rounded-xl border border-line bg-surface px-3 text-ink placeholder:text-subtle print:border print:border-black ${large ? "text-lg" : "text-[15px]"}`} />
     </div>
   );
 }
@@ -315,7 +315,7 @@ function Area({ label, value, onChange, rows, id }: { label: string; value: stri
     <div className="flex flex-col gap-1.5">
       <label htmlFor={id ?? autoId} className="text-sm text-muted">{label}</label>
       <textarea id={id ?? autoId} rows={rows} value={value} onChange={(e) => onChange(e.target.value)}
-        className="rounded-md bg-surface-2 px-3 py-2.5 text-[15px] leading-relaxed text-ink print:border print:border-black" />
+        className="rounded-xl border border-line bg-surface px-3 py-2.5 text-[15px] leading-relaxed text-ink print:border print:border-black" />
     </div>
   );
 }

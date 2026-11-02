@@ -66,7 +66,7 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
 function TourOffer({ onStart, onDismiss }: { onStart: () => void; onDismiss: () => void }) {
   return (
     <div role="region" aria-label="Guided tour"
-      className="fixed inset-x-4 bottom-20 z-40 mx-auto max-w-sm rounded-lg bg-surface-2 p-4 shadow-pop lg:bottom-6 lg:left-auto lg:right-6 lg:mx-0">
+      className="fixed inset-x-4 bottom-20 z-40 mx-auto max-w-sm rounded-2xl border border-line bg-surface p-4 shadow-pop lg:bottom-6 lg:left-auto lg:right-6 lg:mx-0">
       <div className="flex items-start gap-3">
         {/* eslint-disable-next-line @next/next/no-img-element -- small static illustration */}
         <img src="/wren/scene-guide.webp" alt="" width={480} height={351} className="w-20 shrink-0" />
@@ -182,7 +182,7 @@ function TourDialog({ step, setStep, onClose }: {
           }} />
       )}
       <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={titleId} aria-describedby={bodyId}
-        className={`absolute rounded-lg bg-surface-2 p-5 shadow-pop ${ease}`}
+        className={`absolute rounded-2xl border border-line bg-surface p-5 shadow-pop ${ease}`}
         style={{ width: phone ? undefined : CARD_W, ...cardStyle }}>
         <div className="flex items-start justify-between gap-3">
           <p className="text-xs font-medium tracking-wide text-muted">

@@ -54,7 +54,7 @@ export function Documents() {
       <label className="flex max-w-xs flex-col gap-1.5 text-sm text-muted">
         Your state
         <select value={state} onChange={(e) => { setGuide(null); setState(e.target.value); }}
-          className="h-12 rounded-md bg-surface-2 px-3 text-[15px] text-ink">
+          className="h-12 rounded-xl border border-line bg-surface px-3 text-[15px] text-ink">
           {(states ?? [{ state: "VA", state_name: "Virginia", available: true }]).map((s) => (
             <option key={s.state} value={s.state}>{s.state_name}{s.available ? "" : " (coming soon)"}</option>
           ))}
@@ -79,8 +79,8 @@ export function Documents() {
                 const on = lostSet.has(d.id);
                 return (
                   <button key={d.id} type="button" aria-pressed={on} onClick={() => setLost((l) => toggle(l, d.id))}
-                    className={`flex min-h-20 items-start gap-2 rounded-lg p-3 text-left text-[15px] font-medium transition-colors ${
-                      on ? "bg-accent-soft text-ink ring-2 ring-accent" : "bg-surface-2 text-muted hover:text-ink"}`}>
+                    className={`flex min-h-20 items-start gap-2 rounded-2xl border p-3 text-left text-[15px] font-medium transition-colors ${
+                      on ? "border-accent bg-accent-soft text-ink" : "border-line bg-surface text-muted hover:text-ink"}`}>
                     <span className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded border-2 ${on ? "border-accent bg-accent text-accent-ink" : "border-subtle"}`}>
                       {on && <Check className="size-3.5" strokeWidth={3} aria-hidden />}
                     </span>
@@ -100,10 +100,10 @@ export function Documents() {
                     Some documents need another one first, so the order matters. Check each step off as you finish it.
                   </p>
                 </div>
-                <div className="flex gap-1 rounded-lg bg-surface-2 p-1" role="group" aria-label="View">
+                <div className="flex gap-1 rounded-full bg-surface-2 p-1" role="group" aria-label="View">
                   {([["list", "List", List], ["path", "Path", Route]] as const).map(([v, label, Icon]) => (
                     <button key={v} type="button" aria-pressed={view === v} onClick={() => setView(v)}
-                      className={`inline-flex min-h-10 items-center gap-1.5 rounded-md px-3 text-sm font-semibold ${view === v ? "bg-surface-3 text-ink" : "text-muted"}`}>
+                      className={`inline-flex min-h-10 items-center gap-1.5 rounded-full px-4 text-sm font-semibold ${view === v ? "bg-surface text-ink shadow-card ring-1 ring-line" : "text-muted"}`}>
                       <Icon className="size-4" aria-hidden /> {label}
                     </button>
                   ))}
@@ -244,7 +244,7 @@ function PharmacyNote() {
   const [v, setV] = useState({ my_name: "", date_of_birth: "", medicines: "", pharmacy: "", my_phone: "" });
   const text = fillTemplate(LETTER, v);
   return (
-    <div className="rounded-lg bg-surface p-5">
+    <div className="rounded-2xl border border-line bg-surface p-5">
       <h3 className="text-lg">A note for your pharmacy or prescriber</h3>
       <p className="mt-1 text-sm text-muted">Written on this device. Read it aloud on the phone, or copy it into a message.</p>
       {!open ? (
@@ -254,11 +254,11 @@ function PharmacyNote() {
           {([["my_name", "Your name"], ["date_of_birth", "Date of birth"], ["medicines", "Medicines"], ["pharmacy", "Pharmacy"], ["my_phone", "Your phone"]] as const).map(([k, label]) => (
             <label key={k} className="flex flex-col gap-1.5 text-sm text-muted">{label}
               <input value={v[k]} onChange={(e) => setV({ ...v, [k]: e.target.value })} autoComplete="off"
-                className="h-12 rounded-md bg-surface-2 px-3 text-[15px] text-ink" />
+                className="h-12 rounded-xl border border-line bg-surface px-3 text-[15px] text-ink" />
             </label>
           ))}
           <textarea readOnly value={text} rows={12} aria-label="Your note"
-            className="rounded-md bg-surface-2 px-3 py-2.5 text-[15px] leading-relaxed sm:col-span-2" />
+            className="rounded-xl border border-line bg-surface px-3 py-2.5 text-[15px] leading-relaxed sm:col-span-2" />
         </div>
       )}
     </div>
@@ -281,7 +281,7 @@ function AskBox({ state, docIds, byId }: { state: string; docIds: string[]; byId
   }
 
   return (
-    <form onSubmit={ask} className="rounded-lg bg-surface p-5">
+    <form onSubmit={ask} className="rounded-2xl border border-line bg-surface p-5">
       <h3 className="text-lg">Ask about these documents</h3>
       <p className="mt-1 text-sm text-muted">
         Answers use only the official information above. Don’t include names or numbers; they are removed before your question is sent.
@@ -289,7 +289,7 @@ function AskBox({ state, docIds, byId }: { state: string; docIds: string[]; byId
       <div className="mt-3 flex gap-2">
         <input value={q} onChange={(e) => setQ(e.target.value)} maxLength={300} aria-label="Your question"
           placeholder="For example: can I order a birth certificate by mail?"
-          className="h-12 min-w-0 flex-1 rounded-md bg-surface-2 px-3 text-[15px] placeholder:text-subtle" />
+          className="h-12 min-w-0 flex-1 rounded-xl border border-line bg-surface px-3 text-[15px] placeholder:text-subtle" />
         <Button type="submit" size="lg" variant="primary" loading={busy} disabled={!clean.trim()}>Ask</Button>
       </div>
       {clean !== q && q && <p className="mt-2 text-xs text-muted">Will be sent as: “{clean}”</p>}

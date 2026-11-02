@@ -211,10 +211,10 @@ export function ToolkitLinkView({ card }: { card: ToolkitLink }) {
 
 export function EmergencyView() {
   return (
-    <div className="flex flex-col gap-3 rounded-lg bg-danger-solid p-4 text-white shadow-pop">
+    <div className="flex flex-col gap-3 rounded-2xl bg-danger-solid p-4 text-white">
       <p className="text-lg font-bold">Call 911 now</p>
       <p className="text-sm opacity-90">If anyone is hurt or in immediate danger, emergency services come first.</p>
-      <a href="tel:911" className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-white font-bold text-danger">
+      <a href="tel:911" className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-white font-bold text-danger">
         <Phone className="size-4" aria-hidden /> Call 911
       </a>
     </div>

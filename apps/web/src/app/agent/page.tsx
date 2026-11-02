@@ -59,7 +59,7 @@ export default function AgentPage() {
   }
 
   return (
-    <div className="mx-auto grid w-full max-w-7xl flex-1 gap-3 p-3 lg:h-[calc(100dvh_-_4rem)] lg:flex-none lg:grid-cols-[minmax(380px,520px)_1fr] lg:grid-rows-[minmax(0,1fr)] lg:gap-4 lg:p-4">
+    <div className="mx-auto grid w-full min-w-0 max-w-7xl flex-1 gap-3 p-3 [&>*]:min-w-0 lg:h-[calc(100dvh_-_4rem)] lg:flex-none lg:grid-cols-[minmax(380px,520px)_1fr] lg:grid-rows-[minmax(0,1fr)] lg:gap-4 lg:p-4">
       <div className="order-2 flex h-[75vh] min-h-0 flex-col lg:order-1 lg:h-full">
         <Card className="flex min-h-0 flex-1 flex-col overflow-hidden">
           <div className="flex items-center gap-3 border-b border-line px-4 py-3">
@@ -97,9 +97,9 @@ export default function AgentPage() {
             </div>
           )}
 
-          <div className="flex items-center gap-2 border-b border-line px-4 py-2">
+          <div className="flex flex-wrap items-center gap-2 border-b border-line px-4 py-2">
             <span className="text-xs font-medium text-muted">{agent.scenario?.title ?? "Scenario"}:</span>
-            <div className="flex rounded-full bg-surface-2 p-1" role="tablist">
+            <div className="flex flex-wrap rounded-3xl bg-surface-2 p-1" role="tablist">
               {(agent.scenario?.presets ?? []).map((p) => (
                 <button key={p.id} role="tab" aria-selected={p.id === agent.caseFile.preset}
                   onClick={() => { agent.setPreset(p.id); setSelectedId(null); }}

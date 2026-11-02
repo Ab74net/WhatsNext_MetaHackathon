@@ -156,6 +156,10 @@ All hand-checked on Nov 2, 2026. Every row has a source URL; news sources are la
 - `resources.json`: shelters, animal evacuation, hospitals and recovery help. `phases` controls when each one is shown.
 - `programs.json`: the assistance knowledge base. As of Nov 2: FEMA Individual Assistance is **pending** (only emergency declaration EM-3650 exists; a Major Disaster Declaration was requested in late Sept), SBA loans are **not available**, and the state Household Needs Grant is open with **no published deadline**. Never add a deadline the official source doesn't publish.
 
+## Design
+
+Light, warm, editorial look matched to `docs/design/target-mockup.png`. All colors are tokens in `apps/web/src/app/globals.css` (no dark mode). Coral `#C2381F` is the accent for key states and the 911 banner (white on it is 5.4:1); the mockup's brighter coral and blue are decoration-only tokens (`--deco-*`), never text. Green is darkened to `#1F7A45` for AA. Fonts: Inter (UI) and Inter Tight (headings). Shared pieces live in `components/ui.tsx` (pill buttons, bordered cards, Stepper). The wordmark reads `projectName × partner` from `packages/shared/brand.json`.
+
 ## Second demo scenario (`/content/nrv`)
 
 Ask Wren has a **Demo scenario** switch: Spokane Complex Fires (default) or a **hypothetical** New River Valley flood modeled on the September 27, 2024 Helene flooding (USGS alert, WVTF, FEMA DR-4831-VA). It is labeled hypothetical in the UI and in Wren's instructions. The places (hospitals, county offices, animal center) and programs (Red Cross, 211 Virginia, NFIP claims, FEMA IA, SBA) are real and sourced; no shelters are listed because real shelters are announced during an event. Safety steps: `content/safety/flood.json`, quoted from Ready.gov: Floods and FloodSmart. Scenario ids live in `ScenarioId` (schemas.py and types.ts); adding one means a new content folder plus that id.

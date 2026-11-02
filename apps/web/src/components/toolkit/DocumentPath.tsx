@@ -26,7 +26,7 @@ export function DocumentPath({ entries, lost, done, onToggle }: {
   const height = PAD * 2 + Math.max(...cols.map((c) => c.length)) * (H + GY) - GY;
 
   return (
-    <div className="overflow-x-auto rounded-lg bg-surface p-3">
+    <div className="overflow-x-auto rounded-2xl border border-line bg-surface p-3">
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} role="group" aria-label="Replacement path">
         <defs>
           <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">

@@ -1,6 +1,6 @@
 import type { InventoryItem, Mask, PhotoMeta } from "@shared/types";
 
-const COLORS = ["#e3a548", "#7fb3a8", "#d9826b", "#9dbb98", "#c9b48a", "#8fa9c7"];
+const COLORS = ["#2f7fa6", "#e5533d", "#1f7a45", "#8a5300", "#1f5e7e", "#c2381f"];
 
 export function colorFor(index: number) {
   return COLORS[index % COLORS.length];
