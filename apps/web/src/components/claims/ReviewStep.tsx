@@ -1,7 +1,8 @@
 "use client";
 
-// Step 3: review the inventory. Every line must be confirmed by the user, one at a time
-// (no "confirm all": the claim must reflect what the user actually owned). Items seen in
+// Step 3: review the inventory. Every line must be confirmed by the user, here or per photo
+// in the scan view ("Yes, I've owned all of these"); there is no global "confirm all", so
+// the claim reflects what the user actually owned. Items seen in
 // several photos were merged automatically; the user can split them or merge by hand.
 
 import { useMemo, useState } from "react";

@@ -37,6 +37,8 @@ export function useClaimSession() {
   const [memory, setMemory] = useState<WebState>({ status: "idle" });
   const [sessionId, setSessionId] = useState<string | null>(null);
   const sessionRef = useRef<string | null>(null);
+  const itemsRef = useRef(items);
+  useEffect(() => { itemsRef.current = items; }, [items]);
 
   useEffect(() => {
     api.health().then(setHealth).catch((e) => setHealthError(message(e)));
@@ -110,6 +112,15 @@ export function useClaimSession() {
       if (fresh) setItems((prev) => ({ ...prev, [id]: fresh }));
     }
   }, []);
+
+  // "Yes, I've owned all of these": the user confirms every item found in one photo at once.
+  // Still an explicit confirmation of items they can see; each can be un-confirmed in Review.
+  const confirmPhoto = useCallback(async (photoId: string) => {
+    const ids = Object.values(itemsRef.current)
+      .filter((it) => !it.user_confirmed && it.photos.some((p) => p.photo_id === photoId))
+      .map((it) => it.id);
+    await Promise.all(ids.map((id) => patchItem(id, { user_confirmed: true })));
+  }, [patchItem]);
 
   const removeItem = useCallback(async (id: string) => {
     const sid = sessionRef.current;
@@ -208,7 +219,7 @@ export function useClaimSession() {
 
   return {
     health, healthError, sessionId, photos, items, merge, valuing, memory,
-    scan, patchItem, removeItem, runMerge, mergeItems, splitItem, valueItem, loadMemoryWeb, addFromPhoto,
+    scan, patchItem, confirmPhoto, removeItem, runMerge, mergeItems, splitItem, valueItem, loadMemoryWeb, addFromPhoto,
     endSession, photoUrl, exportUrl,
   };
 }

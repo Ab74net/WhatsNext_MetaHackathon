@@ -4,7 +4,8 @@
 // When every photo is done, items are matched across photos automatically.
 
 import { motion } from "motion/react";
-import { ArrowRight, CopyCheck, Layers } from "lucide-react";
+import { ArrowRight, Check, CopyCheck, Layers } from "lucide-react";
+import type { InventoryItem } from "@shared/types";
 import type { ClaimSession, ScanPhoto } from "@/lib/useClaimSession";
 import { PhotoWithMasks } from "@/components/PhotoWithMasks";
 import { Badge, Button, Card, ProgressBar, Pulse, Stat } from "@/components/ui";
@@ -33,7 +34,7 @@ export function ScanStep({ session, onReview }: { session: ClaimSession; onRevie
           <div className="flex items-center gap-3">
             <WrenAvatar mood={allDone && merge.status !== "running" ? "idle" : "searching"} size={64} />
             <p className="max-w-36 text-sm font-semibold leading-snug">
-              {!allDone ? "Wren is searching your photos…" : merge.status === "running" ? "Matching items across photos…" : "All done!"}
+              {!allDone ? "Wren is searching your photos…" : merge.status === "running" ? "Matching items across photos…" : "All done."}
             </p>
           </div>
           <Stat label="Photos scanned" value={`${finished}/${photos.length}`} />
@@ -70,14 +71,18 @@ export function ScanStep({ session, onReview }: { session: ClaimSession; onRevie
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
         {photos.map((p) => (
-          <ScanCard key={p.key} photo={p} src={p.meta ? session.photoUrl(p.meta.photo_id) : p.localUrl} />
+          <ScanCard key={p.key} photo={p} src={p.meta ? session.photoUrl(p.meta.photo_id) : p.localUrl}
+            found={p.meta ? Object.values(items).filter((it) => it.photos.some((ph) => ph.photo_id === p.meta!.photo_id)) : []}
+            onConfirmAll={() => p.meta && session.confirmPhoto(p.meta.photo_id)} />
         ))}
       </div>
     </div>
   );
 }
 
-function ScanCard({ photo: p, src }: { photo: ScanPhoto; src: string }) {
+function ScanCard({ photo: p, src, found, onConfirmAll }: {
+  photo: ScanPhoto; src: string; found: InventoryItem[]; onConfirmAll: () => void;
+}) {
   const busy = p.status === "queued" || p.status === "uploading" || p.status === "scanning";
   const count = p.result?.items.length ?? 0;
   const overlay = p.status === "duplicate" ? "Same photo as one already scanned"
@@ -112,6 +117,7 @@ function ScanCard({ photo: p, src }: { photo: ScanPhoto; src: string }) {
           <StatusBadge photo={p} count={count} />
         </div>
         {p.error && <p className="px-3 pb-2 text-xs text-danger">{p.error}</p>}
+        {p.status === "done" && found.length > 0 && <ConfirmAll found={found} onConfirmAll={onConfirmAll} />}
       </Card>
     </motion.div>
   );
@@ -126,4 +132,26 @@ function StatusBadge({ photo: p, count }: { photo: ScanPhoto; count: number }) {
     case "error": return <Badge tone="danger">Failed</Badge>;
     case "done": return p.result?.skipped ? <Badge>Skipped</Badge> : <Badge tone="good">{count} item{count === 1 ? "" : "s"}</Badge>;
   }
+}
+
+// One tap to confirm everything found in this photo. The names are listed so "all of these"
+// is unambiguous; each item can still be un-confirmed or removed in Review.
+function ConfirmAll({ found, onConfirmAll }: { found: InventoryItem[]; onConfirmAll: () => void }) {
+  const left = found.filter((it) => !it.user_confirmed).length;
+  const names = [...new Set(found.map((it) => it.category))].join(", ");
+  return (
+    <div className="flex flex-col gap-2 border-t border-line px-3 py-2.5">
+      <p className="text-xs capitalize text-muted">{names}</p>
+      {left ? (
+        <button type="button" onClick={onConfirmAll}
+          className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-md bg-surface-3 px-3 text-[13px] font-semibold text-ink transition-colors hover:bg-good hover:text-good-ink">
+          <Check className="size-3.5" strokeWidth={3} aria-hidden /> Yes, I’ve owned all of these
+        </button>
+      ) : (
+        <p className="inline-flex min-h-10 items-center justify-center gap-1.5 text-[13px] font-semibold text-good" role="status">
+          <Check className="size-3.5" strokeWidth={3} aria-hidden /> All {found.length} confirmed
+        </p>
+      )}
+    </div>
+  );
 }
