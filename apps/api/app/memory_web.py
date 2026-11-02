@@ -14,7 +14,7 @@ from .schemas import EvidenceGrade, InventoryItem, MemoryRoom, MemorySuggestion,
 
 MAX_SUGGESTIONS = 12
 
-PROMPT = """You help a wildfire survivor remember belongings for an insurance claim.
+PROMPT = """You help a disaster survivor remember belongings for an insurance claim.
 Here are the items they have confirmed so far (id: description):
 {items}
 

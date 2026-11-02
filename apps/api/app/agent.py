@@ -46,9 +46,9 @@ TOOLS = [
          "insured": {"type": "string", "enum": ["yes", "no", "unknown"]},
          "lost_documents": {"type": "string", "enum": ["yes", "no", "unknown"]}}}},
     {"type": "function", "name": "show_safety_flow", "strict": True,
-     "description": "Pre-authored wildfire safety steps from Ready.gov and Spokane County. Use when the user asks what to do to stay safe: evacuating, being told to get ready, being trapped, smoke, or going back home. Pick the situation that matches, or 'unknown' to let them choose.",
+     "description": "Pre-authored safety steps for this scenario's hazard, from official sources. Use when the user asks what to do to stay safe. Wildfire situations: level3 (told to go now), level12 (told to get ready), smoke. Flood situations: rising (water rising), driving. Both: trapped, returning (going back home). Pick the one that matches, or 'unknown' to let them choose.",
      "parameters": {"type": "object", "additionalProperties": False, "required": ["situation"], "properties": {
-         "situation": {"type": "string", "enum": ["level3", "level12", "trapped", "smoke", "returning", "unknown"]}}}},
+         "situation": {"type": "string", "enum": ["level3", "level12", "smoke", "rising", "driving", "trapped", "returning", "unknown"]}}}},
     {"type": "function", "name": "start_claim", "strict": True,
      "description": "Offer the claims helper, which rebuilds a home inventory from the user's photos for an insurance claim.",
      "parameters": {"type": "object", "additionalProperties": False, "required": ["reason"], "properties": {
@@ -62,15 +62,16 @@ TOOLS = [
 
 
 def system_prompt(case: CaseFile) -> str:
-    s = content.scenario()
-    p = content.preset(case.preset)
-    when = (f"This is a replay of {p['label'].split(' · ')[0]}, during the fires." if p["replay"]
-            else "It is now, months after the fires; the user is recovering.")
+    s = content.scenario(case.scenario)
+    p = content.preset(case.preset, case.scenario)
+    when = s["when"][p["phase"]]
+    demo = (" This is a hypothetical demo scenario: describe the situation as hypothetical if asked, but the places and programs"
+            " from tools are real." if s.get("hypothetical") else "")
     return f"""You are {BRAND['agentName']}, a calm disaster-recovery assistant in the {BRAND['projectName']} app.
-The user is in {s['place']}, affected by the {s['title']} ({s['hazard']}). {when}
+The user is in {s['place']}, affected by the {s['title']} ({s['hazard']}). {when}{demo}
 
 How you answer:
-- Use tools. The app shows tool results as cards and on a map. Call get_alerts first in a new situation, find_resources when they need a place or service, build_plan when they ask what to do, show_safety_flow when they ask how to stay safe (evacuating, smoke, going back home), start_claim when they mention insurance, belongings or a claim, open_toolkit with tab documents when they mention lost IDs, cards, papers or mail, and with tab insurer_call when they are about to call their insurer.
+- Use tools. The app shows tool results as cards and on a map. Call get_alerts first in a new situation, find_resources when they need a place or service, build_plan when they ask what to do, show_safety_flow when they ask how to stay safe (evacuating, smoke, rising water, driving, going back home), start_claim when they mention insurance, belongings or a claim, open_toolkit with tab documents when they mention lost IDs, cards, papers or mail, and with tab insurer_call when they are about to call their insurer.
 - Your own text is one or two short, warm sentences that frame the cards, which appear below your message. Do not repeat what the cards show.
 - Never state addresses, phone numbers, dollar amounts, deadlines, program rules or safety instructions in your own words. Those come only from tools. Never invent programs, places or deadlines.
 - If something is unknown or not covered by a tool, say so plainly and suggest calling 2-1-1.
@@ -90,20 +91,18 @@ EMERGENCY_MESSAGE = ("If you or anyone is hurt or in immediate danger, call 911 
 async def run_tool(name: str, args: dict, case: CaseFile) -> tuple[list[UIInstruction], dict, CaseFile]:
     """Execute a tool. Returns UI instructions for the user, a compact summary for the
     model, and the (possibly updated) case file."""
-    phase = content.preset(case.preset)["phase"]
+    s = content.scenario(case.scenario)
+    phase = content.preset(case.preset, case.scenario)["phase"]
     if name == "get_alerts":
-        card = await alerts_card(replay=content.preset(case.preset)["replay"])
+        card = await alerts_card(replay=content.preset(case.preset, case.scenario)["replay"], scenario_id=case.scenario)
         summary = {"live_alerts": [a.title for a in card.live], "live_error": card.live_error,
                    "recorded_alerts_from_replay": [a.title for a in card.recorded],
                    "fire_areas": [a.name for a in card.fire_areas]}
         return [card], summary, case
     if name == "find_resources":
         kinds = [k for k in args.get("kinds", []) if k in {"shelter", "animal_shelter", "clinic", "recovery_center"}]
-        items = content.resources(phase, kinds or None)
-        note = ("Shown as reported during the fires. Call 2-1-1 to confirm a place is open before you go."
-                if phase == "response" else "Current recovery locations. Call ahead to confirm hours.")
-        if not items:
-            note = "No places of that kind are listed for this time. Call 2-1-1 for current options."
+        items = content.resources(phase, kinds or None, case.scenario)
+        note = s["resource_notes"][phase] if items else s["resource_notes"]["empty"]
         return [ResourceList(kinds=kinds, items=items, note=note)], {"found": [r.name for r in items]}, case
     if name == "build_plan":
         case = case.model_copy(update={k: args[k] for k in ("home_damage", "insured", "lost_documents") if k in args})
@@ -116,7 +115,7 @@ async def run_tool(name: str, args: dict, case: CaseFile) -> tuple[list[UIInstru
         tab = args.get("tab") if args.get("tab") in ("documents", "insurer_call") else "documents"
         return [ToolkitLink(tab=tab, reason=str(args.get("reason", ""))[:200])], {"shown": True}, case
     if name == "show_safety_flow":
-        card = content.safety_flow("wildfire", args.get("situation"))
+        card = content.safety_flow(s["safety_flow"], args.get("situation"))
         return [card], {"shown": True, "opened": card.initial}, case
     return [], {"error": f"unknown tool {name}"}, case
 
@@ -175,13 +174,14 @@ class MockAgent:
         if is_emergency(text):
             return AgentResponse(message=EMERGENCY_MESSAGE, ui=[EmergencyCard()], case=case, tools_used=[])
         plan: list[tuple[str, dict]] = [("get_alerts", {})]
-        if any(w in text for w in ("shelter", "stay", "sleep", "tonight", "hospital", "pet", "dog", "cat")):
+        if re.search(r"\b(shelter|stay|sleep|tonight|hospital|pets?|dogs?|cats?)\b", text):
             plan.append(("find_resources", {"kinds": ["shelter", "animal_shelter", "clinic"]}))
         if any(w in text for w in ("what should", "what do", "first", "help", "plan", "aid", "grant")):
             damage = "destroyed" if any(w in text for w in ("burned", "destroyed", "lost my home", "gone")) else "unknown"
             plan.append(("build_plan", {"home_damage": damage, "insured": "unknown", "lost_documents": "unknown"}))
-        if any(w in text for w in ("safe", "evacuat", "smoke", "go back", "return")):
+        if any(w in text for w in ("safe", "evacuat", "smoke", "go back", "return", "rising", "drive", "driving")):
             situation = ("smoke" if "smoke" in text else "returning" if ("go back" in text or "return" in text)
+                         else "rising" if "rising" in text else "driving" if "driv" in text
                          else "level3" if "evacuat" in text else "unknown")
             plan.append(("show_safety_flow", {"situation": situation}))
         if any(w in text for w in ("insurance", "claim", "belongings", "inventory")):

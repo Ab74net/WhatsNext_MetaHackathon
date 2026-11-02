@@ -95,8 +95,8 @@ function MeetWren() {
   return (
     <section className="grid items-center gap-8 rounded-lg bg-surface p-6 sm:grid-cols-[auto_1fr] sm:p-10" aria-labelledby="wren">
       {/* eslint-disable-next-line @next/next/no-img-element -- small static webp */}
-      <img src="/wren/wren-hero.webp" alt={`${brand.agentName}, a friendly first-aid kit with a heart, waving`}
-        width={320} height={320} loading="lazy" className="w-36 rounded-lg sm:w-48" />
+      <img src="/wren/scene-guide.webp" alt={`${brand.agentName}, a friendly first-aid kit, pointing at a screen`}
+        width={480} height={351} loading="lazy" className="w-44 sm:w-60" />
       <div>
         <h2 id="wren" className="text-3xl">Meet {brand.agentName}</h2>
         <p className="mt-3 max-w-xl text-muted">

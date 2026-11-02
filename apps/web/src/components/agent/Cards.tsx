@@ -46,7 +46,7 @@ export function AlertsView({ card }: { card: AlertsCard }) {
           <div className="flex-1">
             {card.live_error ? <span>{card.live_error} Check weather.gov or local news.</span>
               : card.live.length ? <span className="font-semibold">{card.live.length} active alert{card.live.length === 1 ? "" : "s"} from the National Weather Service</span>
-              : <span>Live now: <strong>no active National Weather Service alerts</strong> for Spokane.</span>}
+              : <span>Live now: <strong>no active National Weather Service alerts</strong> for this area.</span>}
             <span className="block text-[11px] text-subtle">
               Checked {time(card.live_checked_at)} · <a href={card.live_source_url} target="_blank" rel="noopener noreferrer" className="hover:text-accent">api.weather.gov</a>
             </span>
@@ -80,7 +80,9 @@ export function AlertsView({ card }: { card: AlertsCard }) {
             </span>
           ))}
         </div>
-        <SourceLink name={card.fire_areas_source.name} url={card.fire_areas_source.url} checked={card.fire_areas_source.retrieved_at} type="official" />
+        {card.fire_areas_source && (
+          <SourceLink name={card.fire_areas_source.name} url={card.fire_areas_source.url} checked={card.fire_areas_source.retrieved_at} type="official" />
+        )}
       </div>
     </Card>
   );
@@ -96,7 +98,7 @@ export function PlanView({ card }: { card: PlanCard }) {
   return (
     <Card className="overflow-hidden">
       <CardHeader icon={<ListChecks className="size-[18px]" />} title="Your plan"
-        right={<span className="text-xs text-subtle">{card.phase === "response" ? "During the fires" : "Recovery"}</span>} />
+        right={<span className="text-xs text-subtle">{card.phase_label || (card.phase === "response" ? "During the disaster" : "Recovery")}</span>} />
       <div className="divide-y divide-line">
         {BUCKETS.map(({ key, label, icon: Icon }) => card[key].length > 0 && (
           <div key={key} className="grid gap-2 px-4 py-3 sm:grid-cols-[7.5rem_1fr]">

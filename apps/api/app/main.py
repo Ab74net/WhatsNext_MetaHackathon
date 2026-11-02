@@ -223,12 +223,21 @@ def download_export(sid: str, fmt: str) -> Response:
 agent = make_agent(client)
 
 
+@app.get("/api/scenarios")
+def list_scenarios() -> list[dict]:
+    """The demo scenarios the user can switch between."""
+    return [{"id": sid, "title": content.scenario(sid)["title"], "hazard": content.scenario(sid)["hazard"],
+             "hypothetical": content.scenario(sid).get("hypothetical", False)} for sid in content.SCENARIOS]
+
+
 @app.get("/api/scenario")
-def get_scenario() -> dict:
-    """Map setup and presets for the demo scenario (fire perimeters included)."""
-    s = content.scenario()
-    return {k: s[k] for k in ("id", "title", "hazard", "place", "center", "zoom", "summary", "summary_sources", "presets")} | {
-        "fire_areas": content.perimeters()}
+def get_scenario(id: str = content.DEFAULT_SCENARIO) -> dict:
+    """Map setup and presets for one demo scenario (hazard areas included)."""
+    if id not in content.SCENARIOS:
+        raise HTTPException(404, "Unknown scenario")
+    s = content.scenario(id)
+    keys = ("title", "hypothetical", "hazard", "place", "center", "zoom", "summary", "summary_sources", "presets", "suggestions")
+    return {"id": id} | {k: s[k] for k in keys} | {"fire_areas": content.perimeters(id)}
 
 
 @app.post("/api/agent", response_model=AgentResponse)

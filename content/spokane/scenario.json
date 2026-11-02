@@ -1,14 +1,25 @@
 {
   "id": "spokane-2026",
   "title": "Spokane Complex Fires",
+  "hypothetical": false,
   "hazard": "wildfire",
+  "safety_flow": "wildfire",
   "place": "Spokane, Washington",
-  "center": [-117.47, 47.72],
+  "center": [
+    -117.47,
+    47.72
+  ],
   "zoom": 10,
   "summary": "The Old Trails, Fairview and Autumn Lane fires started on August 1, 2026 in Spokane County. Reports put losses at about 850 buildings destroyed and about 67,000 people evacuated.",
   "summary_sources": [
-    {"name": "OPB (news)", "url": "https://www.opb.org/article/2026/08/06/firefighters-spokane-wildfires-tens-of-thousands-remain-evacuated/"},
-    {"name": "NIFC WFIGS fire perimeters", "url": "https://data-nifc.opendata.arcgis.com/"}
+    {
+      "name": "OPB (news)",
+      "url": "https://www.opb.org/article/2026/08/06/firefighters-spokane-wildfires-tens-of-thousands-remain-evacuated/"
+    },
+    {
+      "name": "NIFC WFIGS fire perimeters",
+      "url": "https://data-nifc.opendata.arcgis.com/"
+    }
   ],
   "presets": [
     {
@@ -26,6 +37,33 @@
       "replay": false
     }
   ],
+  "when": {
+    "response": "This is a replay of Aug 2, 2026, during the fires.",
+    "recovery": "It is now, months after the fires; the user is recovering."
+  },
+  "phase_labels": {
+    "response": "During the fires",
+    "recovery": "Recovery"
+  },
+  "resource_notes": {
+    "response": "Shown as reported during the fires. Call 2-1-1 to confirm a place is open before you go.",
+    "recovery": "Current recovery locations. Call ahead to confirm hours.",
+    "empty": "No places of that kind are listed for this time. Call 2-1-1 for current options."
+  },
+  "suggestions": {
+    "during": [
+      "My home was damaged in the fire. What should I do first?",
+      "I need shelter tonight with my dog",
+      "We've been told to get ready to evacuate. What do we do?",
+      "How do I start an insurance claim?"
+    ],
+    "recovery": [
+      "Our house burned down and we have insurance. What help can we get now?",
+      "Is it safe to go back home?",
+      "Is FEMA aid available yet?",
+      "I lost my ID and documents in the fire"
+    ]
+  },
   "recorded_alerts": [
     {
       "id": "rec-old-trails-level3",

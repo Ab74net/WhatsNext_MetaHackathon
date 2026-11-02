@@ -89,11 +89,14 @@ export interface Health {
 // --- Assistant: case file and UI instructions (mirror: apps/api/app/schemas.py) ---------
 
 export type ScenarioPresetId = "during" | "recovery";
+/** Demo scenarios (content/<id>/). Mirror: ScenarioId in schemas.py. */
+export type ScenarioId = "spokane" | "nrv";
 export type HomeDamage = "destroyed" | "major" | "minor" | "none" | "unknown";
 export type YesNoUnknown = "yes" | "no" | "unknown";
 export type SourceType = "official" | "news";
 
 export interface CaseFile {
+  scenario: ScenarioId;
   preset: ScenarioPresetId;
   home_damage: HomeDamage;
   insured: YesNoUnknown;
@@ -131,7 +134,7 @@ export interface AlertsCard {
   live_error: string | null;
   recorded: Alert[];
   fire_areas: FireArea[];
-  fire_areas_source: { name: string; url: string; retrieved_at: string; note?: string };
+  fire_areas_source: { name: string; url: string; retrieved_at: string; note?: string } | null;
 }
 
 export type ResourceKind = "shelter" | "animal_shelter" | "clinic" | "recovery_center";
@@ -184,6 +187,7 @@ export interface PlanItem {
 export interface PlanCard {
   type: "plan";
   phase: "response" | "recovery";
+  phase_label: string;
   today: PlanItem[];
   this_week: PlanItem[];
   deadlines: PlanItem[];
@@ -218,6 +222,7 @@ export interface SafetyBranch {
 
 export interface SafetyFlowCard {
   type: "safety_flow";
+  hazard: string; // "wildfire" | "flood"
   title: string;
   question: string;
   disclaimer: string;
@@ -255,9 +260,18 @@ export interface ScenarioPreset {
   replay: boolean;
 }
 
-export interface Scenario {
-  id: string;
+export interface ScenarioSummary {
+  id: ScenarioId;
   title: string;
+  hazard: string;
+  hypothetical: boolean;
+}
+
+export interface Scenario {
+  id: ScenarioId;
+  title: string;
+  hypothetical: boolean;
+  suggestions: Record<ScenarioPresetId, string[]>;
   hazard: string;
   place: string;
   center: [number, number];
@@ -265,7 +279,7 @@ export interface Scenario {
   summary: string;
   summary_sources: { name: string; url: string }[];
   presets: ScenarioPreset[];
-  fire_areas: GeoJSON.FeatureCollection & { source: { name: string; url: string; retrieved_at: string } };
+  fire_areas: GeoJSON.FeatureCollection & { source: { name: string; url: string; retrieved_at: string } | null };
 }
 
 // --- Memory web (mirror: apps/api/app/schemas.py) --------------------------------------------

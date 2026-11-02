@@ -4,7 +4,9 @@
 // closes) so the conversation survives a trip to the claims helper and back.
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { AlertsCard, CaseFile, ResourceList, Scenario, ScenarioPresetId, UIInstruction } from "@shared/types";
+import type {
+  AlertsCard, CaseFile, ResourceList, Scenario, ScenarioId, ScenarioPresetId, ScenarioSummary, UIInstruction,
+} from "@shared/types";
 import { api } from "./api";
 
 export interface Message {
@@ -16,17 +18,23 @@ export interface Message {
 }
 
 const STORE_KEY = "assistant-conversation-v1";
-const DEFAULT_CASE: CaseFile = { preset: "during", home_damage: "unknown", insured: "unknown", lost_documents: "unknown" };
+const DEFAULT_CASE: CaseFile = {
+  scenario: "spokane", preset: "during", home_damage: "unknown", insured: "unknown", lost_documents: "unknown",
+};
 
 function load(): { messages: Message[]; caseFile: CaseFile } {
   try {
     const raw = sessionStorage.getItem(STORE_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const saved = JSON.parse(raw);
+      return { messages: saved.messages, caseFile: { ...DEFAULT_CASE, ...saved.caseFile } };
+    }
   } catch {}
   return { messages: [], caseFile: DEFAULT_CASE };
 }
 
 export function useAgent() {
+  const [scenarios, setScenarios] = useState<ScenarioSummary[]>([]);
   const [scenario, setScenario] = useState<Scenario | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [caseFile, setCaseFile] = useState<CaseFile>(DEFAULT_CASE);
@@ -40,8 +48,16 @@ export function useAgent() {
     setMessages(saved.messages);
     setCaseFile(saved.caseFile);
     setLoaded(true);
-    api.scenario().then(setScenario).catch(() => {});
+    api.scenarios().then(setScenarios).catch(() => {});
   }, []);
+
+  // Map setup, presets and suggestions for the chosen demo scenario.
+  useEffect(() => {
+    if (!loaded) return;
+    let live = true;
+    api.scenario(caseFile.scenario).then((s) => live && setScenario(s)).catch(() => {});
+    return () => { live = false; };
+  }, [loaded, caseFile.scenario]);
 
   useEffect(() => {
     if (!loaded) return;
@@ -77,7 +93,14 @@ export function useAgent() {
 
   const setPreset = useCallback((preset: ScenarioPresetId) => {
     // A different point in time is a different situation: start a fresh conversation.
-    setCaseFile({ ...DEFAULT_CASE, preset });
+    setCaseFile((c) => ({ ...DEFAULT_CASE, scenario: c.scenario, preset }));
+    setMessages([]);
+  }, []);
+
+  // A different demo scenario is a different place and disaster: fresh conversation and map.
+  const chooseScenario = useCallback((id: ScenarioId) => {
+    setScenario(null);
+    setCaseFile({ ...DEFAULT_CASE, scenario: id });
     setMessages([]);
   }, []);
 
@@ -96,7 +119,7 @@ export function useAgent() {
     return { alerts, resources };
   }, [messages]);
 
-  return { scenario, messages, caseFile, pending, typingId, doneTyping, send, setPreset, reset, ...latest };
+  return { scenarios, scenario, messages, caseFile, pending, typingId, doneTyping, send, setPreset, chooseScenario, reset, ...latest };
 }
 
 export type AgentState = ReturnType<typeof useAgent>;

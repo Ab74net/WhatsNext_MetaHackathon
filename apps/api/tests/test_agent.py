@@ -93,3 +93,46 @@ def test_lost_documents_offers_the_toolkit():
     r = TestClient(app).post("/api/agent", json={"messages": [{"role": "user", "text": "I lost my license and passport in the fire"}]})
     cards = [c for c in r.json()["ui"] if c["type"] == "toolkit_link"]
     assert cards and cards[0]["tab"] == "documents"
+
+
+# --- Second demo scenario: hypothetical New River Valley flood ---------------------------------
+
+
+def test_nrv_every_fact_has_a_source():
+    for r in content.resources("response", scenario_id="nrv") + content.resources("recovery", scenario_id="nrv"):
+        assert r.source_url.startswith("https://") and r.checked_at
+        assert 36.9 < r.lat < 37.4 and -80.8 < r.lon < -80.2  # New River Valley
+    assert not [r for r in content.resources("response", ["shelter"], "nrv")]  # no invented shelters
+    for p in content.programs("nrv")["programs"]:
+        assert p["source_url"].startswith("https://")
+        assert not (p.get("deadline") or {}).get("date")
+    for a in content.recorded_alerts("nrv"):
+        assert a.source_url.startswith("https://") and a.recorded
+    assert content.fire_areas("nrv") == [] and content.scenario("nrv")["hypothetical"] is True
+
+
+def test_flood_safety_flow_cites_every_step():
+    card = content.safety_flow("flood", "rising")
+    ids = {s.id for s in card.sources}
+    assert card.hazard == "flood" and card.initial == "rising"
+    assert all(step.source in ids for b in card.branches for step in b.steps)
+    trapped = next(b for b in card.branches if b.id == "trapped")
+    assert trapped.emergency and "9-1-1" in trapped.steps[0].text
+
+
+def test_agent_uses_the_chosen_scenario():
+    r = client.post("/api/agent", json={"messages": [{"role": "user", "text": "The river is rising, is it safe? Where is the hospital?"}],
+                                       "case": {"scenario": "nrv", "preset": "during"}}).json()
+    cards = {c["type"]: c for c in r["ui"]}
+    assert cards["safety_flow"]["hazard"] == "flood" and cards["safety_flow"]["initial"] == "rising"
+    assert cards["alerts"]["fire_areas"] == [] and cards["alerts"]["recorded"]
+    assert all(i["id"] != "shelter-sfcc" for i in cards["resources"]["items"])
+    assert r["case"]["scenario"] == "nrv"
+
+
+def test_scenarios_endpoint_lists_both():
+    ids = [s["id"] for s in client.get("/api/scenarios").json()]
+    assert ids == ["spokane", "nrv"]
+    s = client.get("/api/scenario", params={"id": "nrv"}).json()
+    assert s["hazard"] == "flood" and s["suggestions"]["during"] and s["fire_areas"]["features"] == []
+    assert client.get("/api/scenario", params={"id": "nowhere"}).status_code == 404

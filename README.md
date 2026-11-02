@@ -156,6 +156,10 @@ All hand-checked on Nov 2, 2026. Every row has a source URL; news sources are la
 - `resources.json`: shelters, animal evacuation, hospitals and recovery help. `phases` controls when each one is shown.
 - `programs.json`: the assistance knowledge base. As of Nov 2: FEMA Individual Assistance is **pending** (only emergency declaration EM-3650 exists; a Major Disaster Declaration was requested in late Sept), SBA loans are **not available**, and the state Household Needs Grant is open with **no published deadline**. Never add a deadline the official source doesn't publish.
 
+## Second demo scenario (`/content/nrv`)
+
+Ask Wren has a **Demo scenario** switch: Spokane Complex Fires (default) or a **hypothetical** New River Valley flood modeled on the September 27, 2024 Helene flooding (USGS alert, WVTF, FEMA DR-4831-VA). It is labeled hypothetical in the UI and in Wren's instructions. The places (hospitals, county offices, animal center) and programs (Red Cross, 211 Virginia, NFIP claims, FEMA IA, SBA) are real and sourced; no shelters are listed because real shelters are announced during an event. Safety steps: `content/safety/flood.json`, quoted from Ready.gov: Floods and FloodSmart. Scenario ids live in `ScenarioId` (schemas.py and types.ts); adding one means a new content folder plus that id.
+
 ## Safety flow, map and mascot
 
 - `content/safety/wildfire.json`: five branches (Level 3 GO, Level 1/2, trapped, smoky, returning home). Every step quotes [Ready.gov: Wildfires](https://www.ready.gov/wildfires) or Spokane County's evacuation levels, with the source shown on each card. The agent's `show_safety_flow` tool picks only the starting branch. The trapped branch starts with Call 911.

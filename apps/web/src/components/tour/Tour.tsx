@@ -67,8 +67,14 @@ function TourOffer({ onStart, onDismiss }: { onStart: () => void; onDismiss: () 
   return (
     <div role="region" aria-label="Guided tour"
       className="fixed inset-x-4 bottom-20 z-40 mx-auto max-w-sm rounded-lg bg-surface-2 p-4 shadow-pop lg:bottom-6 lg:left-auto lg:right-6 lg:mx-0">
-      <p className="font-serif text-lg leading-snug">New here?</p>
-      <p className="mt-1 text-sm text-muted">A one-minute tour shows how to ask for help and build your claim list.</p>
+      <div className="flex items-start gap-3">
+        {/* eslint-disable-next-line @next/next/no-img-element -- small static illustration */}
+        <img src="/wren/scene-guide.webp" alt="" width={480} height={351} className="w-20 shrink-0" />
+        <div>
+          <p className="font-serif text-lg leading-snug">New here?</p>
+          <p className="mt-1 text-sm text-muted">A one-minute tour shows how to ask for help and build your claim list.</p>
+        </div>
+      </div>
       <div className="mt-3 flex gap-2">
         <Button variant="primary" size="sm" onClick={onStart}>Take the tour</Button>
         <Button variant="ghost" size="sm" onClick={onDismiss}>No thanks</Button>

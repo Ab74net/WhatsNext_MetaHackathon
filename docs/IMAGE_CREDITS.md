@@ -30,4 +30,13 @@ dropped. Alt text is in `apps/web/src/lib/heroImages.ts`.
 | `house2.png` | active flames; too sensational next to a calmer aftermath image |
 | `flood3.jpg` | actually a burned house, not a flood; iPhone EXIF suggests a personal photo; the wildfire slot is already filled |
 
-The Wren mascot images (`apps/web/public/wren/`) predate this file. Record their source here too.
+## Wren mascot
+
+| File | Source | Used on |
+| --- | --- | --- |
+| `wren/scene-checklist.webp` | Provided by the developer, Nov 2, 2026 (transparent PNG, specks removed, cropped) | Wren's empty chat; scan finished |
+| `wren/scene-documents.webp` | Provided by the developer, Nov 2, 2026 | Toolkit: Documents |
+| `wren/scene-guide.webp` | Provided by the developer, Nov 2, 2026 | Homepage "Meet Wren"; tour offer |
+| `wren/scene-clipboard.webp` | Provided by the developer, Nov 2, 2026 | Toolkit: Insurer call |
+| `wren/scene-scan.webp` | Provided by the developer, Nov 2, 2026 | Claims: scanning |
+| `wren/idle.webp`, `thinking.webp`, `typing.webp`, `searching.webp`, `wren-hero.webp` | Earlier mascot set; source not recorded here | Round avatars (`wren-hero.webp` is no longer used) |

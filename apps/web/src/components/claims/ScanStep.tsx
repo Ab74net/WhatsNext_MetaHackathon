@@ -9,7 +9,6 @@ import type { InventoryItem } from "@shared/types";
 import type { ClaimSession, ScanPhoto } from "@/lib/useClaimSession";
 import { PhotoWithMasks } from "@/components/PhotoWithMasks";
 import { Badge, Button, Card, ProgressBar, Pulse, Stat } from "@/components/ui";
-import { WrenAvatar } from "@/components/Wren";
 
 const SKIP_REASON: Record<string, string> = {
   id_or_document: "Looks like an ID or document",
@@ -32,7 +31,9 @@ export function ScanStep({ session, onReview }: { session: ClaimSession; onRevie
       <Card className="flex flex-col gap-4 p-5">
         <div className="flex flex-wrap items-center gap-x-10 gap-y-4">
           <div className="flex items-center gap-3">
-            <WrenAvatar mood={allDone && merge.status !== "running" ? "idle" : "searching"} size={64} />
+            {/* eslint-disable-next-line @next/next/no-img-element -- static illustration */}
+            <img src={allDone && merge.status !== "running" ? "/wren/scene-checklist.webp" : "/wren/scene-scan.webp"}
+              alt="" width={480} height={325} className="w-24 object-contain" />
             <p className="max-w-36 text-sm font-semibold leading-snug">
               {!allDone ? "Wren is searching your photos…" : merge.status === "running" ? "Matching items across photos…" : "All done."}
             </p>

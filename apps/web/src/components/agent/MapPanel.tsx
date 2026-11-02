@@ -58,8 +58,9 @@ function pinElement(kind: ResourceKind): HTMLElement {
   return root;
 }
 
-export function MapPanel({ scenario, resources, liveAlerts, replay, selectedId, onSelect }: {
+export function MapPanel({ scenario, replayLabel, resources, liveAlerts, replay, selectedId, onSelect }: {
   scenario: Scenario | null;
+  replayLabel: string;
   resources: Resource[];
   liveAlerts: Alert[];
   replay: boolean;
@@ -184,19 +185,24 @@ export function MapPanel({ scenario, resources, liveAlerts, replay, selectedId, 
         <button onClick={() => setShowSources((s) => !s)} aria-expanded={showSources}
           className="inline-flex items-center gap-1.5 rounded-md bg-black/75 px-2.5 py-1 text-xs font-semibold text-white hover:bg-black/90">
           <Info className="size-3.5" aria-hidden />
-          {replay ? "Replay · Aug 2, 2026" : "Live"} · sources
+          {replay ? `Replay · ${replayLabel}` : "Live"} · sources
         </button>
         {showSources && scenario && (
           <div className="max-w-xs rounded-lg bg-surface p-3 text-xs text-muted shadow-pop">
-            <p>Fire areas: <a className="text-accent hover:underline" href={scenario.fire_areas.source.url} target="_blank" rel="noopener noreferrer">{scenario.fire_areas.source.name}</a>, retrieved {new Date(scenario.fire_areas.source.retrieved_at).toLocaleDateString()}.</p>
-            <p className="mt-1.5">Places are hand-checked demo data; each one links to its source. Call 2-1-1 to confirm before you go.</p>
+            {scenario.fire_areas.source && (
+              <p className="mb-1.5">Fire areas: <a className="text-accent hover:underline" href={scenario.fire_areas.source.url} target="_blank" rel="noopener noreferrer">{scenario.fire_areas.source.name}</a>, retrieved {new Date(scenario.fire_areas.source.retrieved_at).toLocaleDateString()}.</p>
+            )}
+            {scenario.hypothetical && <p className="mb-1.5">Hypothetical scenario for this demo.</p>}
+            <p>Places are hand-checked demo data; each one links to its source. Call 2-1-1 to confirm before you go.</p>
             <p className="mt-1.5">Imagery © Esri, Maxar, Earthstar Geographics.</p>
           </div>
         )}
       </div>
 
       <div className="absolute bottom-8 right-3 z-10 flex flex-col gap-1.5 rounded-lg bg-surface/95 p-2.5 text-xs shadow-card">
-        <span className="flex items-center gap-2"><span className="size-3 rounded-sm border-2" style={{ borderColor: FIRE, background: `${FIRE}55` }} /> Fire area</span>
+        {!!scenario?.fire_areas.features.length && (
+          <span className="flex items-center gap-2"><span className="size-3 rounded-sm border-2" style={{ borderColor: FIRE, background: `${FIRE}55` }} /> Fire area</span>
+        )}
         {kindsShown.map((k) => (
           <span key={k} className="flex items-center gap-2">
             <span className="size-3 rounded-full" style={{ background: KIND_STYLE[k].color }} /> {KIND_STYLE[k].label}

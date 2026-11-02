@@ -1,0 +1,72 @@
+{
+  "id": "nrv-flood",
+  "title": "New River Valley flood",
+  "hypothetical": true,
+  "hazard": "flood",
+  "safety_flow": "flood",
+  "place": "the New River Valley, Virginia",
+  "center": [-80.47, 37.15],
+  "zoom": 10,
+  "summary": "A hypothetical flood modeled on September 27, 2024, when the remnants of Hurricane Helene pushed the New River to major flood stage and evacuations were reported in Montgomery, Pulaski and Giles counties. The places and programs shown are real; the situation is a demonstration.",
+  "summary_sources": [
+    {"name": "USGS alert, Sept 27, 2024", "url": "https://water.usgs.gov/alerts/item_2024-09-27_11:51:12.html"},
+    {"name": "WVTF (news), Sept 28, 2024", "url": "https://www.wvtf.org/news/2024-09-28/residents-in-seven-counties-across-virginia-evacuate-amidst-severe-flooding"}
+  ],
+  "presets": [
+    {"id": "during", "label": "Sept 27 · during the flood", "clock": "2024-09-27T12:00:00-04:00", "phase": "response", "replay": true},
+    {"id": "recovery", "label": "Weeks later · recovery", "clock": null, "phase": "recovery", "replay": false}
+  ],
+  "when": {
+    "response": "This is a hypothetical replay of September 27, during the flood.",
+    "recovery": "It is weeks after the flood; the user is recovering."
+  },
+  "phase_labels": {"response": "During the flood", "recovery": "Recovery"},
+  "resource_notes": {
+    "response": "No shelters are listed for this hypothetical flood. In a real flood, call 2-1-1 or check the Red Cross for open shelters.",
+    "recovery": "Call ahead to confirm hours before you go.",
+    "empty": "No places of that kind are listed for this scenario. Call 2-1-1 for current options."
+  },
+  "suggestions": {
+    "during": [
+      "The river is rising near my house. What should I do?",
+      "Where is the nearest hospital?",
+      "Is it safe to drive to my parents' house?",
+      "I need somewhere to take my dog"
+    ],
+    "recovery": [
+      "Our first floor flooded. What help can we get?",
+      "How do I start a flood insurance claim?",
+      "Is it safe to go back inside?",
+      "I lost my ID and papers in the flood"
+    ]
+  },
+  "recorded_alerts": [
+    {
+      "id": "rec-usgs-new-river",
+      "title": "Major flooding on the New River",
+      "severity": "extreme",
+      "headline": "USGS warned of major flooding impacts in the New River basin in southwest Virginia.",
+      "description": "Mainstem New River sites were expected to peak at major flood stage from Saturday into Sunday morning.",
+      "area": "New River basin, southwest Virginia",
+      "effective": "2024-09-27",
+      "expires": null,
+      "source_name": "U.S. Geological Survey",
+      "source_url": "https://water.usgs.gov/alerts/item_2024-09-27_11:51:12.html",
+      "source_type": "official"
+    },
+    {
+      "id": "rec-evacuations",
+      "title": "Evacuations in seven counties",
+      "severity": "severe",
+      "headline": "Residents in seven Virginia counties, including Montgomery, Pulaski and Giles, evacuated as the New River flooded.",
+      "description": "Reported by WVTF from a state statement. Follow local officials' instructions in a real event.",
+      "area": "Montgomery, Pulaski and Giles counties, and others",
+      "effective": "2024-09-28",
+      "expires": null,
+      "source_name": "WVTF (news report of a state statement)",
+      "source_url": "https://www.wvtf.org/news/2024-09-28/residents-in-seven-counties-across-virginia-evacuate-amidst-severe-flooding",
+      "source_type": "news"
+    }
+  ],
+  "verified_at": "2026-11-02"
+}

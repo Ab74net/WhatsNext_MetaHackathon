@@ -157,9 +157,14 @@ YesNoUnknown = Literal["yes", "no", "unknown"]
 HomeDamage = Literal["destroyed", "major", "minor", "none", "unknown"]
 
 
+# Demo scenarios (content/<id>/). The first is the default. Mirror: ScenarioId in types.ts.
+ScenarioId = Literal["spokane", "nrv"]
+
+
 class CaseFile(BaseModel):
     """What the assistant knows about the user's situation. Shared with the claims helper."""
 
+    scenario: ScenarioId = "spokane"
     preset: Literal["during", "recovery"] = "during"
     home_damage: HomeDamage = "unknown"
     insured: YesNoUnknown = "unknown"
@@ -197,7 +202,7 @@ class AlertsCard(BaseModel):
     live_error: str | None = None
     recorded: list[Alert]
     fire_areas: list[FireArea]
-    fire_areas_source: dict
+    fire_areas_source: dict | None  # None when the scenario has no mapped hazard areas
 
 
 class Resource(BaseModel):
@@ -248,6 +253,7 @@ class PlanItem(BaseModel):
 class PlanCard(BaseModel):
     type: Literal["plan"] = "plan"
     phase: Phase
+    phase_label: str = ""  # "During the fires", "During the flood", "Recovery"
     today: list[PlanItem]
     this_week: list[PlanItem]
     deadlines: list[PlanItem]
@@ -296,6 +302,7 @@ class SafetyFlowCard(BaseModel):
     """Pre-authored safety steps (content/safety). The model only picks the starting branch."""
 
     type: Literal["safety_flow"] = "safety_flow"
+    hazard: str = "wildfire"  # which pre-authored flow (content/safety/<hazard>.json)
     title: str
     question: str
     disclaimer: str

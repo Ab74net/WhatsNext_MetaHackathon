@@ -1,0 +1,81 @@
+{
+  "_note": "Permanent places in the New River Valley for the hypothetical flood scenario. No shelters are listed: real shelters are announced during an event. Addresses from the official pages in source_url; coordinates from OpenStreetMap (Nominatim) for those addresses.",
+  "checked_at": "2026-11-02",
+  "resources": [
+    {
+      "id": "clinic-carilion-nrv",
+      "kind": "clinic",
+      "name": "Carilion New River Valley Medical Center",
+      "address": "2900 Lamb Circle, Christiansburg, VA 24073",
+      "lat": 37.08847,
+      "lon": -80.50499,
+      "phone": "540-731-2000",
+      "hours": null,
+      "notes": "Hospital. Call ahead if you can; in an emergency, call 911.",
+      "phases": ["response", "recovery"],
+      "source_name": "Carilion Clinic",
+      "source_url": "https://www.carilionclinic.org/locations/carilion-new-river-valley-medical-center",
+      "source_type": "official"
+    },
+    {
+      "id": "clinic-lewisgale-montgomery",
+      "kind": "clinic",
+      "name": "LewisGale Hospital Montgomery",
+      "address": "3700 S Main St, Blacksburg, VA 24060",
+      "lat": 37.18551,
+      "lon": -80.40826,
+      "phone": "540-951-1111",
+      "hours": "Emergency room",
+      "notes": "Hospital with an emergency room. In an emergency, call 911.",
+      "phases": ["response", "recovery"],
+      "source_name": "HCA Virginia",
+      "source_url": "https://www.hcavirginia.com/locations/lewisgale-hospital-montgomery/specialties/emergency-care",
+      "source_type": "official"
+    },
+    {
+      "id": "clinic-lewisgale-christiansburg-er",
+      "kind": "clinic",
+      "name": "LewisGale Christiansburg ER",
+      "address": "1145 West Main Street, Christiansburg, VA 24073",
+      "lat": 37.11997,
+      "lon": -80.4205,
+      "phone": "540-251-8900",
+      "hours": "Open 24 hours",
+      "notes": "Freestanding emergency room.",
+      "phases": ["response", "recovery"],
+      "source_name": "HCA Virginia",
+      "source_url": "https://www.hcavirginia.com/locations/lewisgale-christiansburg-er",
+      "source_type": "official"
+    },
+    {
+      "id": "recovery-montgomery-county",
+      "kind": "recovery_center",
+      "name": "Montgomery County Government Center",
+      "address": "755 Roanoke St, Christiansburg, VA 24073",
+      "lat": 37.13099,
+      "lon": -80.39295,
+      "phone": "540-394-2120",
+      "hours": null,
+      "notes": "County offices, including Fire-EMS, which handles emergency management (540-394-2146). Ask about local recovery help.",
+      "phases": ["recovery"],
+      "source_name": "Montgomery County, Virginia",
+      "source_url": "https://montva.com/1/departments-services/fire-ems",
+      "source_type": "official"
+    },
+    {
+      "id": "animal-montgomery-acac",
+      "kind": "animal_shelter",
+      "name": "Montgomery County Animal Care and Adoption Center",
+      "address": "480 Cinnabar Rd, Christiansburg, VA 24073",
+      "lat": 37.17429,
+      "lon": -80.41494,
+      "phone": "540-382-5795",
+      "hours": "Mon, Tue, Thu, Fri 11 a.m.–6 p.m.; Wed 3–6 p.m.; Sat–Sun 11 a.m.–4 p.m.",
+      "notes": "County animal center. Call to ask whether they can help with pets during an emergency.",
+      "phases": ["response", "recovery"],
+      "source_name": "Montgomery County, Virginia",
+      "source_url": "https://montva.com/1/departments-services/animal-care-adoption-center",
+      "source_type": "official"
+    }
+  ]
+}

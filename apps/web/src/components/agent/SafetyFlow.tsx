@@ -1,7 +1,7 @@
 "use client";
 
-// Pre-authored wildfire safety flow. The user picks their situation; animated step cards
-// play from content/safety/wildfire.json. Every step shows its official source, and the
+// Pre-authored safety flow (wildfire or flood). The user picks their situation; animated step
+// cards play from content/safety/<hazard>.json. Every step shows its official source, and the
 // 911 banner is always on screen. The model never writes these steps.
 
 import { useEffect, useState } from "react";
@@ -10,7 +10,7 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import {
   Backpack, BatteryCharging, BellRing, Camera, ChevronLeft, ChevronRight, DoorClosed, ExternalLink, Flame, Footprints,
   House, Lightbulb, Map as MapIcon, MessageSquareText, Pause, Phone, Play, Shirt, ShieldCheck, ShieldPlus, Stethoscope,
-  TriangleAlert, Wind,
+  TriangleAlert, Waves, Wind,
 } from "lucide-react";
 import type { SafetyBranch, SafetyFlowCard } from "@shared/types";
 import { Card } from "@/components/ui";
@@ -37,7 +37,9 @@ export function SafetyFlowView({ card }: { card: SafetyFlowCard }) {
         <Phone className="size-4" aria-hidden /> In danger? Call 911.
       </a>
       <div className="flex items-center gap-2 border-b border-line px-4 py-3">
-        <Flame className="size-[18px] text-[#ea580c]" aria-hidden />
+        {card.hazard === "flood"
+          ? <Waves className="size-[18px] text-[#7fb3d5]" aria-hidden />
+          : <Flame className="size-[18px] text-[#ea580c]" aria-hidden />}
         <p className="flex-1 font-semibold">{card.title}</p>
         {branch && <button onClick={() => setBranchId(null)} className="text-xs font-semibold text-accent hover:underline">Change situation</button>}
       </div>

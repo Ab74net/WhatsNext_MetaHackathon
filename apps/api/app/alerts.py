@@ -61,8 +61,8 @@ async def fetch_live(lat: float, lon: float) -> tuple[list[Alert], str, str | No
     return alerts, checked_at, None
 
 
-async def alerts_card(replay: bool) -> AlertsCard:
-    s = content.scenario()
+async def alerts_card(replay: bool, scenario_id: str = content.DEFAULT_SCENARIO) -> AlertsCard:
+    s = content.scenario(scenario_id)
     lon, lat = s["center"]
     live, checked_at, error = await fetch_live(lat, lon)
     return AlertsCard(
@@ -70,7 +70,7 @@ async def alerts_card(replay: bool) -> AlertsCard:
         live_checked_at=checked_at,
         live_source_url=f"{NWS_URL}?point={lat:.3f},{lon:.3f}",
         live_error=error,
-        recorded=content.recorded_alerts() if replay else [],
-        fire_areas=content.fire_areas(),
-        fire_areas_source=content.perimeters()["source"],
+        recorded=content.recorded_alerts(scenario_id) if replay else [],
+        fire_areas=content.fire_areas(scenario_id),
+        fire_areas_source=content.perimeters(scenario_id)["source"],
     )

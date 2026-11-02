@@ -1,0 +1,146 @@
+{
+  "_note": "Pre-authored safety flow. Every step quotes or closely follows Ready.gov: Floods. The model may choose a branch but never writes or changes steps. Checked Nov 2, 2026.",
+  "id": "flood",
+  "title": "Flood safety",
+  "question": "What's your situation right now?",
+  "disclaimer": "General guidance from Ready.gov and FloodSmart, not local emergency instructions. Always follow orders from local officials.",
+  "sources": [
+    {
+      "id": "ready",
+      "name": "Ready.gov: Floods",
+      "url": "https://www.ready.gov/floods"
+    },
+    {
+      "id": "floodsmart",
+      "name": "FloodSmart: How do I start my flood claim?",
+      "url": "https://www.floodsmart.gov/how-do-i-start-my-flood-claim"
+    }
+  ],
+  "checked_at": "2026-11-02",
+  "branches": [
+    {
+      "id": "rising",
+      "label": "Water is rising near me",
+      "hint": "A flood warning, or water coming up",
+      "tone": "warn",
+      "steps": [
+        {
+          "icon": "run",
+          "title": "Evacuate if told to",
+          "text": "Evacuate immediately, if told to do so. Never drive around barricades.",
+          "source": "ready"
+        },
+        {
+          "icon": "home",
+          "title": "Get higher",
+          "text": "Depending on the type of flooding, move to higher ground or a higher floor, or stay where you are.",
+          "source": "ready"
+        },
+        {
+          "icon": "alert",
+          "title": "Stay out of the water",
+          "text": "Do not walk, swim or drive through flood waters. Turn Around, Don’t Drown.",
+          "source": "ready"
+        },
+        {
+          "icon": "bell",
+          "title": "Keep listening",
+          "text": "Listen to EAS, NOAA Weather Radio or local alerting systems for current emergency information.",
+          "source": "ready"
+        }
+      ]
+    },
+    {
+      "id": "driving",
+      "label": "I need to drive",
+      "hint": "Roads may be flooded",
+      "tone": "warn",
+      "steps": [
+        {
+          "icon": "alert",
+          "title": "Turn around",
+          "text": "Do not drive through flood waters. Just six inches of moving water can knock you down, and one foot of moving water can sweep your vehicle away.",
+          "source": "ready"
+        },
+        {
+          "icon": "map",
+          "title": "Avoid bridges over fast water",
+          "text": "Stay off bridges over fast-moving water. Fast-moving water can wash bridges away without warning.",
+          "source": "ready"
+        },
+        {
+          "icon": "door",
+          "title": "If water surrounds your car",
+          "text": "Stay inside your car if it is trapped in rapidly moving water. Get on the roof if water is rising inside the car.",
+          "source": "ready"
+        }
+      ]
+    },
+    {
+      "id": "trapped",
+      "label": "I can't get out",
+      "hint": "Water is blocking my way",
+      "tone": "danger",
+      "emergency": true,
+      "steps": [
+        {
+          "icon": "phone",
+          "title": "Call 911 now",
+          "text": "If you are experiencing a medical emergency, call 9-1-1.",
+          "source": "ready"
+        },
+        {
+          "icon": "home",
+          "title": "Go to the highest level",
+          "text": "Get to the highest level if trapped in a building. Do not climb into a closed attic to avoid getting trapped by rising floodwater.",
+          "source": "ready"
+        },
+        {
+          "icon": "light",
+          "title": "Signal for help",
+          "text": "Only get on the roof if necessary and once there, signal for help.",
+          "source": "ready"
+        }
+      ]
+    },
+    {
+      "id": "returning",
+      "label": "Going back home",
+      "hint": "The water has gone down",
+      "tone": "neutral",
+      "steps": [
+        {
+          "icon": "check",
+          "title": "Wait for the all-clear",
+          "text": "Return home only when authorities say it is safe.",
+          "source": "ready"
+        },
+        {
+          "icon": "battery",
+          "title": "Watch for electricity",
+          "text": "Do not touch electrical equipment if it is wet or if you are standing in water. Turn off the electricity to prevent electric shock if it is safe to do so.",
+          "source": "ready"
+        },
+        {
+          "icon": "shirt",
+          "title": "Protect yourself",
+          "text": "Wear heavy work gloves, protective clothing and boots during cleanup. Avoid wading in floodwater, which can be contaminated and contain dangerous debris.",
+          "source": "ready"
+        },
+        {
+          "icon": "health",
+          "title": "Mold and health",
+          "text": "People with asthma and other lung conditions and/or immune suppression should not enter buildings with indoor water leaks or mold growth that can be seen or smelled. Children should not take part in disaster cleanup work.",
+          "source": "ready"
+        },
+        {
+          "icon": "camera",
+          "title": "Document the damage",
+          "text": "Take photos and videos of your flood-damaged belongings and property for your insurance claim.",
+          "source": "floodsmart",
+          "action": "start_claim"
+        }
+      ]
+    }
+  ]
+}

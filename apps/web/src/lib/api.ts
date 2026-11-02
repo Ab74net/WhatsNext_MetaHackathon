@@ -2,7 +2,7 @@
 import type {
   AgentResponse, CaseFile, ChatTurn, DocumentAnswer, DocumentGuide, DocumentQuestion, DocumentState, FromPhotoResult,
   Health, InsurerQuestions, InsurerQuestionsRequest, InventoryItem,
-  MemoryWeb, MergeResult, PhotoMeta, PhotoResult, Scenario,
+  MemoryWeb, MergeResult, PhotoMeta, PhotoResult, Scenario, ScenarioId, ScenarioSummary,
 } from "@shared/types";
 
 export class ApiError extends Error {
@@ -71,7 +71,8 @@ export const api = {
     form.append("category", category);
     return call<FromPhotoResult>(`/sessions/${sid}/items/from-photo`, { method: "POST", body: form });
   },
-  scenario: () => call<Scenario>("/scenario"),
+  scenarios: () => call<ScenarioSummary[]>("/scenarios"),
+  scenario: (id: ScenarioId) => call<Scenario>(`/scenario?id=${encodeURIComponent(id)}`),
   agent: (messages: ChatTurn[], caseFile: CaseFile) =>
     call<AgentResponse>("/agent", { method: "POST", ...json({ messages, case: caseFile }) }),
 };

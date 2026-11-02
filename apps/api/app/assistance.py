@@ -20,8 +20,8 @@ def applies(program: dict, case: CaseFile) -> bool:
 
 
 def build_plan(case: CaseFile) -> PlanCard:
-    phase = content.preset(case.preset)["phase"]
-    data = content.programs()
+    phase = content.preset(case.preset, case.scenario)["phase"]
+    data = content.programs(case.scenario)
     buckets: dict[str, list[PlanItem]] = {b: [] for b in BUCKETS}
     for p in data["programs"]:
         slot = p.get("plan", {}).get(phase)
@@ -42,5 +42,5 @@ def build_plan(case: CaseFile) -> PlanCard:
             source_url=p["source_url"],
             checked_at=data["verified_at"],
         ))
-    return PlanCard(phase=phase, today=buckets["today"], this_week=buckets["this_week"],
+    return PlanCard(phase=phase, phase_label=content.scenario(case.scenario)["phase_labels"][phase], today=buckets["today"], this_week=buckets["this_week"],
                     deadlines=buckets["deadlines"], based_on=case)

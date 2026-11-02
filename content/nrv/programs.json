@@ -1,0 +1,76 @@
+{
+  "_note": "Assistance programs for the hypothetical New River Valley flood. Statuses describe this hypothetical: federal aid depends on a declaration. Facts about the real 2024 Helene declaration (DR-4831-VA) are cited from FEMA. Never add a deadline the source does not publish.",
+  "verified_at": "2026-11-02",
+  "programs": [
+    {
+      "id": "red-cross",
+      "name": "American Red Cross disaster help",
+      "summary": "Emergency shelter, food and support after a disaster.",
+      "status": "available",
+      "phases": ["response", "recovery"],
+      "applies_if": {},
+      "how": [{"label": "Call 1-800-RED-CROSS", "phone": "1-800-733-2767"}, {"label": "redcross.org", "url": "https://www.redcross.org/get-help.html"}],
+      "deadline": null,
+      "plan": {"response": {"bucket": "today", "text": "Find an open shelter or a safe place to stay"}, "recovery": {"bucket": "this_week", "text": "Ask the Red Cross about recovery support"}},
+      "source_name": "American Red Cross",
+      "source_url": "https://www.redcross.org/get-help.html"
+    },
+    {
+      "id": "va-211",
+      "name": "211 Virginia",
+      "summary": "A free, confidential service that connects you with housing, food, health care and other help across Virginia.",
+      "status": "available",
+      "phases": ["response", "recovery"],
+      "applies_if": {},
+      "how": [{"label": "Dial 2-1-1 (live help Mon–Fri, 9 a.m.–5 p.m.)", "phone": "2-1-1"}, {"label": "Text CONNECT to 247211", "url": "https://www.211virginia.org/"}],
+      "deadline": null,
+      "plan": {"response": {"bucket": "today", "text": "Call 2-1-1 for local help and places to stay"}, "recovery": {"bucket": "today", "text": "Call 2-1-1 to find local recovery help"}},
+      "source_name": "211 Virginia",
+      "source_url": "https://www.211virginia.org/"
+    },
+    {
+      "id": "flood-insurance-claim",
+      "name": "Flood insurance claim",
+      "summary": "Report the flood and your loss to your insurance provider as soon as possible. Take photos and videos of damaged belongings and property.",
+      "status": "available",
+      "status_note": "Homeowner’s insurance policies do not cover flooding; flood coverage is a separate policy.",
+      "phases": ["response", "recovery"],
+      "applies_if": {"insured": ["yes"]},
+      "how": [{"label": "How to start a flood claim", "url": "https://www.floodsmart.gov/how-do-i-start-my-flood-claim"}],
+      "deadline": null,
+      "plan": {"response": {"bucket": "this_week", "text": "Report the flood to your insurer when you are safe"}, "recovery": {"bucket": "today", "text": "Report your flood loss and photograph the damage", "action": "start_claim"}},
+      "source_name": "FloodSmart (FEMA National Flood Insurance Program)",
+      "source_url": "https://www.floodsmart.gov/how-do-i-start-my-flood-claim",
+      "extra_sources": [{"name": "Ready.gov: Floods", "url": "https://www.ready.gov/floods"}]
+    },
+    {
+      "id": "fema-ia",
+      "name": "FEMA Individual Assistance",
+      "summary": "Federal help for housing and other needs. Only available after a Major Disaster Declaration that includes your county.",
+      "status": "pending",
+      "status_note": "In this hypothetical, it depends on a federal declaration. In 2024, FEMA approved it for Montgomery, Pulaski and Giles counties and Radford (DR-4831-VA); registration for that disaster has closed.",
+      "phases": ["response", "recovery"],
+      "applies_if": {"home_damage": ["destroyed", "major", "minor"]},
+      "how": [{"label": "DisasterAssistance.gov (only once approved)", "url": "https://www.disasterassistance.gov/"}],
+      "deadline": {"date": null, "note": "If approved, FEMA announces a registration deadline."},
+      "plan": {"recovery": {"bucket": "deadlines", "text": "FEMA aid depends on a declaration. Watch for a registration deadline"}},
+      "source_name": "FEMA: DR-4831-VA",
+      "source_url": "https://www.fema.gov/disaster/4831",
+      "extra_sources": [{"name": "FEMA press release, Oct 2024", "url": "https://www.fema.gov/press-release/20250122/fema-assistance-now-available-more-virginians"}]
+    },
+    {
+      "id": "sba-disaster-loans",
+      "name": "SBA disaster loans",
+      "summary": "Loans for homeowners and renters whose property was damaged in a declared disaster area.",
+      "status": "pending",
+      "status_note": "Only in a declared disaster area.",
+      "phases": ["recovery"],
+      "applies_if": {"home_damage": ["destroyed", "major", "minor"]},
+      "how": [{"label": "Call 800-659-2955", "phone": "800-659-2955"}, {"label": "sba.gov disaster assistance", "url": "https://www.sba.gov/funding-programs/disaster-assistance"}],
+      "deadline": null,
+      "plan": {"recovery": {"bucket": "deadlines", "text": "SBA loans: only if your area is declared"}},
+      "source_name": "U.S. Small Business Administration",
+      "source_url": "https://www.sba.gov/funding-programs/disaster-assistance"
+    }
+  ]
+}

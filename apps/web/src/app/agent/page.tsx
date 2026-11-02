@@ -7,27 +7,11 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { RotateCcw, Send } from "lucide-react";
 import brand from "@shared/brand.json";
-import type { ScenarioPresetId } from "@shared/types";
 import { useAgent } from "@/lib/useAgent";
 import { MapPanel } from "@/components/agent/MapPanel";
 import { UICard } from "@/components/agent/Cards";
 import { Button, Card } from "@/components/ui";
 import { WrenAvatar, type WrenMood } from "@/components/Wren";
-
-const SUGGESTIONS: Record<ScenarioPresetId, string[]> = {
-  during: [
-    "My home was damaged in the fire. What should I do first?",
-    "I need shelter tonight with my dog",
-    "We've been told to get ready to evacuate. What do we do?",
-    "How do I start an insurance claim?",
-  ],
-  recovery: [
-    "Our house burned down and we have insurance. What help can we get now?",
-    "Is it safe to go back home?",
-    "Is FEMA aid available yet?",
-    "I lost my ID and documents in the fire",
-  ],
-};
 
 const STATUS: Record<WrenMood, string> = {
   idle: "Disaster recovery assistant · official sources only",
@@ -91,6 +75,25 @@ export default function AgentPage() {
             )}
           </div>
 
+          {agent.scenarios.length > 1 && (
+            <div className="flex flex-wrap items-center gap-2 border-b border-line px-4 py-2">
+              <span className="text-xs font-medium text-muted">Demo scenario:</span>
+              <div className="flex flex-wrap gap-1" role="radiogroup" aria-label="Demo scenario">
+                {agent.scenarios.map((sc) => {
+                  const on = sc.id === agent.caseFile.scenario;
+                  return (
+                    <button key={sc.id} role="radio" aria-checked={on}
+                      onClick={() => { if (!on) { agent.chooseScenario(sc.id); setSelectedId(null); } }}
+                      className={`min-h-9 rounded-md px-3 text-xs font-semibold transition-colors ${
+                        on ? "bg-accent text-accent-ink" : "bg-surface-2 text-muted hover:text-ink"}`}>
+                      {sc.title}{sc.hypothetical ? " (hypothetical)" : ""}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           <div className="flex items-center gap-2 border-b border-line px-4 py-2">
             <span className="text-xs font-medium text-muted">{agent.scenario?.title ?? "Scenario"}:</span>
             <div className="flex rounded-lg bg-surface-2 p-0.5" role="tablist">
@@ -108,12 +111,18 @@ export default function AgentPage() {
           <div ref={listRef} data-tour="agent-messages" className="relative flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-4 py-4">
             {agent.messages.length === 0 && (
               <div className="flex flex-col gap-3">
-                <WrenAvatar mood="idle" size={88} />
+                {/* eslint-disable-next-line @next/next/no-img-element -- static webp illustration */}
+                <img src="/wren/scene-checklist.webp" alt="" width={144} height={144} className="size-36 object-contain" />
                 <h1 className="text-2xl">Hi, I’m {brand.agentName}. What’s happening?</h1>
                 <p className="text-sm text-muted">
                   {agent.scenario?.summary} I’ll answer with alerts, places on the map and a step-by-step plan, all
                   from official sources.
                 </p>
+                {agent.scenario?.hypothetical && (
+                  <p className="rounded-lg bg-surface-2 px-3 py-2 text-xs text-muted">
+                    A hypothetical scenario for this demo. The places, programs and safety steps are real and sourced.
+                  </p>
+                )}
                 {preset?.replay && (
                   <p className="rounded-lg bg-warn-soft px-3 py-2 text-xs text-warn">
                     You’re viewing a replay of {preset.label.split(" · ")[0]}. Live alerts are still checked for today.
@@ -157,7 +166,7 @@ export default function AgentPage() {
 
           {agent.messages.length < 2 && !agent.pending && (
             <div className="flex flex-wrap gap-1.5 px-4 pb-2">
-              {SUGGESTIONS[agent.caseFile.preset].map((s) => (
+              {(agent.scenario?.suggestions[agent.caseFile.preset] ?? []).map((s) => (
                 <button key={s} onClick={() => submit(s)}
                   className="rounded-md bg-surface-2 px-3 py-2 text-left text-[13px] text-ink transition-colors hover:bg-accent-soft hover:text-accent">
                   {s}
@@ -182,7 +191,7 @@ export default function AgentPage() {
       </div>
 
       <div data-tour="agent-map" className="order-1 h-[42vh] min-h-0 lg:order-2 lg:h-full">
-        <MapPanel scenario={agent.scenario} resources={agent.resources?.items ?? []} liveAlerts={agent.alerts?.live ?? []}
+        <MapPanel key={agent.caseFile.scenario} scenario={agent.scenario} replayLabel={preset?.label.split(" · ")[0] ?? ""} resources={agent.resources?.items ?? []} liveAlerts={agent.alerts?.live ?? []}
           replay={!!preset?.replay} selectedId={selectedId} onSelect={setSelectedId} />
       </div>
     </div>

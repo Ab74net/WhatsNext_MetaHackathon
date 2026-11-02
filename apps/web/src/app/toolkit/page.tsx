@@ -28,11 +28,16 @@ export default function ToolkitPage() {
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 py-6 sm:px-8 lg:py-10">
-      <header>
-        <h1 className="text-3xl">Recovery toolkit</h1>
-        <p className="mt-2 max-w-2xl text-muted">
-          Replace lost documents in the right order, and get ready for the call with your insurance company.
-        </p>
+      <header className="flex items-center justify-between gap-6">
+        <div>
+          <h1 className="text-3xl">Recovery toolkit</h1>
+          <p className="mt-2 max-w-2xl text-muted">
+            Replace lost documents in the right order, and get ready for the call with your insurance company.
+          </p>
+        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element -- static illustration, changes with the tab */}
+        <img src={tab === "documents" ? "/wren/scene-documents.webp" : "/wren/scene-clipboard.webp"} alt=""
+          width={480} height={400} className="hidden w-36 shrink-0 object-contain sm:block print:hidden" />
       </header>
 
       <div role="tablist" aria-label="Toolkit" className="flex gap-1 border-b border-line print:hidden">
