@@ -173,7 +173,7 @@ function TourDialog({ step, setStep, onClose }: {
   return (
     <div className="fixed inset-0 z-50" onKeyDown={onKeyDown}>
       {/* Click-catcher: the page underneath is inert during the tour. */}
-      <div className={`absolute inset-0 ${rect ? "" : "bg-black/60"}`} aria-hidden />
+      <div className={`absolute inset-0 ${rect ? "" : "bg-overlay"}`} aria-hidden />
       {rect && (
         <div aria-hidden className={`pointer-events-none absolute rounded-lg ring-2 ring-accent ${ease}`}
           style={{

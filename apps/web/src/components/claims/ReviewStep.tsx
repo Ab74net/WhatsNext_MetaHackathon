@@ -5,7 +5,7 @@
 // the claim reflects what the user actually owned. Items seen in
 // several photos were merged automatically; the user can split them or merge by hand.
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import {
   ArrowRight, Check, ChevronLeft, ChevronRight, Combine, Images, Layers, Pencil, Plus, Split, Trash2, X,
@@ -83,7 +83,7 @@ export function ReviewStep({ session, onAddMore, onExport }: {
           {([["all", "All"], ["todo", "To review"], ["confirmed", "Confirmed"]] as const).map(([key, label]) => (
             <button key={key} role="tab" aria-selected={filter === key} onClick={() => setFilter(key)}
               className={`min-h-9 rounded-full px-4 text-[13px] font-semibold transition ${
-                filter === key ? "bg-ink text-white" : "border border-line text-muted hover:text-ink"}`}>
+                filter === key ? "bg-primary text-primary-ink" : "border border-line text-muted hover:text-ink"}`}>
               {label} <span className="ml-1 tabular-nums opacity-70">{counts[key]}</span>
             </button>
           ))}
@@ -135,12 +135,13 @@ export function ReviewStep({ session, onAddMore, onExport }: {
         </Card>
       )}
 
+      {groups.length > 0 && <div className="overflow-hidden rounded-3xl border border-line bg-surface [&>section+section]:border-t [&>section+section]:border-line">
       {groups.map(([category, list]) => (
         <section key={category} className="flex flex-col gap-2">
-          <h2 className="px-1 text-[13px] font-semibold uppercase tracking-wide text-muted">
+          <h2 className="sr-only">
             {category} <span className="font-normal text-subtle">· {list.length}</span>
           </h2>
-          <div className="overflow-hidden rounded-3xl border border-line bg-surface [&>div+div]:border-t [&>div+div]:border-line">
+          <div className="[&>div+div]:border-t [&>div+div]:border-line">
             <AnimatePresence initial={false}>
               {list.map((item) => {
                 const meta = metaById[item.photos[0]?.photo_id];
@@ -164,6 +165,7 @@ export function ReviewStep({ session, onAddMore, onExport }: {
           </div>
         </section>
       ))}
+      </div>}
 
       <div className="sticky bottom-20 z-10 lg:bottom-4">
         <Card className="flex items-center justify-between gap-3 px-4 py-3 shadow-pop">
@@ -211,19 +213,23 @@ function ItemCard({ item, meta, src, color, selecting, selected, onSelect, onVie
 
   return (
     <motion.div layout initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.98 }}>
-      <div className={`inventory-row transition ${selected ? "bg-accent-soft" : ""}`}>
-        <button onClick={selecting ? onSelect : onView} aria-label={selecting ? `Select ${item.category} for merge` : `View evidence photos of ${item.category}`}
-          aria-pressed={selecting ? selected : undefined}
+      <div className={`inventory-row transition ${selected ? "bg-accent-soft" : ""}`}
+        onClick={selecting ? onSelect : undefined} role={selecting ? "checkbox" : undefined}
+        tabIndex={selecting ? 0 : undefined} aria-checked={selecting ? selected : undefined}
+        aria-label={selecting ? `Select ${item.category} for merge` : undefined}
+        onKeyDown={selecting ? (e) => { if (e.target === e.currentTarget && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); onSelect(); } } : undefined}>
+        <button onClick={selecting ? undefined : onView} aria-label={`View evidence photos of ${item.category}`}
+          tabIndex={selecting ? -1 : undefined}
           className="inventory-thumb relative shrink-0 overflow-hidden rounded-xl">
           {meta && <ItemCrop src={src} meta={meta} mask={mask} color={color} />}
           {photoCount > 1 && (
-            <span className="absolute bottom-1 right-1 inline-flex items-center gap-0.5 rounded-md bg-black/65 px-1.5 py-0.5 text-[10px] font-semibold text-white">
+            <span className="absolute bottom-1 right-1 inline-flex items-center gap-0.5 rounded-md bg-overlay px-1.5 py-0.5 text-[10px] font-semibold text-pin-ink">
               <Images className="size-3" aria-hidden /> {photoCount}
             </span>
           )}
           {selecting && (
             <span className={`absolute left-1.5 top-1.5 flex size-5 items-center justify-center rounded-full border-2 ${
-              selected ? "border-accent bg-accent text-accent-ink" : "border-white bg-black/25"}`}>
+              selected ? "border-accent bg-accent text-accent-ink" : "border-pin-ink bg-overlay/35"}`}>
               {selected && <Check className="size-3" strokeWidth={3} />}
             </span>
           )}
@@ -308,6 +314,22 @@ function ItemCard({ item, meta, src, color, selecting, selected, onSelect, onVie
 function PhotoViewer({ item, metaById, photoUrl, onClose }: {
   item: InventoryItem; metaById: Record<string, PhotoMeta>; photoUrl: (pid: string) => string; onClose: () => void;
 }) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const opener = document.activeElement as HTMLElement | null;
+    const dialog = dialogRef.current;
+    dialog?.querySelector<HTMLButtonElement>('button[aria-label="Close"]')?.focus();
+    const keydown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") { event.preventDefault(); onClose(); }
+      if (event.key !== "Tab" || !dialog) return;
+      const buttons = Array.from(dialog.querySelectorAll<HTMLButtonElement>("button"));
+      const first = buttons[0], last = buttons.at(-1);
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+      if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+    };
+    document.addEventListener("keydown", keydown);
+    return () => { document.removeEventListener("keydown", keydown); opener?.focus(); };
+  }, [onClose]);
   const evidence = item.photos.filter((p) => metaById[p.photo_id]);
   const [index, setIndex] = useState(0);
   const ev = evidence[Math.min(index, evidence.length - 1)];
@@ -316,8 +338,8 @@ function PhotoViewer({ item, metaById, photoUrl, onClose }: {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" role="dialog" aria-modal="true">
-      <motion.div initial={{ scale: 0.97, y: 8 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.97 }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-overlay p-4" role="dialog" aria-modal="true" aria-label={`Evidence photos of ${item.category}`}>
+      <motion.div ref={dialogRef} initial={{ scale: 0.97, y: 8 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.97 }}
         onClick={(e) => e.stopPropagation()} className="flex max-h-full w-full max-w-3xl flex-col overflow-hidden rounded-2xl bg-surface shadow-pop">
         <div className="flex items-center gap-3 border-b border-line px-4 py-3">
           <div className="min-w-0 flex-1">

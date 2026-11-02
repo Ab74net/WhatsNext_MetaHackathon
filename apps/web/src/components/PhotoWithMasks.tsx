@@ -1,6 +1,6 @@
 import type { InventoryItem, Mask, PhotoMeta } from "@shared/types";
 
-const COLORS = ["#2f7fa6", "#e5533d", "#1f7a45", "#8a5300", "#1f5e7e", "#c2381f"];
+const COLORS = ["var(--deco-blue)", "var(--deco-coral)", "var(--good)", "var(--warn)", "var(--pin-recovery)", "var(--accent)"];
 
 export function colorFor(index: number) {
   return COLORS[index % COLORS.length];
@@ -61,9 +61,18 @@ export function PhotoWithMasks({
           const mask = item.photos.find((p) => p.photo_id === meta.photo_id)?.mask;
           if (!mask) return null;
           const dim = highlightId !== null && highlightId !== item.id;
+          const fontSize = Math.max(13, meta.width / 48);
+          const labelWidth = Math.min(meta.width, (item.category.length * .6 + 1.4) * fontSize);
+          const labelHeight = fontSize * 1.7;
+          const labelX = Math.max(0, Math.min(meta.width - labelWidth, mask.bounds.left));
+          const labelY = Math.max(0, mask.bounds.top - labelHeight);
           return (
             <g key={item.id} opacity={dim ? 0.12 : 1} className="transition-opacity">
               <MaskShape mask={mask} color={colorFor(i)} width={meta.width} animate={animate} delayMs={i * 140} />
+              <rect x={labelX} y={labelY} width={labelWidth} height={labelHeight} rx={fontSize * .4}
+                fill={highlightId === item.id ? "var(--accent)" : "var(--blue)"} />
+              <text x={labelX + fontSize * .7} y={labelY + fontSize * 1.15} fontSize={fontSize} fontWeight={600}
+                fill={highlightId === item.id ? "var(--accent-ink)" : "var(--blue-ink)"}>{item.category}</text>
             </g>
           );
         })}

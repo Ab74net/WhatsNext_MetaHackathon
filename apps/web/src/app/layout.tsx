@@ -28,12 +28,15 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "#faf7f2",
-  colorScheme: "light",
+  colorScheme: "light dark",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${inter.variable} ${interTight.variable} ${geistMono.variable} h-full`}>
+    <html lang="en" data-theme="light" suppressHydrationWarning className={`${inter.variable} ${interTight.variable} ${geistMono.variable} h-full`}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: `try{var t=localStorage.getItem('what-next-theme');document.documentElement.dataset.theme=t==='dark'?'dark':'light'}catch(e){document.documentElement.dataset.theme='light'}` }} />
+      </head>
       <body className="min-h-full">
         <AppShell>{children}</AppShell>
       </body>

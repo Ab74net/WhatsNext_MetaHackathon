@@ -175,7 +175,7 @@ function Download({ href, fmt, icon, title, primary = false }: {
   return (
     <a href={href} download aria-label={`Download ${title} (.${fmt})`}
       className={`inline-flex h-12 items-center gap-2 rounded-full px-5 text-sm font-semibold transition ${
-        primary ? "bg-ink text-white hover:bg-[#2b2b2b]" : "border border-ink bg-surface text-ink hover:bg-surface-2"}`}>
+        primary ? "bg-primary text-primary-ink hover:bg-primary-hover" : "border border-ink bg-surface text-ink hover:bg-surface-2"}`}>
       {icon} {title}
     </a>
   );

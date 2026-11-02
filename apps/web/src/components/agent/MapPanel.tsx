@@ -10,13 +10,12 @@ import { Clock, ExternalLink, Info, MapPin, Navigation, Phone, X } from "lucide-
 import type { Alert, Resource, ResourceKind, Scenario } from "@shared/types";
 
 export const KIND_STYLE: Record<ResourceKind, { color: string; label: string; icon: string }> = {
-  shelter: { color: "#2f7fa6", label: "Shelter", icon: "M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6M3 14h18M7 10V7h4v3" },
-  clinic: { color: "#c2381f", label: "Hospital", icon: "M12 6v12M6 12h12" },
-  recovery_center: { color: "#1f5e7e", label: "Recovery help", icon: "M4 20V9l8-5 8 5v11M9 20v-6h6v6" },
-  animal_shelter: { color: "#8a5a2b", label: "Animals", icon: "M8 13a4 4 0 0 0 8 0c0-2-2-4-4-4s-4 2-4 4zM6 8.5a1.5 1.5 0 1 0 0-.01M18 8.5a1.5 1.5 0 1 0 0-.01M9.5 5a1.5 1.5 0 1 0 0-.01M14.5 5a1.5 1.5 0 1 0 0-.01" },
+  shelter: { color: "var(--deco-blue)", label: "Shelter", icon: "M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6M3 14h18M7 10V7h4v3" },
+  clinic: { color: "var(--accent)", label: "Hospital", icon: "M12 6v12M6 12h12" },
+  recovery_center: { color: "var(--pin-recovery)", label: "Recovery help", icon: "M4 20V9l8-5 8 5v11M9 20v-6h6v6" },
+  animal_shelter: { color: "var(--pin-animal)", label: "Animals", icon: "M8 13a4 4 0 0 0 8 0c0-2-2-4-4-4s-4 2-4 4zM6 8.5a1.5 1.5 0 1 0 0-.01M18 8.5a1.5 1.5 0 1 0 0-.01M9.5 5a1.5 1.5 0 1 0 0-.01M14.5 5a1.5 1.5 0 1 0 0-.01" },
 };
-const FIRE = "#e5533d";
-const ALERT = "#e5533d";
+const FIRE = "var(--deco-coral)";
 const ESRI = "https://server.arcgisonline.com/ArcGIS/rest/services";
 
 // Inline raster style: a light-gray base map plus its label overlay. No style JSON,
@@ -50,9 +49,9 @@ function pinElement(kind: ResourceKind): HTMLElement {
   root.style.cssText = "background:none;border:0;padding:0;cursor:pointer;";
   const pin = document.createElement("span");
   pin.className = "map-pin";
-  pin.style.cssText = `width:34px;height:34px;border-radius:50%;background:${color};border:3px solid #fff;
-    box-shadow:0 2px 6px rgb(20 20 20 / .25);display:flex;align-items:center;justify-content:center;transition:transform .15s;`;
-  pin.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4"
+  pin.style.background = color;
+  pin.style.color = kind === "clinic" ? "var(--accent-ink)" : kind === "shelter" ? "var(--blue-ink)" : "var(--pin-ink)";
+  pin.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
     stroke-linecap="round" stroke-linejoin="round"><path d="${icon}"/></svg>`;
   root.appendChild(pin);
   return root;
@@ -98,13 +97,16 @@ export function MapPanel({ scenario, replayLabel, resources, liveAlerts, replay,
       });
       m.addControl(new ml.NavigationControl({ showCompass: false }), "top-right");
       m.on("load", () => {
+        const tokens = getComputedStyle(document.documentElement);
+        const fireColor = tokens.getPropertyValue("--deco-coral").trim();
+        const haloColor = tokens.getPropertyValue("--pin-ink").trim();
         m.addSource("fires", { type: "geojson", data: scenario.fire_areas });
-        m.addLayer({ id: "fires-fill", type: "fill", source: "fires", paint: { "fill-color": FIRE, "fill-opacity": 0.35 } });
+        m.addLayer({ id: "fires-fill", type: "fill", source: "fires", paint: { "fill-color": fireColor, "fill-opacity": 0.35 } });
         // A dark halo under the outline keeps it readable over bright imagery.
-        m.addLayer({ id: "fires-halo", type: "line", source: "fires", paint: { "line-color": "#fff", "line-width": 4, "line-opacity": 0.6 } });
-        m.addLayer({ id: "fires-line", type: "line", source: "fires", paint: { "line-color": FIRE, "line-width": 2.5 } });
+        m.addLayer({ id: "fires-halo", type: "line", source: "fires", paint: { "line-color": haloColor, "line-width": 4, "line-opacity": 0.6 } });
+        m.addLayer({ id: "fires-line", type: "line", source: "fires", paint: { "line-color": fireColor, "line-width": 2.5 } });
         m.addSource("alerts", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
-        m.addLayer({ id: "alerts-line", type: "line", source: "alerts", paint: { "line-color": ALERT, "line-width": 2, "line-dasharray": [2, 2] } });
+        m.addLayer({ id: "alerts-line", type: "line", source: "alerts", paint: { "line-color": fireColor, "line-width": 2, "line-dasharray": [2, 2] } });
         // Start the compact attribution collapsed (the "i" button opens it) so it doesn't cover the legend.
         container.current?.querySelector(".maplibregl-ctrl-attrib")?.classList.remove("maplibregl-compact-show");
         setReady(true);
@@ -167,21 +169,21 @@ export function MapPanel({ scenario, replayLabel, resources, liveAlerts, replay,
       (el.firstElementChild as HTMLElement).style.transform = `scale(${on ? 1.3 : 1})`;
       el.style.zIndex = on ? "2" : "1";
     });
-    if (selected && map.current) map.current.easeTo({ center: [selected.lon, selected.lat], zoom: Math.max(map.current.getZoom(), 12), duration: 600 });
+    if (selected && map.current) map.current.easeTo({ center: [selected.lon, selected.lat], zoom: Math.max(map.current.getZoom(), 12), duration: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 600 });
   }, [selected, selectedId]);
 
   const kindsShown = [...new Set(resources.map((r) => r.kind))];
 
   return (
-    <div className="map-shell relative h-full w-full overflow-hidden rounded-2xl border border-line bg-surface-3">
+    <div className="map-shell relative h-full w-full overflow-hidden">
       {/* h-full, not absolute: maplibre-gl.css forces .maplibregl-map to position: relative */}
-      <div ref={container} className="h-full w-full" />
+      <div ref={container} className="mt-16 h-[calc(100%_-_4rem)] w-full overflow-hidden rounded-3xl border border-line bg-surface-3" />
 
-      <a href="tel:911" className="absolute inset-x-3 top-3 z-10 flex h-12 items-center justify-center gap-2 rounded-2xl bg-danger-solid font-semibold text-white hover:bg-accent-hover">
+      <a href="tel:911" className="absolute inset-x-0 top-0 z-10 flex h-12 items-center justify-center gap-2 rounded-3xl bg-danger-solid text-lg font-semibold text-emergency-ink hover:bg-accent-hover">
         <Phone className="size-4" aria-hidden /> In danger? Call 911.
       </a>
 
-      <div className="absolute left-3 top-16 z-10 flex flex-col items-start gap-1.5">
+      <div className="absolute left-3 top-20 z-10 flex flex-col items-start gap-1.5">
         <button onClick={() => setShowSources((s) => !s)} aria-expanded={showSources}
           className="inline-flex min-h-8 items-center gap-1.5 rounded-full border border-line bg-surface px-3 text-xs font-semibold text-ink hover:bg-surface-2">
           <Info className="size-3.5" aria-hidden />
@@ -202,7 +204,7 @@ export function MapPanel({ scenario, replayLabel, resources, liveAlerts, replay,
 
       <div className="absolute bottom-8 right-3 z-10 flex flex-col gap-2 rounded-2xl border border-line bg-surface p-3 text-xs shadow-card">
         {!!scenario?.fire_areas.features.length && (
-          <span className="flex items-center gap-2"><span className="size-3 rounded-sm border-2" style={{ borderColor: FIRE, background: `${FIRE}55` }} /> Fire area</span>
+          <span className="flex items-center gap-2"><span className="size-3 rounded-sm border-2" style={{ borderColor: FIRE, background: "color-mix(in srgb, var(--deco-coral) 35%, transparent)" }} /> Fire area</span>
         )}
         {kindsShown.map((k) => (
           <span key={k} className="flex items-center gap-2">

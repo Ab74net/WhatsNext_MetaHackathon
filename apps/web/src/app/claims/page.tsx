@@ -2,7 +2,7 @@
 
 // Claims helper: choose photos -> scan -> review -> export.
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Trash2, TriangleAlert } from "lucide-react";
 import { useClaimSession } from "@/lib/useClaimSession";
@@ -26,6 +26,14 @@ export default function ClaimsPage() {
   const session = useClaimSession();
   const [step, setStep] = useState<Step>("select");
   const itemList = Object.values(session.items);
+  const hasConfirmed = itemList.some((i) => i.user_confirmed);
+  // A header link can reveal the existing Memory Web step without leaving this session.
+  useEffect(() => {
+    const reveal = () => { if (window.location.hash === "#memory" && hasConfirmed) setStep("remember"); };
+    reveal();
+    window.addEventListener("hashchange", reveal);
+    return () => window.removeEventListener("hashchange", reveal);
+  }, [hasConfirmed]);
   const reachable: Record<Step, boolean> = {
     select: true,
     scan: session.photos.length > 0,

@@ -158,7 +158,9 @@ All hand-checked on Nov 2, 2026. Every row has a source URL; news sources are la
 
 ## Design
 
-Light, warm, editorial look matched to `docs/design/target-mockup.png`. All colors are tokens in `apps/web/src/app/globals.css` (no dark mode). Coral `#C2381F` is the accent for key states and the 911 banner (white on it is 5.4:1); the mockup's brighter coral and blue are decoration-only tokens (`--deco-*`), never text. Green is darkened to `#1F7A45` for AA. Fonts: Inter (UI) and Inter Tight (headings). Shared pieces live in `components/ui.tsx` (pill buttons, bordered cards, Stepper). The wordmark reads `projectName × partner` from `packages/shared/brand.json`.
+Warm, editorial look matched to the six references in `scripts/mockupsfornehomepage/`. Shared colors, type, spacing and radii live in `apps/web/src/app/globals.css`; shared pill buttons, bordered cards and the stepper live in `components/ui.tsx`. Fonts: Inter (UI) and Inter Tight (headings). The wordmark reads `projectName × partner` from `packages/shared/brand.json`.
+
+Light mode is always the first-visit default, regardless of the OS preference. The navigation's sun/moon button saves a choice in localStorage; a head script applies it before paint. Storage failure falls back to light and the toggle still works for that visit. Both themes cover the claims steps, Memory Web, safety cards, Toolkit and tour. The existing map canvas uses a CSS filter in dark mode; no tile provider was added. Printing forces light colors, and exports retain their existing format. See `docs/FRONTEND_REDESIGN.md` for checks and deliberate differences from the mockups.
 
 ## Second demo scenario (`/content/nrv`)
 

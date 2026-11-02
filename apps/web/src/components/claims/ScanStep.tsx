@@ -107,7 +107,7 @@ function ScanCard({ photo: p, src, found, onConfirmAll }: {
               onError={(e) => { e.currentTarget.style.visibility = "hidden"; }} />
           )}
           {busy && (
-            <div className="pointer-events-none absolute inset-0 overflow-hidden bg-black/15">
+            <div className="pointer-events-none absolute inset-0 overflow-hidden bg-overlay/20">
               <div className="scan-sweep absolute inset-x-0 h-1/3" />
             </div>
           )}
@@ -151,7 +151,7 @@ function ConfirmAll({ found, onConfirmAll }: { found: InventoryItem[]; onConfirm
       <p className="text-xs capitalize text-muted">{names}</p>
       {left ? (
         <button type="button" onClick={onConfirmAll}
-          className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-full bg-ink px-4 text-[13px] font-semibold text-white transition-colors hover:bg-[#2b2b2b]">
+          className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full bg-primary px-4 text-[13px] font-semibold text-primary-ink transition-colors hover:bg-primary-hover">
           <Check className="size-3.5" strokeWidth={3} aria-hidden /> Yes, I’ve owned all of these
         </button>
       ) : (

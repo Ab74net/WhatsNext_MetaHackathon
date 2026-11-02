@@ -150,10 +150,10 @@ export function SelectStep({ onScan, scannedCount }: { onScan: (picks: Pick[]) =
                     onError={(e) => { e.currentTarget.style.visibility = "hidden"; }} />
                   <span className={`absolute inset-0 rounded-lg ring-inset transition ${on ? "ring-[3px] ring-accent" : "ring-0"}`} />
                   <span className={`absolute right-1.5 top-1.5 flex size-5 items-center justify-center rounded-full border-2 transition ${
-                    on ? "border-accent bg-accent text-accent-ink" : "border-white/90 bg-black/20"}`}>
+                    on ? "border-accent bg-accent text-accent-ink" : "border-pin-ink bg-overlay/30"}`}>
                     {on && <Check className="size-3" strokeWidth={3} aria-hidden />}
                   </span>
-                  <span className="absolute inset-x-0 bottom-0 truncate bg-gradient-to-t from-black/60 to-transparent px-1.5 pb-1 pt-4 text-left text-[10px] font-medium text-white">
+                  <span className="absolute inset-x-0 bottom-0 truncate bg-overlay px-1.5 pb-1 pt-4 text-left text-[10px] font-medium text-pin-ink">
                     {p.takenAt ? p.takenAt.toLocaleDateString() : "No date"}
                   </span>
                 </motion.button>

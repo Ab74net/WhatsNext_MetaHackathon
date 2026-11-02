@@ -1,26 +1,37 @@
 "use client";
 
 import Link from "next/link";
+import { useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
-import { Compass, FolderCheck, House, MessageCircle, Package, Phone } from "lucide-react";
+import { Compass, FolderCheck, House, MessageCircle, Network, Package, Phone, ShieldCheck } from "lucide-react";
 import brand from "@shared/brand.json";
 import { TourProvider, useTour } from "@/components/tour/Tour";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { MotionConfig } from "motion/react";
 
 const NAV = [
   { href: "/agent", label: brand.agentName, icon: MessageCircle },
   { href: "/claims", label: "My Claim", icon: Package },
-  { href: "/toolkit", label: "Toolkit", icon: FolderCheck },
+  { href: "/claims#memory", label: "Memory Web", icon: Network },
+  { href: "/#privacy", label: "Privacy", icon: ShieldCheck },
 ];
-const MOBILE_NAV = [{ href: "/", label: "Home", icon: House }, ...NAV];
+const MOBILE_NAV = [{ href: "/", label: "Home", icon: House }, ...NAV.slice(0, 2), { href: "/toolkit", label: "Toolkit", icon: FolderCheck }];
+const subscribeHash = (listener: () => void) => {
+  window.addEventListener("hashchange", listener);
+  return () => window.removeEventListener("hashchange", listener);
+};
 
 // Top bar with text links on desktop, bottom tab bar on phones. The 911 link is always visible,
 // and the "not insurance or legal advice" note sits at the foot of every page.
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const active = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
+  const hash = useSyncExternalStore(subscribeHash, () => window.location.hash, () => "");
+  const active = (href: string) => href.includes("#") ? `${pathname}${hash}` === href
+    : href === "/" ? pathname === "/" && !hash : pathname.startsWith(href) && hash !== "#memory";
 
   return (
     <TourProvider>
+    <MotionConfig reducedMotion="user">
     <div className="app-shell flex min-h-dvh flex-col">
       <a href="#main-content" className="fixed -top-20 left-4 z-50 rounded-full bg-primary px-5 py-3 text-primary-ink focus:top-3">Skip to content</a>
       <header className="sticky top-0 z-30 border-b border-line bg-canvas">
@@ -28,11 +39,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <Link href="/" className="flex min-w-0 items-center gap-2.5">
             <Mark />
             <span className="truncate font-display text-lg font-bold tracking-tight lg:text-[23px]">
-              {brand.projectName}<span className="hidden sm:inline"> × {brand.partner}</span>
+              {brand.projectName}<span className="hidden sm:inline lg:hidden xl:inline"> × {brand.partner}</span>
             </span>
           </Link>
 
-          <nav className="ml-auto hidden h-full items-center gap-7 md:flex" aria-label="Main">
+          <nav className="ml-auto hidden h-full items-center gap-6 lg:flex" aria-label="Main">
             {NAV.map(({ href, label }) => (
               <Link key={href} href={href} aria-current={active(href) ? "page" : undefined}
                 className={`relative flex h-full items-center text-sm font-medium transition-colors ${
@@ -49,6 +60,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               className="inline-flex h-10 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 text-[13px] font-semibold text-danger transition-colors hover:bg-danger-soft">
               <Phone className="size-3.5" aria-hidden /> Call 911
             </a>
+            <ThemeToggle />
             <Link href="/agent" className="hidden h-11 items-center rounded-full bg-primary px-6 text-sm font-semibold text-primary-ink hover:bg-primary-hover sm:inline-flex">
               Get help
             </Link>
@@ -62,16 +74,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {children}
       </main>
 
-      <footer className="border-t border-line px-4 pb-24 pt-5 text-center text-xs text-subtle md:pb-5">
+      <footer className="border-t border-line px-4 pb-24 pt-5 text-center text-xs text-subtle lg:pb-5">
         <div className="mb-3 flex flex-wrap justify-center gap-5 text-[13px] font-medium text-ink">
           <Link href="/#privacy" className="hover:underline">Privacy</Link>
           <Link href="/toolkit" className="hover:underline">Recovery toolkit</Link>
+          <TourLink footer />
           <a href="tel:911" className="text-danger hover:underline">In danger? Call 911.</a>
         </div>
         General guidance only. Not insurance or legal advice. Every source shows when it was last checked.
       </footer>
 
-      <nav className="fixed inset-x-0 bottom-0 z-30 flex border-t border-line bg-surface pb-[env(safe-area-inset-bottom)] md:hidden" aria-label="Main">
+      <nav className="fixed inset-x-0 bottom-0 z-30 flex border-t border-line bg-surface pb-[env(safe-area-inset-bottom)] lg:hidden" aria-label="Main">
         {MOBILE_NAV.map(({ href, label, icon: Icon }) => (
           <Link key={href} href={href} aria-current={active(href) ? "page" : undefined}
             className={`flex min-h-14 flex-1 flex-col items-center justify-center gap-1 text-[11px] font-medium ${active(href) ? "text-accent" : "text-muted"}`}>
@@ -81,18 +94,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         ))}
       </nav>
     </div>
+    </MotionConfig>
     </TourProvider>
   );
 }
 
 // Replays the guided tour. Text on wider screens, icon only on phones.
-function TourLink() {
+function TourLink({ footer = false }: { footer?: boolean }) {
   const { start } = useTour();
   return (
     <button type="button" onClick={start} aria-label="Take a tour" data-tour-link
-      className="inline-flex h-10 items-center gap-1.5 rounded-full px-3 text-[13px] font-medium text-muted hover:bg-surface-2 hover:text-ink">
+      className={`${footer ? "inline-flex" : "hidden sm:inline-flex"} min-h-11 items-center gap-1.5 rounded-full px-3 text-[13px] font-medium text-muted hover:bg-surface-2 hover:text-ink`}>
       <Compass className="size-4" aria-hidden />
-      <span className="hidden lg:inline">Take a tour</span>
+      <span className={footer ? "" : "hidden 2xl:inline"}>Take a tour</span>
     </button>
   );
 }

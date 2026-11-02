@@ -33,13 +33,13 @@ export function SafetyFlowView({ card }: { card: SafetyFlowCard }) {
 
   return (
     <Card className="overflow-hidden">
-      <a href="tel:911" className="flex h-10 items-center justify-center gap-2 bg-danger-solid text-sm font-semibold text-white hover:brightness-110">
+      <a href="tel:911" className="flex h-10 items-center justify-center gap-2 bg-danger-solid text-sm font-semibold text-emergency-ink hover:brightness-110">
         <Phone className="size-4" aria-hidden /> In danger? Call 911.
       </a>
       <div className="flex items-center gap-2 border-b border-line px-4 py-3">
         {card.hazard === "flood"
-          ? <Waves className="size-[18px] text-[#7fb3d5]" aria-hidden />
-          : <Flame className="size-[18px] text-[#ea580c]" aria-hidden />}
+          ? <Waves className="size-[18px] text-blue" aria-hidden />
+          : <Flame className="size-[18px] text-accent" aria-hidden />}
         <p className="flex-1 font-semibold">{card.title}</p>
         {branch && <button onClick={() => setBranchId(null)} className="text-xs font-semibold text-accent hover:underline">Change situation</button>}
       </div>
@@ -109,17 +109,17 @@ function StepPlayer({ branch, card }: { branch: SafetyBranch; card: SafetyFlowCa
         <AnimatePresence mode="wait">
           <motion.div key={i} initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -24 }}
             transition={{ duration: reduced ? 0 : 0.25 }}
-            className={`flex flex-col gap-2.5 rounded-2xl p-4 ${branch.emergency && i === 0 ? "bg-danger-solid text-white" : "bg-surface-2"}`}
+            className={`flex flex-col gap-2.5 rounded-2xl p-4 ${branch.emergency && i === 0 ? "bg-danger-solid text-emergency-ink" : "bg-surface-2"}`}
             aria-live="polite">
             <motion.span initial={{ scale: 0.6, rotate: -8 }} animate={{ scale: 1, rotate: 0 }}
               transition={{ type: "spring", stiffness: 300, damping: 14, delay: 0.05 }}
-              className={`flex size-12 items-center justify-center rounded-full ${branch.emergency && i === 0 ? "bg-white text-danger-solid" : "bg-accent-soft text-accent"}`}>
+              className={`flex size-12 items-center justify-center rounded-full ${branch.emergency && i === 0 ? "bg-surface text-danger-solid" : "bg-accent-soft text-accent"}`}>
               <Icon className="size-6" aria-hidden />
             </motion.span>
             <p className="text-lg font-bold leading-tight">{step.title}</p>
-            <p className={`text-sm ${branch.emergency && i === 0 ? "text-white/90" : "text-ink"}`}>{step.text}</p>
+            <p className={`text-sm ${branch.emergency && i === 0 ? "text-emergency-ink" : "text-ink"}`}>{step.text}</p>
             {branch.emergency && i === 0 && (
-              <a href="tel:911" className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-white font-bold text-danger">
+              <a href="tel:911" className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-surface font-bold text-danger">
                 <Phone className="size-4" aria-hidden /> Call 911
               </a>
             )}
@@ -130,7 +130,7 @@ function StepPlayer({ branch, card }: { branch: SafetyBranch; card: SafetyFlowCa
             )}
             {source && (
               <a href={source.url} target="_blank" rel="noopener noreferrer"
-                className={`inline-flex items-center gap-1 text-[11px] ${branch.emergency && i === 0 ? "text-white/80" : "text-subtle hover:text-accent"}`}>
+                className={`inline-flex items-center gap-1 text-[11px] ${branch.emergency && i === 0 ? "text-emergency-ink" : "text-subtle hover:text-accent"}`}>
                 Source: {source.name} <ExternalLink className="size-3" aria-hidden />
               </a>
             )}

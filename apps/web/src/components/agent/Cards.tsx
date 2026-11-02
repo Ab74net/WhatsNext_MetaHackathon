@@ -76,7 +76,7 @@ export function AlertsView({ card }: { card: AlertsCard }) {
         <div className="flex flex-wrap items-center gap-1.5">
           {card.fire_areas.map((f) => (
             <span key={f.name} className="inline-flex items-center gap-1 rounded-md bg-surface-2 px-2 py-1 text-xs font-medium">
-              <Flame className="size-3 text-[#ea580c]" aria-hidden /> {f.name} · {f.acres.toLocaleString()} acres
+              <Flame className="size-3 text-accent" aria-hidden /> {f.name} · {f.acres.toLocaleString()} acres
             </span>
           ))}
         </div>
@@ -211,10 +211,10 @@ export function ToolkitLinkView({ card }: { card: ToolkitLink }) {
 
 export function EmergencyView() {
   return (
-    <div className="flex flex-col gap-3 rounded-2xl bg-danger-solid p-4 text-white">
+    <div className="flex flex-col gap-3 rounded-2xl bg-danger-solid p-4 text-emergency-ink">
       <p className="text-lg font-bold">Call 911 now</p>
       <p className="text-sm opacity-90">If anyone is hurt or in immediate danger, emergency services come first.</p>
-      <a href="tel:911" className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-white font-bold text-danger">
+      <a href="tel:911" className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-surface font-bold text-danger">
         <Phone className="size-4" aria-hidden /> Call 911
       </a>
     </div>

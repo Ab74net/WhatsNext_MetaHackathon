@@ -294,7 +294,7 @@ function SidePanel({ selected, session, web, metaById, onClose, onDismiss, onAdd
       {header(item.category)}
       {meta && (
         <div className="mb-3 h-36 overflow-hidden rounded-lg">
-          <ItemCrop src={session.photoUrl(meta.photo_id)} meta={meta} mask={item.photos[0]?.mask ?? null} color="#e3a548" />
+          <ItemCrop src={session.photoUrl(meta.photo_id)} meta={meta} mask={item.photos[0]?.mask ?? null} color="var(--accent)" />
         </div>
       )}
       {g ? <GradeView grade={g} /> : <Notice tone="good" icon={<Check className="size-4" />}>Just added from your photo. Its grade updates on refresh.</Notice>}
@@ -371,7 +371,7 @@ function AskPanel({ suggestion: s, session, metaById, header, onDismiss, onAdded
         {header(`Found: ${s.name}`)}
         {meta && (
           <div className="h-40 overflow-hidden rounded-lg">
-            <ItemCrop src={session.photoUrl(meta.photo_id)} meta={meta} mask={item.photos[0]?.mask ?? null} color="#9dbb98" />
+            <ItemCrop src={session.photoUrl(meta.photo_id)} meta={meta} mask={item.photos[0]?.mask ?? null} color="var(--good)" />
           </div>
         )}
         <p className="text-sm text-muted">Is this your {s.name}? Confirm it to add it to your claim.</p>

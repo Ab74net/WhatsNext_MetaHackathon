@@ -42,7 +42,8 @@ export function HomeHero({ children }: { children: ReactNode }) {
           ))}
         </svg>
         <div className="hero-photo">
-        {HERO_IMAGES.slice(0, reduced ? 1 : slide.reach).map((img, i) => {
+        {HERO_IMAGES.slice(0, slide.reach).map((img, i) => {
+          if (reduced && i !== slide.index) return null;
           const state = i === slide.index ? "is-active" : i === slide.prev ? "is-leaving" : "";
           return (
             // eslint-disable-next-line @next/next/no-img-element -- pre-sized webp set with srcset

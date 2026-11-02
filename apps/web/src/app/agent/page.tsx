@@ -12,6 +12,7 @@ import { MapPanel } from "@/components/agent/MapPanel";
 import { UICard } from "@/components/agent/Cards";
 import { Button, Card } from "@/components/ui";
 import { WrenAvatar, type WrenMood } from "@/components/Wren";
+import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
 
 const STATUS: Record<WrenMood, string> = {
   idle: "Disaster recovery assistant · official sources only",
@@ -23,19 +24,26 @@ const STATUS: Record<WrenMood, string> = {
 // Types the reply out (Wren shows the typing pose meanwhile), then reveals the cards.
 function TypedText({ text, onDone }: { text: string; onDone: () => void }) {
   const [n, setN] = useState(0);
+  const reduced = usePrefersReducedMotion();
   useEffect(() => {
+    if (reduced) {
+      const t = setTimeout(onDone, 0);
+      return () => clearTimeout(t);
+    }
     const step = Math.max(1, Math.ceil(text.length / 60)); // about one second whatever the length
     const t = setInterval(() => setN((c) => {
       if (c + step >= text.length) { clearInterval(t); setTimeout(onDone, 150); return text.length; }
       return c + step;
     }), 16);
     return () => clearInterval(t);
-  }, [text, onDone]);
+  }, [text, onDone, reduced]);
+  if (reduced) return <>{text}</>;
   return <>{text.slice(0, n)}<span className="ml-0.5 inline-block h-4 w-0.5 translate-y-0.5 animate-pulse bg-accent" aria-hidden /></>;
 }
 
 export default function AgentPage() {
   const agent = useAgent();
+  const reduced = usePrefersReducedMotion();
   const [input, setInput] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
@@ -49,8 +57,8 @@ export default function AgentPage() {
     if (!list) return;
     const last = [...list.querySelectorAll<HTMLElement>("[data-msg]")].at(-1);
     const top = !agent.pending && last?.dataset.role === "assistant" ? last.offsetTop - 12 : list.scrollHeight;
-    list.scrollTo({ top, behavior: "smooth" });
-  }, [agent.messages.length, agent.pending]);
+    list.scrollTo({ top, behavior: reduced ? "instant" : "smooth" });
+  }, [agent.messages.length, agent.pending, reduced]);
 
   function submit(text: string) {
     setInput("");
@@ -88,7 +96,7 @@ export default function AgentPage() {
                     <button key={sc.id} role="radio" aria-checked={on}
                       onClick={() => { if (!on) { agent.chooseScenario(sc.id); setSelectedId(null); } }}
                       className={`min-h-9 rounded-full px-3.5 text-xs font-semibold transition-colors ${
-                        on ? "bg-ink text-white" : "border border-line text-muted hover:text-ink"}`}>
+                        on ? "bg-primary text-primary-ink" : "border border-line text-muted hover:text-ink"}`}>
                       {sc.title}{sc.hypothetical ? " (hypothetical)" : ""}
                     </button>
                   );
