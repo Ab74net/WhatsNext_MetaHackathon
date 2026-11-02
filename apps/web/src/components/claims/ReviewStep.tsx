@@ -307,7 +307,7 @@ function PhotoViewer({ item, metaById, photoUrl, onClose }: {
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" role="dialog" aria-modal="true">
       <motion.div initial={{ scale: 0.97, y: 8 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.97 }}
-        onClick={(e) => e.stopPropagation()} className="flex max-h-full w-full max-w-3xl flex-col overflow-hidden rounded-2xl bg-surface shadow-pop">
+        onClick={(e) => e.stopPropagation()} className="flex max-h-full w-full max-w-3xl flex-col overflow-hidden rounded-lg bg-surface shadow-pop">
         <div className="flex items-center gap-3 border-b border-line px-4 py-3">
           <div className="min-w-0 flex-1">
             <p className="truncate font-semibold capitalize">{item.category}</p>

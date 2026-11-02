@@ -109,7 +109,7 @@ export default function AgentPage() {
             {agent.messages.length === 0 && (
               <div className="flex flex-col gap-3">
                 <WrenAvatar mood="idle" size={88} />
-                <p className="text-lg font-semibold">Hi, I’m {brand.agentName}. What’s happening?</p>
+                <h1 className="text-2xl">Hi, I’m {brand.agentName}. What’s happening?</h1>
                 <p className="text-sm text-muted">
                   {agent.scenario?.summary} I’ll answer with alerts, places on the map and a step-by-step plan, all
                   from official sources.
@@ -126,7 +126,7 @@ export default function AgentPage() {
               {agent.messages.map((m) => (
                 <motion.div key={m.id} data-msg data-role={m.role} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-2.5">
                   {m.role === "user" ? (
-                    <p className="max-w-[85%] self-end rounded-2xl rounded-br-md bg-accent px-3.5 py-2 text-[15px] text-accent-ink">{m.text}</p>
+                    <p className="max-w-[85%] self-end rounded-lg rounded-br-sm bg-accent px-3.5 py-2 text-[15px] text-accent-ink">{m.text}</p>
                   ) : (
                     <>
                       <div className="flex items-start gap-2.5">
@@ -159,7 +159,7 @@ export default function AgentPage() {
             <div className="flex flex-wrap gap-1.5 px-4 pb-2">
               {SUGGESTIONS[agent.caseFile.preset].map((s) => (
                 <button key={s} onClick={() => submit(s)}
-                  className="rounded-full border border-line px-3 py-1.5 text-left text-[13px] text-ink hover:border-accent hover:bg-accent-soft">
+                  className="rounded-md bg-surface-2 px-3 py-2 text-left text-[13px] text-ink transition-colors hover:bg-accent-soft hover:text-accent">
                   {s}
                 </button>
               ))}
@@ -167,12 +167,12 @@ export default function AgentPage() {
           )}
 
           <form data-tour="agent-input" onSubmit={(e) => { e.preventDefault(); submit(input); }} className="border-t border-line p-3">
-            <div className="flex items-center gap-2 rounded-full bg-surface-2 py-1.5 pl-4 pr-1.5 focus-within:ring-2 focus-within:ring-accent">
+            <div className="flex items-center gap-2 rounded-lg bg-surface-2 py-1.5 pl-4 pr-1.5 focus-within:ring-2 focus-within:ring-accent">
               <input value={input} onChange={(e) => setInput(e.target.value)} placeholder={`Message ${brand.agentName}`}
                 aria-label={`Message ${brand.agentName}`} maxLength={1000}
                 className="min-w-0 flex-1 bg-transparent text-[15px] outline-none placeholder:text-subtle" />
               <button type="submit" disabled={!input.trim() || agent.pending} aria-label="Send"
-                className="flex size-9 items-center justify-center rounded-full bg-accent text-accent-ink disabled:opacity-40">
+                className="flex size-10 items-center justify-center rounded-md bg-accent text-accent-ink disabled:opacity-40">
                 <Send className="size-4" aria-hidden />
               </button>
             </div>

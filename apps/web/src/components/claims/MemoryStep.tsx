@@ -18,7 +18,7 @@ import { Badge, Button, Card, EmptyState, Notice } from "@/components/ui";
 const W = 900;
 const H = 560;
 const R = { room: 36, item: 26, suggestion: 19 };
-const GRADE_COLOR: Record<EvidenceGrade["grade"], string> = { strong: "#1a8a3c", fair: "#d48806", weak: "#8a8d91" };
+const GRADE_COLOR: Record<EvidenceGrade["grade"], string> = { strong: "#9dbb98", fair: "#e3a548", weak: "#9a9184" };
 const GRADE_LABEL: Record<EvidenceGrade["grade"], string> = { strong: "Strong evidence", fair: "Fair evidence", weak: "Weak evidence" };
 
 type Kind = "room" | "item" | "suggestion";
@@ -298,7 +298,7 @@ function SidePanel({ selected, session, web, metaById, onClose, onDismiss, onAdd
       {header(item.category)}
       {meta && (
         <div className="mb-3 h-36 overflow-hidden rounded-lg">
-          <ItemCrop src={session.photoUrl(meta.photo_id)} meta={meta} mask={item.photos[0]?.mask ?? null} color="#0866ff" />
+          <ItemCrop src={session.photoUrl(meta.photo_id)} meta={meta} mask={item.photos[0]?.mask ?? null} color="#e3a548" />
         </div>
       )}
       {g ? <GradeView grade={g} /> : <Notice tone="good" icon={<Check className="size-4" />}>Just added from your photo. Its grade updates on refresh.</Notice>}
@@ -375,7 +375,7 @@ function AskPanel({ suggestion: s, session, metaById, header, onDismiss, onAdded
         {header(`Found: ${s.name}`)}
         {meta && (
           <div className="h-40 overflow-hidden rounded-lg">
-            <ItemCrop src={session.photoUrl(meta.photo_id)} meta={meta} mask={item.photos[0]?.mask ?? null} color="#1a8a3c" />
+            <ItemCrop src={session.photoUrl(meta.photo_id)} meta={meta} mask={item.photos[0]?.mask ?? null} color="#9dbb98" />
           </div>
         )}
         <p className="text-sm text-muted">Is this your {s.name}? Confirm it to add it to your claim.</p>

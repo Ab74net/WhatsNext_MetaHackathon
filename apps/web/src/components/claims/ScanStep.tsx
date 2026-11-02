@@ -4,10 +4,10 @@
 // When every photo is done, items are matched across photos automatically.
 
 import { motion } from "motion/react";
-import { ArrowRight, CopyCheck, Layers, LoaderCircle } from "lucide-react";
+import { ArrowRight, CopyCheck, Layers } from "lucide-react";
 import type { ClaimSession, ScanPhoto } from "@/lib/useClaimSession";
 import { PhotoWithMasks } from "@/components/PhotoWithMasks";
-import { Badge, Button, Card, ProgressBar, Stat } from "@/components/ui";
+import { Badge, Button, Card, ProgressBar, Pulse, Stat } from "@/components/ui";
 import { WrenAvatar } from "@/components/Wren";
 
 const SKIP_REASON: Record<string, string> = {
@@ -52,7 +52,7 @@ export function ScanStep({ session, onReview }: { session: ClaimSession; onRevie
         {allDone && (
           <p className="flex items-center gap-2 text-sm">
             {merge.status === "running" && (
-              <><LoaderCircle className="size-4 animate-spin text-accent" aria-hidden />
+              <><Pulse className="text-accent" />
                 <span className="text-muted">Matching the same belongings across photos…</span></>
             )}
             {merge.status === "done" && (
@@ -100,7 +100,7 @@ function ScanCard({ photo: p, src }: { photo: ScanPhoto; src: string }) {
             </div>
           )}
           {overlay && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 bg-surface/88 p-3 text-center backdrop-blur-sm">
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 bg-surface/92 p-3 text-center">
               <CopyCheck className="size-5 text-muted" aria-hidden />
               <p className="text-xs font-semibold">{overlay}</p>
               <p className="text-[11px] text-muted">Nothing from this photo was added.</p>
@@ -121,7 +121,7 @@ function StatusBadge({ photo: p, count }: { photo: ScanPhoto; count: number }) {
   switch (p.status) {
     case "queued": return <Badge>Waiting</Badge>;
     case "uploading": return <Badge tone="accent">Uploading</Badge>;
-    case "scanning": return <Badge tone="accent" icon={<LoaderCircle className="size-3 animate-spin" />}>Scanning</Badge>;
+    case "scanning": return <Badge tone="accent" icon={<Pulse className="size-1.5" />}>Scanning</Badge>;
     case "duplicate": return <Badge>Duplicate</Badge>;
     case "error": return <Badge tone="danger">Failed</Badge>;
     case "done": return p.result?.skipped ? <Badge>Skipped</Badge> : <Badge tone="good">{count} item{count === 1 ? "" : "s"}</Badge>;

@@ -17,7 +17,7 @@ export function WrenAvatar({ mood = "idle", size = 40, ring = false, className =
 }) {
   return (
     <span role="img" aria-label={LABEL[mood]}
-      className={`relative inline-block shrink-0 overflow-hidden rounded-full bg-[#140c33] ${ring ? "ring-2 ring-accent ring-offset-2 ring-offset-surface" : ""} ${className}`}
+      className={`relative inline-block shrink-0 overflow-hidden rounded-full bg-surface-3 ${ring ? "ring-2 ring-accent ring-offset-2 ring-offset-surface" : ""} ${className}`}
       style={{ width: size, height: size }}>
       {MOODS.map((m) => (
         // eslint-disable-next-line @next/next/no-img-element -- tiny static webp, crossfaded

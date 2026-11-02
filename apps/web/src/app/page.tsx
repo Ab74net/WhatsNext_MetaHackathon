@@ -1,90 +1,112 @@
-import { ArrowRight, Camera, FileSpreadsheet, Lock, MessageCircle, ScanSearch, ShieldCheck } from "lucide-react";
+import { ArrowRight, Check, MessageCircle } from "lucide-react";
 import brand from "@shared/brand.json";
-import { ButtonLink, Card } from "@/components/ui";
+import { ButtonLink } from "@/components/ui";
 import { HeroBackdrop } from "@/components/home/HeroBackdrop";
+
+const STEPS = [
+  { title: "Pick photos you already have",
+    body: "Birthdays, holidays, move-in day. Your belongings are in the background of photos on your phone." },
+  { title: "We find your things",
+    body: "Each item is outlined, matched across photos, and given an estimated price from a real retail listing." },
+  { title: "You confirm, then export",
+    body: "Nothing goes on the list until you confirm it. Download a PDF and a spreadsheet with a photo beside each item." },
+];
+
+const PROMISES = [
+  { title: "Your photos stay yours",
+    body: "Only the photos you pick are used. Location data is removed, and everything is deleted when you finish." },
+  { title: "Honest estimates",
+    body: "Every price is an estimate with its source. Nothing is added to your claim without your confirmation." },
+  { title: "Official sources first",
+    body: "Alerts and aid programs come from official sources, each with the time it was last checked." },
+];
 
 export default function Home() {
   return (
     <>
-    <section className="relative isolate flex min-h-[min(88svh,760px)] items-end text-white">
-      <HeroBackdrop />
-      <div className="relative mx-auto flex w-full max-w-5xl flex-col gap-5 px-4 pb-12 pt-32 sm:pb-16">
-        <p className="inline-flex items-center gap-1.5 text-sm text-white/80">
-          <ShieldCheck className="size-4" aria-hidden /> Free · private · no account needed
-        </p>
-        <h1 className="max-w-2xl text-4xl font-bold leading-[1.1] tracking-tight sm:text-6xl">{brand.tagline}</h1>
-        <p className="max-w-xl text-lg text-white/85">
-          Get a clear plan for today, find official help near you, and rebuild a claim-ready list of what
-          you owned from the photos already on your phone.
-        </p>
-        <div className="flex flex-wrap gap-2.5">
-          <ButtonLink href="/agent" variant="primary" size="lg">
-            <MessageCircle className="size-[18px]" aria-hidden /> Ask {brand.agentName}
-          </ButtonLink>
-          <ButtonLink href="/claims" size="lg">
-            Build my claim inventory <ArrowRight className="size-[18px]" aria-hidden />
-          </ButtonLink>
+      <section className="relative isolate flex min-h-[min(88svh,760px)] items-end text-white">
+        <HeroBackdrop />
+        <div className="relative mx-auto flex w-full max-w-5xl flex-col gap-5 px-4 pb-12 pt-32 sm:px-8 sm:pb-16">
+          <p className="text-sm text-white/80">Free and private. No account needed.</p>
+          <h1 className="max-w-2xl text-[2.6rem] leading-[1.05] sm:text-6xl">{brand.tagline}</h1>
+          <p className="max-w-xl text-lg leading-relaxed text-white/85">
+            Get a clear plan for today, find official help near you, and rebuild a claim-ready list of what
+            you owned from the photos already on your phone.
+          </p>
+          <div className="mt-1 flex flex-wrap gap-3">
+            <ButtonLink href="/agent" variant="primary" size="lg">
+              <MessageCircle className="size-[18px]" aria-hidden /> Ask {brand.agentName}
+            </ButtonLink>
+            <ButtonLink href="/claims" size="lg" className="bg-white/10 text-white hover:bg-white/20">
+              Build my claim inventory <ArrowRight className="size-[18px]" aria-hidden />
+            </ButtonLink>
+          </div>
         </div>
-      </div>
-    </section>
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-6 lg:py-10">
-      <MeetWren />
-
-      <section className="grid gap-4 sm:grid-cols-3">
-        <Step icon={<Camera className="size-5" />} n={1} title="Pick photos"
-          body="Birthdays, holidays, move-in day. Your belongings are in the background of photos you already have." />
-        <Step icon={<ScanSearch className="size-5" />} n={2} title="We find your things"
-          body="Each item is outlined, matched across photos, and priced from a real retail listing." />
-        <Step icon={<FileSpreadsheet className="size-5" />} n={3} title="Export your claim"
-          body="You confirm every line. Download a PDF and spreadsheet with a photo beside each item." />
       </section>
 
-      <Card className="grid gap-5 p-6 sm:grid-cols-3">
-        <Pledge title="Your photos stay yours" body="Only the photos you pick are used. Location data is removed, and everything is deleted when you finish." />
-        <Pledge title="Honest by design" body="Every price is an estimate with its source. Nothing is added to your claim without your confirmation." />
-        <Pledge title="Official sources first" body="Alerts and aid programs come from official sources, each with the time it was last checked." />
-      </Card>
-    </div>
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-16 px-4 py-14 sm:px-8 lg:gap-20 lg:py-20">
+        <section className="grid gap-8 md:grid-cols-[1fr_1.6fr] md:gap-12" aria-labelledby="how">
+          <div>
+            <h2 id="how" className="text-3xl">Rebuild your inventory</h2>
+            <p className="mt-3 text-muted">
+              Insurers ask for a list of everything you lost. Most people have the evidence already, scattered across years of photos.
+            </p>
+          </div>
+          <ol className="flex flex-col">
+            {STEPS.map((s, i) => (
+              <li key={s.title} className="grid grid-cols-[3rem_1fr] gap-x-4 border-t border-line py-5 first:border-t-0 first:pt-0 md:first:border-t md:first:pt-5">
+                <span className="font-serif text-2xl leading-none text-accent tabular-nums" aria-hidden>{String(i + 1).padStart(2, "0")}</span>
+                <div>
+                  <h3 className="text-lg">{s.title}</h3>
+                  <p className="mt-1 text-[15px] text-muted">{s.body}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <MeetWren />
+
+        <section aria-labelledby="promises">
+          <h2 id="promises" className="text-3xl">What we promise</h2>
+          <ul className="mt-6 grid gap-8 sm:grid-cols-3 sm:gap-10">
+            {PROMISES.map((p) => (
+              <li key={p.title} className="border-t border-line pt-5">
+                <p className="flex items-center gap-2 font-semibold">
+                  <Check className="size-4 shrink-0 text-good" aria-hidden /> {p.title}
+                </p>
+                <p className="mt-2 text-[15px] text-muted">{p.body}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <p className="border-t border-line pt-6 text-sm text-subtle">
+          General guidance only. Not insurance or legal advice, and not local emergency instructions.
+          If you are in danger, call 911.
+        </p>
+      </div>
     </>
   );
 }
 
-function Step({ icon, n, title, body }: { icon: React.ReactNode; n: number; title: string; body: string }) {
-  return (
-    <Card className="flex flex-col gap-3 p-5">
-      <div className="flex items-center justify-between">
-        <span className="flex size-10 items-center justify-center rounded-full bg-accent-soft text-accent">{icon}</span>
-        <span className="text-xs font-semibold text-subtle">STEP {n}</span>
-      </div>
-      <p className="font-semibold">{title}</p>
-      <p className="text-sm text-muted">{body}</p>
-    </Card>
-  );
-}
-
-function Pledge({ title, body }: { title: string; body: string }) {
-  return (
-    <div className="flex gap-3">
-      <Lock className="mt-0.5 size-4 shrink-0 text-good" aria-hidden />
-      <div>
-        <p className="text-sm font-semibold">{title}</p>
-        <p className="mt-1 text-sm text-muted">{body}</p>
-      </div>
-    </div>
-  );
-}
-
-// Wren, the assistant, introduced in the hero.
+// Wren, the assistant, introduced below the steps.
 function MeetWren() {
   return (
-    <div className="relative hidden flex-col items-center gap-3 md:flex">
-      <div className="absolute -inset-6 rounded-3xl bg-[radial-gradient(circle_at_50%_40%,var(--accent-soft),transparent_70%)]" aria-hidden />
+    <section className="grid items-center gap-8 rounded-lg bg-surface p-6 sm:grid-cols-[auto_1fr] sm:p-10" aria-labelledby="wren">
       {/* eslint-disable-next-line @next/next/no-img-element -- small static webp */}
       <img src="/wren/wren-hero.webp" alt={`${brand.agentName}, a friendly first-aid kit with a heart, waving`}
-        width={320} height={320} className="relative w-72 rounded-3xl shadow-pop" />
-      <p className="relative max-w-64 text-center text-sm text-muted">
-        Hi, I’m {brand.agentName}. I’ll help you find official help and rebuild your claim.
-      </p>
-    </div>
+        width={320} height={320} loading="lazy" className="w-36 rounded-lg sm:w-48" />
+      <div>
+        <h2 id="wren" className="text-3xl">Meet {brand.agentName}</h2>
+        <p className="mt-3 max-w-xl text-muted">
+          Tell {brand.agentName} what happened. You get a short plan for today and this week, places on a map,
+          and the programs that may apply to you. Every answer links to its official source.
+        </p>
+        <ButtonLink href="/agent" className="mt-5" variant="primary">
+          Start with a question <ArrowRight className="size-4" aria-hidden />
+        </ButtonLink>
+      </div>
+    </section>
   );
 }

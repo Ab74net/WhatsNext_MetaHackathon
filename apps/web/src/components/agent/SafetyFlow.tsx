@@ -33,7 +33,7 @@ export function SafetyFlowView({ card }: { card: SafetyFlowCard }) {
 
   return (
     <Card className="overflow-hidden">
-      <a href="tel:911" className="flex h-10 items-center justify-center gap-2 bg-danger text-sm font-semibold text-white hover:brightness-110">
+      <a href="tel:911" className="flex h-10 items-center justify-center gap-2 bg-danger-solid text-sm font-semibold text-white hover:brightness-110">
         <Phone className="size-4" aria-hidden /> In danger? Call 911.
       </a>
       <div className="flex items-center gap-2 border-b border-line px-4 py-3">
@@ -107,11 +107,11 @@ function StepPlayer({ branch, card }: { branch: SafetyBranch; card: SafetyFlowCa
         <AnimatePresence mode="wait">
           <motion.div key={i} initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -24 }}
             transition={{ duration: reduced ? 0 : 0.25 }}
-            className={`flex flex-col gap-2.5 rounded-xl p-4 ${branch.emergency && i === 0 ? "bg-danger text-white" : "bg-surface-2"}`}
+            className={`flex flex-col gap-2.5 rounded-lg p-4 ${branch.emergency && i === 0 ? "bg-danger-solid text-white" : "bg-surface-2"}`}
             aria-live="polite">
             <motion.span initial={{ scale: 0.6, rotate: -8 }} animate={{ scale: 1, rotate: 0 }}
               transition={{ type: "spring", stiffness: 300, damping: 14, delay: 0.05 }}
-              className={`flex size-12 items-center justify-center rounded-full ${branch.emergency && i === 0 ? "bg-white text-danger" : "bg-accent-soft text-accent"}`}>
+              className={`flex size-12 items-center justify-center rounded-full ${branch.emergency && i === 0 ? "bg-white text-danger-solid" : "bg-accent-soft text-accent"}`}>
               <Icon className="size-6" aria-hidden />
             </motion.span>
             <p className="text-lg font-bold leading-tight">{step.title}</p>

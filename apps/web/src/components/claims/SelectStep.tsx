@@ -5,8 +5,8 @@
 
 import { useMemo, useState } from "react";
 import { motion } from "motion/react";
-import { Calendar, Check, ImageUp, LoaderCircle, ScanSearch } from "lucide-react";
-import { Button, Card } from "@/components/ui";
+import { Calendar, Check, ImageUp, ScanSearch } from "lucide-react";
+import { Button, Card, Pulse } from "@/components/ui";
 
 export interface Pick {
   key: string;
@@ -76,12 +76,12 @@ export function SelectStep({ onScan, scannedCount }: { onScan: (picks: Pick[]) =
       onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
       onDragLeave={() => setDragging(false)}
       onDrop={(e) => { e.preventDefault(); setDragging(false); addFiles(e.dataTransfer.files); }}
-      className={`flex cursor-pointer flex-col items-center gap-3 rounded-xl border-2 border-dashed text-center transition-colors ${
+      className={`flex cursor-pointer flex-col items-center gap-3 rounded-lg border-2 border-dashed text-center transition-colors ${
         picks.length ? "px-4 py-5 sm:flex-row sm:text-left" : "px-6 py-14"} ${
         dragging ? "border-accent bg-accent-soft" : "border-line hover:border-accent/60 hover:bg-surface-2"}`}
     >
-      <span className={`flex shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent ${picks.length ? "size-10" : "size-14"}`}>
-        {reading ? <LoaderCircle className="size-6 animate-spin" aria-hidden /> : <ImageUp className="size-6" aria-hidden />}
+      <span className={`flex shrink-0 items-center justify-center rounded-lg bg-accent-soft text-accent ${picks.length ? "size-10" : "size-14"}`}>
+        {reading ? <Pulse className="size-2.5" /> : <ImageUp className="size-6" aria-hidden />}
       </span>
       <span className="flex flex-col gap-1">
         <span className="font-semibold">{picks.length ? "Add more photos" : "Choose photos from your camera roll"}</span>

@@ -10,10 +10,10 @@ import { Clock, ExternalLink, Info, MapPin, Navigation, Phone, X } from "lucide-
 import type { Alert, Resource, ResourceKind, Scenario } from "@shared/types";
 
 export const KIND_STYLE: Record<ResourceKind, { color: string; label: string; icon: string }> = {
-  shelter: { color: "#1a8a3c", label: "Shelter", icon: "M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6M3 14h18M7 10V7h4v3" },
-  clinic: { color: "#d0312d", label: "Hospital", icon: "M12 6v12M6 12h12" },
-  recovery_center: { color: "#0866ff", label: "Recovery help", icon: "M4 20V9l8-5 8 5v11M9 20v-6h6v6" },
-  animal_shelter: { color: "#7c3aed", label: "Animals", icon: "M8 13a4 4 0 0 0 8 0c0-2-2-4-4-4s-4 2-4 4zM6 8.5a1.5 1.5 0 1 0 0-.01M18 8.5a1.5 1.5 0 1 0 0-.01M9.5 5a1.5 1.5 0 1 0 0-.01M14.5 5a1.5 1.5 0 1 0 0-.01" },
+  shelter: { color: "#4f7f4b", label: "Shelter", icon: "M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6M3 14h18M7 10V7h4v3" },
+  clinic: { color: "#b5382a", label: "Hospital", icon: "M12 6v12M6 12h12" },
+  recovery_center: { color: "#3f6f96", label: "Recovery help", icon: "M4 20V9l8-5 8 5v11M9 20v-6h6v6" },
+  animal_shelter: { color: "#8a5a2b", label: "Animals", icon: "M8 13a4 4 0 0 0 8 0c0-2-2-4-4-4s-4 2-4 4zM6 8.5a1.5 1.5 0 1 0 0-.01M18 8.5a1.5 1.5 0 1 0 0-.01M9.5 5a1.5 1.5 0 1 0 0-.01M14.5 5a1.5 1.5 0 1 0 0-.01" },
 };
 const FIRE = "#ff7a1a";
 const ALERT = "#ff4d4f";
@@ -172,17 +172,17 @@ export function MapPanel({ scenario, resources, liveAlerts, replay, selectedId, 
   const kindsShown = [...new Set(resources.map((r) => r.kind))];
 
   return (
-    <div className="map-shell relative h-full w-full overflow-hidden rounded-xl bg-surface-3 shadow-card">
+    <div className="map-shell relative h-full w-full overflow-hidden rounded-lg bg-surface-3 shadow-card">
       {/* h-full, not absolute: maplibre-gl.css forces .maplibregl-map to position: relative */}
       <div ref={container} className="h-full w-full" />
 
-      <a href="tel:911" className="absolute inset-x-3 top-3 z-10 flex h-11 items-center justify-center gap-2 rounded-lg bg-danger font-semibold text-white shadow-pop hover:brightness-110">
+      <a href="tel:911" className="absolute inset-x-3 top-3 z-10 flex h-11 items-center justify-center gap-2 rounded-lg bg-danger-solid font-semibold text-white shadow-pop hover:brightness-110">
         <Phone className="size-4" aria-hidden /> In danger? Call 911.
       </a>
 
       <div className="absolute left-3 top-16 z-10 flex flex-col items-start gap-1.5">
         <button onClick={() => setShowSources((s) => !s)} aria-expanded={showSources}
-          className="inline-flex items-center gap-1.5 rounded-full bg-black/55 px-2.5 py-1 text-xs font-semibold text-white backdrop-blur hover:bg-black/70">
+          className="inline-flex items-center gap-1.5 rounded-md bg-black/75 px-2.5 py-1 text-xs font-semibold text-white hover:bg-black/90">
           <Info className="size-3.5" aria-hidden />
           {replay ? "Replay · Aug 2, 2026" : "Live"} · sources
         </button>
@@ -205,7 +205,7 @@ export function MapPanel({ scenario, resources, liveAlerts, replay, selectedId, 
       </div>
 
       {selected && (
-        <div className="absolute bottom-8 left-3 z-10 w-[min(20rem,calc(100%-1.5rem))] rounded-xl bg-surface p-3.5 shadow-pop">
+        <div className="absolute bottom-8 left-3 z-10 w-[min(20rem,calc(100%-1.5rem))] rounded-lg bg-surface p-3.5 shadow-pop">
           <div className="flex items-start gap-2">
             <span className="mt-0.5 size-2.5 shrink-0 rounded-full" style={{ background: KIND_STYLE[selected.kind].color }} />
             <p className="flex-1 text-sm font-semibold leading-snug">{selected.name}</p>

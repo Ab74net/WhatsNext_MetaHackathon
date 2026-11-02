@@ -193,7 +193,7 @@ export function ClaimStartView({ card }: { card: ClaimStart }) {
 
 export function EmergencyView() {
   return (
-    <div className="flex flex-col gap-3 rounded-xl bg-danger p-4 text-white shadow-pop">
+    <div className="flex flex-col gap-3 rounded-lg bg-danger-solid p-4 text-white shadow-pop">
       <p className="text-lg font-bold">Call 911 now</p>
       <p className="text-sm opacity-90">If anyone is hurt or in immediate danger, emergency services come first.</p>
       <a href="tel:911" className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-white font-bold text-danger">

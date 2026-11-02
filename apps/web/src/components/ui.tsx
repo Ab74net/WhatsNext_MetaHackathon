@@ -2,7 +2,7 @@
 // stay consistent; change a style here, not in individual pages.
 
 import Link from "next/link";
-import { LoaderCircle } from "lucide-react";
+
 import type { ComponentProps, ReactNode } from "react";
 
 type Variant = "primary" | "secondary" | "ghost" | "danger" | "success";
@@ -13,7 +13,7 @@ const VARIANTS: Record<Variant, string> = {
   secondary: "bg-surface-3 text-ink hover:brightness-95 dark:hover:brightness-110",
   ghost: "text-muted hover:bg-surface-2 hover:text-ink",
   danger: "bg-danger-soft text-danger hover:brightness-95",
-  success: "bg-good text-white hover:brightness-95",
+  success: "bg-good text-good-ink hover:brightness-95",
 };
 const SIZES: Record<Size, string> = {
   sm: "h-8 px-3 text-[13px] gap-1.5",
@@ -29,8 +29,8 @@ export function buttonClass(variant: Variant = "secondary", size: Size = "md", c
 export function Button({ variant = "secondary", size = "md", loading = false, className = "", children, disabled, ...props }:
   ComponentProps<"button"> & { variant?: Variant; size?: Size; loading?: boolean }) {
   return (
-    <button {...props} disabled={disabled || loading} className={buttonClass(variant, size, className)}>
-      {loading && <LoaderCircle className="size-4 animate-spin" aria-hidden />}
+    <button {...props} aria-busy={loading || undefined} disabled={disabled || loading} className={buttonClass(variant, size, className)}>
+      {loading && <Pulse />}
       {children}
     </button>
   );
@@ -42,7 +42,7 @@ export function ButtonLink({ variant = "secondary", size = "md", className = "",
 }
 
 export function Card({ className = "", children, ...props }: ComponentProps<"div">) {
-  return <div {...props} className={`rounded-xl bg-surface shadow-card ${className}`}>{children}</div>;
+  return <div {...props} className={`rounded-lg bg-surface shadow-card ${className}`}>{children}</div>;
 }
 
 type Tone = "neutral" | "accent" | "good" | "warn" | "danger";
@@ -87,8 +87,8 @@ export function Stat({ label, value, hint }: { label: string; value: ReactNode; 
 export function EmptyState({ icon, title, body, action }: { icon: ReactNode; title: string; body: string; action?: ReactNode }) {
   return (
     <div className="flex flex-col items-center gap-2 px-6 py-14 text-center">
-      <div className="mb-1 flex size-12 items-center justify-center rounded-full bg-surface-2 text-muted">{icon}</div>
-      <p className="font-semibold">{title}</p>
+      <div className="mb-2 flex size-12 items-center justify-center rounded-lg bg-surface-2 text-subtle">{icon}</div>
+      <h3 className="text-lg">{title}</h3>
       <p className="max-w-sm text-sm text-muted">{body}</p>
       {action && <div className="mt-2">{action}</div>}
     </div>
@@ -102,4 +102,14 @@ export function Notice({ tone = "neutral", icon, children }: { tone?: Tone; icon
       <div className="flex-1">{children}</div>
     </div>
   );
+}
+
+// A quiet "working" dot, used instead of a spinner. Static when reduced motion is on.
+export function Pulse({ className = "" }: { className?: string }) {
+  return <span aria-hidden className={`inline-block size-2 shrink-0 rounded-full bg-current motion-safe:animate-pulse ${className}`} />;
+}
+
+// Placeholder block while content loads (see .skeleton in globals.css).
+export function Skeleton({ className = "" }: { className?: string }) {
+  return <span aria-hidden className={`skeleton block rounded-md ${className}`} />;
 }

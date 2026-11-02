@@ -148,7 +148,9 @@ function TourDialog({ step, setStep, onClose }: {
   const pad = 6;
   let cardStyle: React.CSSProperties;
   if (phone) {
-    cardStyle = { left: 16, right: 16, bottom: 16 };
+    // Dock at whichever edge keeps the highlighted element visible.
+    const lowTarget = rect && rect.top + rect.height / 2 > vh / 2 && rect.height < vh / 2;
+    cardStyle = lowTarget ? { left: 16, right: 16, top: 64 } : { left: 16, right: 16, bottom: 16 };
   } else if (rect && vh - (rect.top + rect.height) > 240) {
     cardStyle = { top: rect.top + rect.height + pad + GAP, left: clampLeft(rect.left, vw) };
   } else if (rect && rect.top > 240) {

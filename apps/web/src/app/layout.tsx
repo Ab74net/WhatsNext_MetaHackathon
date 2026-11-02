@@ -1,11 +1,17 @@
 import type { Metadata, Viewport } from "next";
-import { Geist_Mono, Inter } from "next/font/google";
+import { Geist_Mono, Public_Sans, Source_Serif_4 } from "next/font/google";
 import brand from "@shared/brand.json";
 import { AppShell } from "@/components/AppShell";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
+// UI text: Public Sans (a civic typeface). Headings: Source Serif 4.
+const publicSans = Public_Sans({
+  variable: "--font-public-sans",
+  subsets: ["latin"],
+});
+
+const sourceSerif = Source_Serif_4({
+  variable: "--font-source-serif",
   subsets: ["latin"],
 });
 
@@ -20,15 +26,13 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#242526" },
-  ],
+  themeColor: "#131210",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${inter.variable} ${geistMono.variable} h-full`}>
+    <html lang="en" className={`${publicSans.variable} ${sourceSerif.variable} ${geistMono.variable} h-full`}>
       <body className="min-h-full">
         <AppShell>{children}</AppShell>
       </body>

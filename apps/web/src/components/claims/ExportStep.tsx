@@ -4,12 +4,12 @@
 // claim downloads. Only confirmed items are exported.
 
 import { useMemo, useState } from "react";
-import { ArrowLeft, CircleDollarSign, ExternalLink, FileSpreadsheet, FileText, Info, LoaderCircle, Sheet } from "lucide-react";
+import { ArrowLeft, CircleDollarSign, ExternalLink, FileSpreadsheet, FileText, Info, Sheet } from "lucide-react";
 import type { InventoryItem, PhotoMeta } from "@shared/types";
 import type { ClaimSession } from "@/lib/useClaimSession";
 import { pool, type ExportFormat } from "@/lib/api";
 import { ItemCrop, colorFor } from "@/components/PhotoWithMasks";
-import { Badge, Button, Card, Notice, Stat } from "@/components/ui";
+import { Badge, Button, Card, Notice, Pulse, Stat } from "@/components/ui";
 
 const money = (n: number) => n.toLocaleString(undefined, { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 
@@ -115,7 +115,7 @@ function PriceRow({ item, meta, src, state, onValue }: {
             <span className="text-[11px] text-subtle">checked {new Date(est.checked_at).toLocaleDateString()}</span>
           </>
         ) : state?.status === "loading" ? (
-          <Badge tone="accent" icon={<LoaderCircle className="size-3 animate-spin" />}>Searching retailers</Badge>
+          <Badge tone="accent" icon={<Pulse className="size-1.5" />}>Searching retailers</Badge>
         ) : state?.status === "error" ? (
           <>
             <span className="text-xs text-warn">{state.error}</span>
@@ -133,7 +133,7 @@ function Download({ href, fmt, icon, title, body, primary = false }: {
   href: string; fmt: ExportFormat; icon: React.ReactNode; title: string; body: string; primary?: boolean;
 }) {
   return (
-    <a href={href} download className={`flex items-start gap-3 rounded-xl border p-4 transition hover:shadow-card ${
+    <a href={href} download className={`flex items-start gap-3 rounded-lg border p-4 transition hover:shadow-card ${
       primary ? "border-accent bg-accent-soft" : "border-line hover:bg-surface-2"}`}>
       <span className={`flex size-10 shrink-0 items-center justify-center rounded-lg ${primary ? "bg-accent text-accent-ink" : "bg-surface-3"}`}>{icon}</span>
       <span className="flex flex-col gap-0.5">

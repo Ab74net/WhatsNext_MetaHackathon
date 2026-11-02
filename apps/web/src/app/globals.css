@@ -1,54 +1,35 @@
 @import "tailwindcss";
 
-/* Design tokens. Neutral canvas, white cards, one confident blue for primary actions.
+/* Design tokens. One dark, warm theme: charcoal base, warm off-white text, a single amber
+   accent for actions, sage only for "done / safe", a deep red only for emergencies.
    Use them as Tailwind classes: bg-canvas, bg-surface, text-ink, text-muted, border-line,
-   bg-accent, text-accent, bg-accent-soft, ... */
+   bg-accent, text-accent, bg-accent-soft, ... Contrast: ink/muted/subtle all pass WCAG AA
+   on canvas, surface and surface-2.
+   Spacing follows Tailwind's 4 px scale; radius is 6-8 px (rounded-md / rounded-lg). */
 :root {
-  --canvas: #f0f2f5;
-  --surface: #ffffff;
-  --surface-2: #f5f6f7;
-  --surface-3: #e4e6eb;
-  --ink: #1c1e21;
-  --muted: #65676b;
-  --subtle: #8a8d91;
-  --line: #dadde1;
-  --accent: #0866ff;
-  --accent-hover: #0757d9;
-  --accent-ink: #ffffff;
-  --accent-soft: #e7f0ff;
-  --good: #1a8a3c;
-  --good-soft: #e6f4ea;
-  --warn: #b26b00;
-  --warn-soft: #fff4e0;
-  --danger: #d0312d;
-  --danger-soft: #fdecea;
-  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.08), 0 0 0 1px rgb(0 0 0 / 0.03);
-  --shadow-pop: 0 12px 28px rgb(0 0 0 / 0.16), 0 2px 4px rgb(0 0 0 / 0.08);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --canvas: #18191a;
-    --surface: #242526;
-    --surface-2: #2d2e30;
-    --surface-3: #3a3b3c;
-    --ink: #e4e6eb;
-    --muted: #b0b3b8;
-    --subtle: #8a8d91;
-    --line: #3e4042;
-    --accent: #2d88ff;
-    --accent-hover: #4a99ff;
-    --accent-ink: #ffffff;
-    --accent-soft: #263951;
-    --good: #45bd62;
-    --good-soft: #1f3326;
-    --warn: #f0a83a;
-    --warn-soft: #3a2e19;
-    --danger: #f3625c;
-    --danger-soft: #3d2120;
-    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 0 0 1px rgb(255 255 255 / 0.04);
-    --shadow-pop: 0 12px 28px rgb(0 0 0 / 0.5);
-  }
+  color-scheme: dark;
+  --canvas: #131210;
+  --surface: #1b1a17;
+  --surface-2: #23221e;
+  --surface-3: #2e2c27;
+  --ink: #f1ece2;
+  --muted: #b8b0a3;
+  --subtle: #9a9184;
+  --line: #34312b;
+  --accent: #e3a548;
+  --accent-hover: #edb661;
+  --accent-ink: #1a1307;
+  --accent-soft: #352a17;
+  --good: #9dbb98;
+  --good-ink: #121a10;
+  --good-soft: #222c20;
+  --warn: #e0bd7c;
+  --warn-soft: #2f2818;
+  --danger: #f2907f;
+  --danger-solid: #b5382a;
+  --danger-soft: #3a1f1a;
+  --shadow-card: 0 0 0 1px rgb(255 255 255 / 0.035), 0 1px 2px rgb(0 0 0 / 0.35);
+  --shadow-pop: 0 0 0 1px rgb(255 255 255 / 0.05), 0 16px 40px rgb(0 0 0 / 0.55);
 }
 
 @theme inline {
@@ -65,15 +46,18 @@
   --color-accent-ink: var(--accent-ink);
   --color-accent-soft: var(--accent-soft);
   --color-good: var(--good);
+  --color-good-ink: var(--good-ink);
   --color-good-soft: var(--good-soft);
   --color-warn: var(--warn);
   --color-warn-soft: var(--warn-soft);
   --color-danger: var(--danger);
+  --color-danger-solid: var(--danger-solid);
   --color-danger-soft: var(--danger-soft);
   --color-bg: var(--canvas);
   --shadow-card: var(--shadow-card);
   --shadow-pop: var(--shadow-pop);
-  --font-sans: var(--font-inter), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-sans: var(--font-public-sans), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif: var(--font-source-serif), Georgia, "Times New Roman", serif;
   --font-mono: var(--font-geist-mono);
 }
 
@@ -82,14 +66,24 @@ body {
   color: var(--ink);
   font-family: var(--font-sans);
   font-size: 15px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
+
+/* Editorial hierarchy: serif headings, sans everything else. */
+h1, h2, h3 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  text-wrap: balance;
+}
+
+::selection { background: var(--accent-soft); color: var(--ink); }
 
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
-
 /* --- Scan animations ----------------------------------------------------------- */
 
 /* A soft light bar that sweeps down a photo while it is being scanned. */

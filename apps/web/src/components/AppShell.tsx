@@ -20,34 +20,34 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <TourProvider>
     <div className="flex min-h-full flex-col">
-      <header className="sticky top-0 z-30 h-14 border-b border-line bg-surface/95 backdrop-blur">
+      <header className="sticky top-0 z-30 h-14 border-b border-line bg-canvas">
         <div className="flex h-full items-center gap-3 px-4">
           <Link href="/" className="flex items-center gap-2.5">
             <Mark />
-            <span className="text-[17px] font-bold tracking-tight">{brand.projectName}</span>
+            <span className="whitespace-nowrap font-serif text-[19px] font-semibold tracking-tight">{brand.projectName}</span>
           </Link>
-          <span className="ml-1 hidden items-center gap-1 rounded-md bg-surface-2 px-2 py-1 text-xs font-medium text-muted md:inline-flex">
+          <span className="ml-2 hidden items-center gap-1.5 text-xs text-muted md:inline-flex">
             <ShieldCheck className="size-3.5 text-good" aria-hidden />
             Private session · nothing stored
           </span>
           <TourLink />
           <a href="tel:911" data-tour="call-911"
-            className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-danger-soft px-3 text-[13px] font-semibold text-danger hover:brightness-95">
+            className="inline-flex h-10 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md bg-danger-soft px-3 text-[13px] font-semibold text-danger transition-colors hover:bg-danger-solid hover:text-white">
             <Phone className="size-3.5" aria-hidden />
-            Emergency? Call 911
+            <span className="hidden sm:inline">Emergency?</span> Call 911
           </a>
         </div>
       </header>
 
       <div className="flex flex-1">
-        <nav className="sticky top-14 hidden h-[calc(100dvh_-_3.5rem)] w-60 shrink-0 flex-col gap-1 p-3 lg:flex" aria-label="Main">
+        <nav className="sticky top-14 hidden h-[calc(100dvh_-_3.5rem)] w-56 shrink-0 flex-col gap-0.5 border-r border-line p-3 lg:flex" aria-label="Main">
           {NAV.map(({ href, label, icon: Icon }) => (
             <Link key={href} href={href}
-              className={`flex h-11 items-center gap-3 rounded-lg px-3 text-[15px] font-medium transition-colors ${
-                active(href) ? "bg-accent-soft text-accent" : "text-ink hover:bg-surface-3/60"}`}>
-              <span className={`flex size-8 items-center justify-center rounded-full ${active(href) ? "bg-accent text-accent-ink" : "bg-surface-3"}`}>
-                <Icon className="size-[18px]" aria-hidden />
-              </span>
+              aria-current={active(href) ? "page" : undefined}
+              className={`relative flex h-11 items-center gap-3 rounded-md px-3 text-[15px] transition-colors ${
+                active(href) ? "bg-surface-2 font-semibold text-ink" : "text-muted hover:bg-surface-2/60 hover:text-ink"}`}>
+              {active(href) && <span className="absolute inset-y-2.5 left-0 w-0.5 rounded-full bg-accent" aria-hidden />}
+              <Icon className={`size-[18px] ${active(href) ? "text-accent" : ""}`} aria-hidden />
               {label}
             </Link>
           ))}
@@ -59,10 +59,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <main className="flex min-w-0 flex-1 flex-col pb-20 lg:pb-0">{children}</main>
       </div>
 
-      <nav className="fixed inset-x-0 bottom-0 z-30 flex border-t border-line bg-surface lg:hidden" aria-label="Main">
+      <nav className="fixed inset-x-0 bottom-0 z-30 flex border-t border-line bg-canvas pb-[env(safe-area-inset-bottom)] lg:hidden" aria-label="Main">
         {NAV.map(({ href, label, short, icon: Icon }) => (
-          <Link key={href} href={href}
-            className={`flex flex-1 flex-col items-center gap-0.5 pb-2 pt-1.5 text-[11px] font-medium ${active(href) ? "text-accent" : "text-muted"}`}>
+          <Link key={href} href={href} aria-current={active(href) ? "page" : undefined}
+            className={`flex min-h-14 flex-1 flex-col items-center gap-0.5 pb-2 pt-1.5 text-[11px] font-medium ${active(href) ? "text-accent" : "text-muted"}`}>
             <span className={`h-0.5 w-8 rounded-full ${active(href) ? "bg-accent" : "bg-transparent"}`} />
             <Icon className="mt-1 size-5" aria-hidden />
             {short ?? label}
@@ -89,7 +89,7 @@ function TourLink() {
 // Three stacked stones: a trail marker.
 function Mark() {
   return (
-    <span className="flex size-8 items-center justify-center rounded-lg bg-accent text-accent-ink">
+    <span className="flex size-8 items-center justify-center rounded-md bg-accent text-accent-ink">
       <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden>
         <ellipse cx="12" cy="18.5" rx="8" ry="3.2" fill="currentColor" />
         <ellipse cx="12" cy="12.4" rx="5.6" ry="2.7" fill="currentColor" opacity="0.85" />
