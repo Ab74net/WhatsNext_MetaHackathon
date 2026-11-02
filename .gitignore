@@ -16,6 +16,7 @@ scripts/**/*.JPG
 scripts/**/*.jpeg
 scripts/**/*.png
 scripts/**/*.webp
+scripts/**/*.avif
 
 node_modules/
 .next/

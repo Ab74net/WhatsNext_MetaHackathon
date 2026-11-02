@@ -105,7 +105,7 @@ export default function AgentPage() {
             </div>
           </div>
 
-          <div ref={listRef} className="relative flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-4 py-4">
+          <div ref={listRef} data-tour="agent-messages" className="relative flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-4 py-4">
             {agent.messages.length === 0 && (
               <div className="flex flex-col gap-3">
                 <WrenAvatar mood="idle" size={88} />
@@ -166,7 +166,7 @@ export default function AgentPage() {
             </div>
           )}
 
-          <form onSubmit={(e) => { e.preventDefault(); submit(input); }} className="border-t border-line p-3">
+          <form data-tour="agent-input" onSubmit={(e) => { e.preventDefault(); submit(input); }} className="border-t border-line p-3">
             <div className="flex items-center gap-2 rounded-full bg-surface-2 py-1.5 pl-4 pr-1.5 focus-within:ring-2 focus-within:ring-accent">
               <input value={input} onChange={(e) => setInput(e.target.value)} placeholder={`Message ${brand.agentName}`}
                 aria-label={`Message ${brand.agentName}`} maxLength={1000}
@@ -181,7 +181,7 @@ export default function AgentPage() {
         </Card>
       </div>
 
-      <div className="order-1 h-[42vh] min-h-0 lg:order-2 lg:h-full">
+      <div data-tour="agent-map" className="order-1 h-[42vh] min-h-0 lg:order-2 lg:h-full">
         <MapPanel scenario={agent.scenario} resources={agent.resources?.items ?? []} liveAlerts={agent.alerts?.live ?? []}
           replay={!!preset?.replay} selectedId={selectedId} onSelect={setSelectedId} />
       </div>

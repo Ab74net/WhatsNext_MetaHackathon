@@ -75,7 +75,7 @@ export default function ClaimsPage() {
           const done = i < currentIndex && reachable[s.key];
           const Icon = done ? Check : s.icon;
           return (
-            <button key={s.key} disabled={!reachable[s.key] || current} onClick={() => setStep(s.key)}
+            <button key={s.key} data-tour={`claims-step-${s.key}`} disabled={!reachable[s.key] || current} onClick={() => setStep(s.key)}
               aria-current={current ? "step" : undefined}
               className="group flex flex-col gap-2 text-left disabled:cursor-default">
               <span className={`h-1 rounded-full transition-colors ${current || done ? "bg-accent" : "bg-surface-3"}`} />

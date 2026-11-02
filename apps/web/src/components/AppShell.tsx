@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { House, MessageCircle, Package, Phone, ShieldCheck } from "lucide-react";
+import { Compass, House, MessageCircle, Package, Phone, ShieldCheck } from "lucide-react";
 import brand from "@shared/brand.json";
+import { TourProvider, useTour } from "@/components/tour/Tour";
 
 const NAV = [
   { href: "/", label: "Home", icon: House },
@@ -17,6 +18,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const active = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
 
   return (
+    <TourProvider>
     <div className="flex min-h-full flex-col">
       <header className="sticky top-0 z-30 h-14 border-b border-line bg-surface/95 backdrop-blur">
         <div className="flex h-full items-center gap-3 px-4">
@@ -28,8 +30,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <ShieldCheck className="size-3.5 text-good" aria-hidden />
             Private session · nothing stored
           </span>
-          <a href="tel:911"
-            className="ml-auto inline-flex h-8 items-center gap-1.5 rounded-lg bg-danger-soft px-3 text-[13px] font-semibold text-danger hover:brightness-95">
+          <TourLink />
+          <a href="tel:911" data-tour="call-911"
+            className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-danger-soft px-3 text-[13px] font-semibold text-danger hover:brightness-95">
             <Phone className="size-3.5" aria-hidden />
             Emergency? Call 911
           </a>
@@ -67,6 +70,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         ))}
       </nav>
     </div>
+    </TourProvider>
+  );
+}
+
+// Replays the guided tour. Text on wider screens, icon only on phones.
+function TourLink() {
+  const { start } = useTour();
+  return (
+    <button type="button" onClick={start} aria-label="Take a tour" data-tour-link
+      className="ml-auto inline-flex h-10 items-center gap-1.5 rounded-md px-2.5 text-[13px] font-medium text-muted hover:text-ink">
+      <Compass className="size-4" aria-hidden />
+      <span className="hidden sm:inline">Take a tour</span>
+    </button>
   );
 }
 
