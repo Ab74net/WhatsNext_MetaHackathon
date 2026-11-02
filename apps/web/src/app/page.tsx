@@ -1,34 +1,34 @@
 import { ArrowRight, Camera, FileSpreadsheet, Lock, MessageCircle, ScanSearch, ShieldCheck } from "lucide-react";
 import brand from "@shared/brand.json";
 import { ButtonLink, Card } from "@/components/ui";
+import { HeroBackdrop } from "@/components/home/HeroBackdrop";
 
-// Static hero for now; the cinematic crossfade hero is Phase 6.
 export default function Home() {
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-6 lg:py-10">
-      <Card className="overflow-hidden">
-        <div className="grid items-center gap-8 p-6 sm:p-10 md:grid-cols-[1.1fr_1fr]">
-          <div className="flex flex-col gap-5">
-            <span className="inline-flex w-fit items-center gap-1.5 rounded-md bg-accent-soft px-2 py-1 text-xs font-semibold text-accent">
-              <ShieldCheck className="size-3.5" aria-hidden /> Free · private · no account needed
-            </span>
-            <h1 className="text-4xl font-bold leading-[1.1] tracking-tight sm:text-5xl">{brand.tagline}</h1>
-            <p className="text-lg text-muted">
-              Get a clear plan for today, find official help near you, and rebuild a claim-ready list of what
-              you owned from the photos already on your phone.
-            </p>
-            <div className="flex flex-wrap gap-2.5">
-              <ButtonLink href="/agent" variant="primary" size="lg">
-                <MessageCircle className="size-[18px]" aria-hidden /> Ask {brand.agentName}
-              </ButtonLink>
-              <ButtonLink href="/claims" size="lg">
-                Build my claim inventory <ArrowRight className="size-[18px]" aria-hidden />
-              </ButtonLink>
-            </div>
-          </div>
-          <MeetWren />
+    <>
+    <section className="relative isolate flex min-h-[min(88svh,760px)] items-end text-white">
+      <HeroBackdrop />
+      <div className="relative mx-auto flex w-full max-w-5xl flex-col gap-5 px-4 pb-12 pt-32 sm:pb-16">
+        <p className="inline-flex items-center gap-1.5 text-sm text-white/80">
+          <ShieldCheck className="size-4" aria-hidden /> Free · private · no account needed
+        </p>
+        <h1 className="max-w-2xl text-4xl font-bold leading-[1.1] tracking-tight sm:text-6xl">{brand.tagline}</h1>
+        <p className="max-w-xl text-lg text-white/85">
+          Get a clear plan for today, find official help near you, and rebuild a claim-ready list of what
+          you owned from the photos already on your phone.
+        </p>
+        <div className="flex flex-wrap gap-2.5">
+          <ButtonLink href="/agent" variant="primary" size="lg">
+            <MessageCircle className="size-[18px]" aria-hidden /> Ask {brand.agentName}
+          </ButtonLink>
+          <ButtonLink href="/claims" size="lg">
+            Build my claim inventory <ArrowRight className="size-[18px]" aria-hidden />
+          </ButtonLink>
         </div>
-      </Card>
+      </div>
+    </section>
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-6 lg:py-10">
+      <MeetWren />
 
       <section className="grid gap-4 sm:grid-cols-3">
         <Step icon={<Camera className="size-5" />} n={1} title="Pick photos"
@@ -45,6 +45,7 @@ export default function Home() {
         <Pledge title="Official sources first" body="Alerts and aid programs come from official sources, each with the time it was last checked." />
       </Card>
     </div>
+    </>
   );
 }
 
