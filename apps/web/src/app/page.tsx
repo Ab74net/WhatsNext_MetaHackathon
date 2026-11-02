@@ -1,4 +1,4 @@
-import { ArrowRight, Camera, CircleCheck, FileSpreadsheet, Lock, MessageCircle, ScanSearch, ShieldCheck } from "lucide-react";
+import { ArrowRight, Camera, FileSpreadsheet, Lock, MessageCircle, ScanSearch, ShieldCheck } from "lucide-react";
 import brand from "@shared/brand.json";
 import { ButtonLink, Card } from "@/components/ui";
 
@@ -26,7 +26,7 @@ export default function Home() {
               </ButtonLink>
             </div>
           </div>
-          <InventoryPreview />
+          <MeetWren />
         </div>
       </Card>
 
@@ -73,39 +73,17 @@ function Pledge({ title, body }: { title: string; body: string }) {
   );
 }
 
-// A stylized, static preview of the inventory screen (no real data).
-function InventoryPreview() {
-  const rows = [
-    { name: "Sofa", meta: "Seen in 3 photos · since 2023", price: "$650 – $900", color: "#0866ff" },
-    { name: "Television · Samsung", meta: "Seen in 5 photos · since 2022", price: "$480 – $560", color: "#e9a23b" },
-    { name: "Floor lamp", meta: "Seen in 2 photos · since 2024", price: "$60 – $95", color: "#1a8a3c" },
-  ];
+// Wren, the assistant, introduced in the hero.
+function MeetWren() {
   return (
-    <div aria-hidden className="relative hidden md:block">
-      <div className="absolute -inset-6 rounded-3xl bg-[radial-gradient(circle_at_30%_20%,var(--accent-soft),transparent_70%)]" />
-      <div className="relative flex flex-col gap-2 rounded-2xl bg-canvas p-3 shadow-pop">
-        <div className="flex items-center justify-between px-1 pb-1">
-          <span className="text-sm font-semibold">Your inventory</span>
-          <span className="rounded-md bg-good-soft px-1.5 py-0.5 text-xs font-semibold text-good">3 confirmed</span>
-        </div>
-        {rows.map((r) => (
-          <div key={r.name} className="flex items-center gap-3 rounded-xl bg-surface p-2.5 shadow-card">
-            <div className="flex size-11 items-center justify-center rounded-lg bg-surface-2">
-              <div className="size-6 rounded-md border-2" style={{ borderColor: r.color, background: `${r.color}22` }} />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold">{r.name}</p>
-              <p className="truncate text-xs text-muted">{r.meta}</p>
-            </div>
-            <div className="text-right">
-              <p className="text-sm font-semibold tabular-nums">{r.price}</p>
-              <p className="flex items-center justify-end gap-1 text-xs text-good">
-                <CircleCheck className="size-3" /> Confirmed
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
+    <div className="relative hidden flex-col items-center gap-3 md:flex">
+      <div className="absolute -inset-6 rounded-3xl bg-[radial-gradient(circle_at_50%_40%,var(--accent-soft),transparent_70%)]" aria-hidden />
+      {/* eslint-disable-next-line @next/next/no-img-element -- small static webp */}
+      <img src="/wren/wren-hero.webp" alt={`${brand.agentName}, a friendly first-aid kit with a heart, waving`}
+        width={320} height={320} className="relative w-72 rounded-3xl shadow-pop" />
+      <p className="relative max-w-64 text-center text-sm text-muted">
+        Hi, I’m {brand.agentName}. I’ll help you find official help and rebuild your claim.
+      </p>
     </div>
   );
 }

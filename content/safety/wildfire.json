@@ -1,0 +1,77 @@
+{
+  "_note": "Pre-authored safety flow. Every step quotes or closely follows the cited official page. The model may choose a branch but never writes or changes steps. Checked Nov 2, 2026.",
+  "id": "wildfire",
+  "title": "Wildfire safety",
+  "question": "What's your situation right now?",
+  "disclaimer": "General guidance from Ready.gov and Spokane County, not local emergency instructions. Always follow orders from local officials.",
+  "sources": [
+    {"id": "ready", "name": "Ready.gov: Wildfires", "url": "https://www.ready.gov/wildfires"},
+    {"id": "spokane-levels", "name": "Spokane County: Evacuation levels", "url": "https://www.spokanecounty.gov/DocumentCenter/View/38612/2021-Evac-Levels-002"}
+  ],
+  "checked_at": "2026-11-02",
+  "branches": [
+    {
+      "id": "level3",
+      "label": "I've been told to leave (Level 3 · GO)",
+      "hint": "An evacuation order covers my area",
+      "tone": "danger",
+      "steps": [
+        {"icon": "run", "title": "Leave now", "text": "Level 3 means GO: there is an immediate threat to your safety and you need to leave now. Evacuate immediately if authorities tell you to do so.", "source": "spokane-levels"},
+        {"icon": "bell", "title": "Follow official instructions", "text": "Pay attention to emergency alerts and notifications for information and instructions.", "source": "ready"},
+        {"icon": "home", "title": "Find a safe place to stay", "text": "Check with local authorities for the latest information about public shelters, or find open Red Cross shelters in the free Red Cross Emergency app. You can also plan to stay with friends or family.", "source": "ready"},
+        {"icon": "mask", "title": "Protect your lungs", "text": "Use an N95 mask to protect yourself from smoke inhalation.", "source": "ready"},
+        {"icon": "message", "title": "Tell family you're safe", "text": "Send text messages or use social media to reach out to family and friends. Phone systems are often busy after a disaster; make calls only in emergencies.", "source": "ready"}
+      ]
+    },
+    {
+      "id": "level12",
+      "label": "I've been told to get ready (Level 1 or 2)",
+      "hint": "No order to leave yet",
+      "tone": "warn",
+      "steps": [
+        {"icon": "alert", "title": "Be ready to leave at a moment's notice", "text": "Level 1 means get READY: prepare to leave. Level 2 means get SET: be prepared to leave at a moment's notice. Conditions can change quickly.", "source": "spokane-levels"},
+        {"icon": "bag", "title": "Have your go bag ready", "text": "Have enough supplies for your household, including a first aid kit, in your go bag or car trunk. If available, include an N95 mask to protect yourself from smoke.", "source": "ready"},
+        {"icon": "battery", "title": "Keep your phone charged", "text": "Keep your cell phone charged when wildfires could be in your area. Backup chargers help.", "source": "ready"},
+        {"icon": "map", "title": "Know your way out", "text": "Learn your evacuation routes, practice with pets and identify where you will go. Follow the instructions from local authorities.", "source": "ready"},
+        {"icon": "run", "title": "Go when told", "text": "Evacuate immediately if authorities tell you to do so.", "source": "ready"}
+      ]
+    },
+    {
+      "id": "trapped",
+      "label": "I can't get out",
+      "hint": "Fire or smoke is blocking my way",
+      "tone": "danger",
+      "emergency": true,
+      "steps": [
+        {"icon": "phone", "title": "Call 911 now", "text": "If trapped, call 9-1-1 and give your location. Be aware that emergency response could be delayed or impossible.", "source": "ready"},
+        {"icon": "light", "title": "Turn on lights", "text": "Turn on lights to help rescuers find you.", "source": "ready"},
+        {"icon": "mask", "title": "Limit smoke you breathe", "text": "Use an N95 mask if you have one, or choose a room you can close off from outside air.", "source": "ready"}
+      ]
+    },
+    {
+      "id": "smoke",
+      "label": "I'm safe, but it's smoky",
+      "hint": "Not ordered to leave",
+      "tone": "neutral",
+      "steps": [
+        {"icon": "home", "title": "Stay inside", "text": "If you are not ordered to evacuate but smoky conditions exist, stay inside in a safe location or go to a community building where smoke levels are lower.", "source": "ready"},
+        {"icon": "door", "title": "Make a clean-air room", "text": "Choose a room to close off from outside air and set up a portable air cleaner or filter to keep the air in this room clean.", "source": "ready"},
+        {"icon": "wind", "title": "Recirculate your air", "text": "Use high-efficiency filters in your central air conditioning. If your system has a fresh-air intake, set it to recirculate and close the outdoor intake damper.", "source": "ready"},
+        {"icon": "mask", "title": "Wear an N95 outdoors", "text": "Use an N95 mask to protect yourself from smoke inhalation.", "source": "ready"},
+        {"icon": "health", "title": "Watch your health", "text": "People with asthma, COPD or other lung conditions should take precautions in poor air quality. If you are sick and need medical attention, contact your healthcare provider.", "source": "ready"}
+      ]
+    },
+    {
+      "id": "returning",
+      "label": "I want to go back home",
+      "hint": "The fire has passed",
+      "tone": "neutral",
+      "steps": [
+        {"icon": "check", "title": "Wait for the all-clear", "text": "Do not return home until authorities say it is safe to do so.", "source": "ready"},
+        {"icon": "flame", "title": "Watch for hot spots", "text": "Avoid hot ash, charred trees, smoldering debris and live embers. The ground may contain heat pockets that can burn you or spark another fire.", "source": "ready"},
+        {"icon": "shirt", "title": "Wear protective gear", "text": "Wear a long-sleeved shirt, long pants, work gloves and sturdy thick-soled shoes. Use a respirator, and wet debris to limit the dust you breathe.", "source": "ready"},
+        {"icon": "camera", "title": "Document the damage", "text": "Document property damage with photographs. Conduct an inventory and contact your insurance company for assistance.", "source": "ready", "action": "start_claim"}
+      ]
+    }
+  ]
+}

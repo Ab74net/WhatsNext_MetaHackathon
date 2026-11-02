@@ -8,6 +8,7 @@ import { ArrowRight, CopyCheck, Layers, LoaderCircle } from "lucide-react";
 import type { ClaimSession, ScanPhoto } from "@/lib/useClaimSession";
 import { PhotoWithMasks } from "@/components/PhotoWithMasks";
 import { Badge, Button, Card, ProgressBar, Stat } from "@/components/ui";
+import { WrenAvatar } from "@/components/Wren";
 
 const SKIP_REASON: Record<string, string> = {
   id_or_document: "Looks like an ID or document",
@@ -29,6 +30,12 @@ export function ScanStep({ session, onReview }: { session: ClaimSession; onRevie
     <div className="flex flex-col gap-4">
       <Card className="flex flex-col gap-4 p-5">
         <div className="flex flex-wrap items-center gap-x-10 gap-y-4">
+          <div className="flex items-center gap-3">
+            <WrenAvatar mood={allDone && merge.status !== "running" ? "idle" : "searching"} size={64} />
+            <p className="max-w-36 text-sm font-semibold leading-snug">
+              {!allDone ? "Wren is searching your photos…" : merge.status === "running" ? "Matching items across photos…" : "All done!"}
+            </p>
+          </div>
           <Stat label="Photos scanned" value={`${finished}/${photos.length}`} />
           <Stat label="Items found" value={
             <motion.span key={itemCount} initial={{ opacity: 0.4, y: -4 }} animate={{ opacity: 1, y: 0 }} className="text-accent">

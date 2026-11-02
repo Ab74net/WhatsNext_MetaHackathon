@@ -5,7 +5,7 @@
 // cross-photo merges, and price lookups.
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { Health, InventoryItem, MergeGroup, PhotoMeta, PhotoResult } from "@shared/types";
+import type { Health, InventoryItem, MemoryWeb, MergeGroup, PhotoMeta, PhotoResult } from "@shared/types";
 import { api, pool, type ExportFormat, type ItemPatch } from "./api";
 
 export type ScanStatus = "queued" | "uploading" | "scanning" | "done" | "duplicate" | "error";
@@ -22,6 +22,7 @@ export interface ScanPhoto {
 
 export type MergeState = { status: "idle" } | { status: "running" } | { status: "done"; merges: MergeGroup[] } | { status: "error"; error: string };
 export type ValueState = { status: "loading" } | { status: "error"; error: string };
+export type WebState = { status: "idle" } | { status: "loading" } | { status: "done"; web: MemoryWeb } | { status: "error"; error: string };
 
 const PARALLEL = 6;
 const message = (e: unknown) => (e instanceof Error ? e.message : String(e));
@@ -33,6 +34,7 @@ export function useClaimSession() {
   const [items, setItems] = useState<Record<string, InventoryItem>>({});
   const [merge, setMerge] = useState<MergeState>({ status: "idle" });
   const [valuing, setValuing] = useState<Record<string, ValueState>>({});
+  const [memory, setMemory] = useState<WebState>({ status: "idle" });
   const [sessionId, setSessionId] = useState<string | null>(null);
   const sessionRef = useRef<string | null>(null);
 
@@ -162,6 +164,31 @@ export function useClaimSession() {
     }
   }, []);
 
+  const loadMemoryWeb = useCallback(async () => {
+    const sid = sessionRef.current;
+    if (!sid) return;
+    setMemory({ status: "loading" });
+    try {
+      setMemory({ status: "done", web: await api.memoryWeb(sid) });
+    } catch (e) {
+      setMemory({ status: "error", error: message(e) });
+    }
+  }, []);
+
+  // Add a remembered item with photo evidence. Throws (with the server's reason) when the
+  // item isn't found in the photo; the new item starts unconfirmed.
+  const addFromPhoto = useCallback(async (file: File, category: string) => {
+    const sid = sessionRef.current;
+    if (!sid) throw new Error("No session");
+    const { item, photo } = await api.addFromPhoto(sid, file, category);
+    const result: PhotoResult = { photo_id: photo.photo_id, photo_kind: "room_or_belongings", skipped: false,
+      items: [item], timings_ms: {}, warnings: [] };
+    setPhotos((prev) => [...prev, { key: `remembered_${item.id}`, filename: file.name,
+      localUrl: URL.createObjectURL(file), status: "done", meta: photo, result }]);
+    setItems((prev) => ({ ...prev, [item.id]: item }));
+    return item;
+  }, []);
+
   const endSession = useCallback(async () => {
     if (sessionRef.current) await api.endSession(sessionRef.current).catch(() => {});
     sessionRef.current = null;
@@ -173,14 +200,16 @@ export function useClaimSession() {
     setItems({});
     setMerge({ status: "idle" });
     setValuing({});
+    setMemory({ status: "idle" });
   }, []);
 
   const photoUrl = (pid: string) => (sessionId ? api.photoUrl(sessionId, pid) : "");
   const exportUrl = (fmt: ExportFormat) => (sessionId ? api.exportUrl(sessionId, fmt) : "#");
 
   return {
-    health, healthError, sessionId, photos, items, merge, valuing,
-    scan, patchItem, removeItem, runMerge, mergeItems, splitItem, valueItem, endSession, photoUrl, exportUrl,
+    health, healthError, sessionId, photos, items, merge, valuing, memory,
+    scan, patchItem, removeItem, runMerge, mergeItems, splitItem, valueItem, loadMemoryWeb, addFromPhoto,
+    endSession, photoUrl, exportUrl,
   };
 }
 

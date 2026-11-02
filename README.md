@@ -148,6 +148,20 @@ Item schema (keep stable; export and UI depend on it):
    - If a port is stuck or the app seems to run old code: `npm run stop`, then `npm run dev`.
 4. Tests: `npm run test:api`. Model check on staged photos: put them in `scripts/test_photos/`, then `cd scripts; npm run day1`.
 
+## Scenario content (`/content/spokane`)
+
+All hand-checked on Nov 2, 2026. Every row has a source URL; news sources are labeled as such.
+- `scenario.json`: two presets. **"Aug 2, 2026 · during the fires"** is a clearly labeled replay with recorded alerts. **"Today · recovery"** is the present. Live NWS alerts are fetched in both.
+- `perimeters.geojson`: the official NIFC WFIGS final perimeters for the three fires, simplified.
+- `resources.json`: shelters, animal evacuation, hospitals and recovery help. `phases` controls when each one is shown.
+- `programs.json`: the assistance knowledge base. As of Nov 2: FEMA Individual Assistance is **pending** (only emergency declaration EM-3650 exists; a Major Disaster Declaration was requested in late Sept), SBA loans are **not available**, and the state Household Needs Grant is open with **no published deadline**. Never add a deadline the official source doesn't publish.
+
+## Safety flow, map and mascot
+
+- `content/safety/wildfire.json`: five branches (Level 3 GO, Level 1/2, trapped, smoky, returning home). Every step quotes [Ready.gov: Wildfires](https://www.ready.gov/wildfires) or Spokane County's evacuation levels, with the source shown on each card. The agent's `show_safety_flow` tool picks only the starting branch. The trapped branch starts with Call 911.
+- Map: Esri World Imagery satellite tiles plus a labels overlay, as an inline raster style. There's no API key, and attribution is shown. For anything beyond a demo, check Esri's terms.
+- Mascot: Wren (`apps/web/public/wren/*.webp`). The poses are idle, thinking (waiting on the model), typing (reply being shown) and searching (scanning photos and the memory web). The agent name lives in `packages/shared/brand.json`.
+
 ## Build order (reconcile with the repo's actual state first)
 
 Priorities, highest first. Never cut the claims inventory and export, the agent with its map, or the demo.
@@ -167,7 +181,7 @@ Priorities, highest first. Never cut the claims inventory and export, the agent 
 
 ## Demo target (3 minutes, staged consented photos)
 
-0:00 homepage cinematic loop (about 5 s), then the problem (lost home, no inventory) → 0:15 talk to the agent: alerts, plan card, resource map → 0:50 upload about 40 photos, inventory builds with masks highlighted → 1:30 memory web suggests forgotten items, add one with evidence → 2:00 claim export (spreadsheet and PDF) → 2:20 flood safety flow plays (about 15 s) → 2:40 close on privacy and honesty safeguards. Also record a backup video. Choose one demo scenario (Virginia flood fits the water-level safety flow; California wildfire has richer data) and keep all demo content consistent with it.
+0:00 homepage cinematic loop (about 5 s), then the problem (lost home, no inventory) → 0:15 talk to the agent: alerts, plan card, resource map → 0:50 upload about 40 photos, inventory builds with masks highlighted → 1:30 memory web suggests forgotten items, add one with evidence → 2:00 claim export (spreadsheet and PDF) → 2:20 wildfire safety flow plays (about 15 s) → 2:40 close on privacy and honesty safeguards. Also record a backup video. **Decided (Nov 2): the August 2026 Spokane Complex Fires (Old Trails, Fairview, Autumn Lane).** Keep all demo content consistent with it. A Virginia flood example is a stretch goal only. The Phase 5 safety flow must therefore be a wildfire flow, not the water-level flood flow.
 
 ## Working agreement
 
@@ -181,5 +195,5 @@ Priorities, highest first. Never cut the claims inventory and export, the agent 
 ## Open decisions (ask James if still undecided)
 
 - Final project and agent names (kept in one constants file).
-- Demo scenario: Virginia flood or California wildfire.
+- ~~Demo scenario~~: decided, Spokane Complex Fires (Aug 2026).
 - Whether ElevenLabs voice is allowed by the Official Rules.

@@ -1,5 +1,8 @@
 // Thin client for the FastAPI backend. /api/* is forwarded to it by next.config.ts.
-import type { Health, InventoryItem, MergeResult, PhotoMeta, PhotoResult } from "@shared/types";
+import type {
+  AgentResponse, CaseFile, ChatTurn, FromPhotoResult, Health, InventoryItem, MemoryWeb, MergeResult, PhotoMeta,
+  PhotoResult, Scenario,
+} from "@shared/types";
 
 export class ApiError extends Error {
   constructor(public status: number, message: string) {
@@ -54,6 +57,16 @@ export const api = {
   valueItem: (sid: string, iid: string) =>
     call<InventoryItem>(`/sessions/${sid}/items/${iid}/value`, { method: "POST" }),
   exportUrl: (sid: string, fmt: ExportFormat) => `/api/sessions/${sid}/export.${fmt}`,
+  memoryWeb: (sid: string) => call<MemoryWeb>(`/sessions/${sid}/memory-web`, { method: "POST" }),
+  addFromPhoto: (sid: string, file: File, category: string) => {
+    const form = new FormData();
+    form.append("file", file);
+    form.append("category", category);
+    return call<FromPhotoResult>(`/sessions/${sid}/items/from-photo`, { method: "POST", body: form });
+  },
+  scenario: () => call<Scenario>("/scenario"),
+  agent: (messages: ChatTurn[], caseFile: CaseFile) =>
+    call<AgentResponse>("/agent", { method: "POST", ...json({ messages, case: caseFile }) }),
 };
 
 // Run async tasks with at most `limit` in flight.

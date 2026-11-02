@@ -37,7 +37,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </header>
 
       <div className="flex flex-1">
-        <nav className="sticky top-14 hidden h-[calc(100vh-3.5rem)] w-60 shrink-0 flex-col gap-1 p-3 lg:flex" aria-label="Main">
+        <nav className="sticky top-14 hidden h-[calc(100dvh_-_3.5rem)] w-60 shrink-0 flex-col gap-1 p-3 lg:flex" aria-label="Main">
           {NAV.map(({ href, label, icon: Icon }) => (
             <Link key={href} href={href}
               className={`flex h-11 items-center gap-3 rounded-lg px-3 text-[15px] font-medium transition-colors ${

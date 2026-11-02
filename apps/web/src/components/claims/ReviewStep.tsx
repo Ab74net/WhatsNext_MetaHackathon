@@ -19,7 +19,7 @@ type Filter = "all" | "todo" | "confirmed";
 const CONDITIONS: Condition[] = ["good", "worn", "damaged", "unknown"];
 
 export function ReviewStep({ session, onAddMore, onExport }: {
-  session: ClaimSession; onAddMore: () => void; onExport: () => void;
+  session: ClaimSession; onAddMore: () => void; onExport: () => void; // continues to the memory web, then export
 }) {
   const { items, photos, photoUrl, patchItem, removeItem, merge, splitItem, mergeItems } = session;
   const [filter, setFilter] = useState<Filter>("all");
@@ -131,7 +131,7 @@ export function ReviewStep({ session, onAddMore, onExport }: {
           <EmptyState icon={<Check className="size-5" />}
             title={filter === "confirmed" ? "Nothing confirmed yet" : filter === "todo" ? "All items reviewed" : "No items yet"}
             body={filter === "todo" ? "Every item has been confirmed or removed. You can export your claim now." : "Confirmed items will appear here."}
-            action={filter === "todo" && confirmedCount ? <Button variant="primary" onClick={onExport}>Continue to export</Button> : undefined} />
+            action={filter === "todo" && confirmedCount ? <Button variant="primary" onClick={onExport}>Continue</Button> : undefined} />
         </Card>
       )}
 
@@ -171,7 +171,7 @@ export function ReviewStep({ session, onAddMore, onExport }: {
             {confirmedCount ? <><strong className="text-ink">{confirmedCount}</strong> confirmed and ready to export</> : "Confirm items to export them"}
           </span>
           <Button variant="primary" disabled={!confirmedCount} onClick={onExport}>
-            Continue to export <ArrowRight className="size-4" aria-hidden />
+            Continue <ArrowRight className="size-4" aria-hidden />
           </Button>
         </Card>
       </div>

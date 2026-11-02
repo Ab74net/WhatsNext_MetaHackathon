@@ -3,7 +3,7 @@
 InventoryItem follows the stable item schema in README.md; export and UI depend on it.
 """
 
-from typing import Literal
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, Field
 
@@ -145,3 +145,211 @@ class Health(BaseModel):
     sam_model: str
     project_name: str
     agent_name: str
+
+
+# --- Assistant: case file and UI instructions --------------------------------------
+# The assistant answers with typed UI instructions that the frontend renders as cards
+# and map layers. Mirror: packages/shared/types.ts (UIInstruction).
+
+Phase = Literal["response", "recovery"]
+SourceType = Literal["official", "news"]
+YesNoUnknown = Literal["yes", "no", "unknown"]
+HomeDamage = Literal["destroyed", "major", "minor", "none", "unknown"]
+
+
+class CaseFile(BaseModel):
+    """What the assistant knows about the user's situation. Shared with the claims helper."""
+
+    preset: Literal["during", "recovery"] = "during"
+    home_damage: HomeDamage = "unknown"
+    insured: YesNoUnknown = "unknown"
+    lost_documents: YesNoUnknown = "unknown"
+
+
+class Alert(BaseModel):
+    id: str
+    title: str
+    severity: str
+    headline: str
+    description: str
+    area: str
+    effective: str | None
+    expires: str | None
+    source_name: str
+    source_url: str
+    source_type: SourceType
+    recorded: bool  # true = replayed from the scenario, not live
+    geometry: dict | None = None
+
+
+class FireArea(BaseModel):
+    name: str
+    acres: int
+    discovered: str
+    geometry: dict
+
+
+class AlertsCard(BaseModel):
+    type: Literal["alerts"] = "alerts"
+    live: list[Alert]
+    live_checked_at: str
+    live_source_url: str
+    live_error: str | None = None
+    recorded: list[Alert]
+    fire_areas: list[FireArea]
+    fire_areas_source: dict
+
+
+class Resource(BaseModel):
+    id: str
+    kind: Literal["shelter", "animal_shelter", "clinic", "recovery_center"]
+    name: str
+    address: str
+    lat: float
+    lon: float
+    phone: str | None
+    hours: str | None
+    notes: str | None
+    source_name: str
+    source_url: str
+    source_type: SourceType
+    checked_at: str
+
+
+class ResourceList(BaseModel):
+    type: Literal["resources"] = "resources"
+    kinds: list[str]
+    items: list[Resource]
+    note: str
+
+
+class HowStep(BaseModel):
+    label: str
+    url: str | None = None
+    phone: str | None = None
+    action: Literal["start_claim"] | None = None
+
+
+class PlanItem(BaseModel):
+    program_id: str
+    text: str
+    detail: str
+    status: Literal["available", "pending", "not_available"]
+    status_note: str | None = None
+    amount: str | None = None
+    deadline_note: str | None = None
+    how: list[HowStep]
+    action: Literal["start_claim"] | None = None
+    source_name: str
+    source_url: str
+    checked_at: str
+
+
+class PlanCard(BaseModel):
+    type: Literal["plan"] = "plan"
+    phase: Phase
+    today: list[PlanItem]
+    this_week: list[PlanItem]
+    deadlines: list[PlanItem]
+    based_on: CaseFile
+
+
+class ClaimStart(BaseModel):
+    type: Literal["claim_start"] = "claim_start"
+    reason: str
+
+
+class EmergencyCard(BaseModel):
+    type: Literal["emergency"] = "emergency"
+
+
+class SafetyStep(BaseModel):
+    icon: str
+    title: str
+    text: str
+    source: str  # id into SafetyFlowCard.sources
+    action: Literal["start_claim"] | None = None
+
+
+class SafetyBranch(BaseModel):
+    id: str
+    label: str
+    hint: str
+    tone: Literal["danger", "warn", "neutral"]
+    emergency: bool = False
+    steps: list[SafetyStep]
+
+
+class SafetySource(BaseModel):
+    id: str
+    name: str
+    url: str
+
+
+class SafetyFlowCard(BaseModel):
+    """Pre-authored safety steps (content/safety). The model only picks the starting branch."""
+
+    type: Literal["safety_flow"] = "safety_flow"
+    title: str
+    question: str
+    disclaimer: str
+    sources: list[SafetySource]
+    checked_at: str
+    branches: list[SafetyBranch]
+    initial: str | None
+
+
+UIInstruction = Annotated[AlertsCard | ResourceList | PlanCard | ClaimStart | EmergencyCard | SafetyFlowCard,
+                          Field(discriminator="type")]
+
+
+class ChatTurn(BaseModel):
+    role: Literal["user", "assistant"]
+    text: str = Field(max_length=4000)
+
+
+class AgentRequest(BaseModel):
+    messages: list[ChatTurn] = Field(min_length=1, max_length=40)
+    case: CaseFile = CaseFile()
+
+
+class AgentResponse(BaseModel):
+    message: str
+    ui: list[UIInstruction]
+    case: CaseFile
+    tools_used: list[str]
+
+
+# --- Memory web ---------------------------------------------------------------------------
+
+
+class EvidenceGrade(BaseModel):
+    """How well an item is proven. Rules only (see memory_web.grade); never model output."""
+
+    grade: Literal["strong", "fair", "weak"]
+    has_dated_photo: bool
+    photo_count: int
+    has_brand: bool
+    has_receipt: bool  # receipts aren't collected yet, so always false
+    tips: list[str]  # where to find more proof
+
+
+class MemoryRoom(BaseModel):
+    id: str
+    name: str
+    item_ids: list[str]
+
+
+class MemorySuggestion(BaseModel):
+    id: str
+    name: str  # short noun, also the prompt used to look for it in a photo
+    room_id: str
+    related_item_ids: list[str]
+    reason: str
+    proof_hint: str
+
+
+class MemoryWeb(BaseModel):
+    rooms: list[MemoryRoom]
+    suggestions: list[MemorySuggestion]
+    grades: dict[str, EvidenceGrade]

@@ -22,3 +22,6 @@ node_modules/
 __pycache__/
 *.pyc
 .venv/
+
+# copied from node_modules by apps/web/scripts/copy-maplibre-worker.mjs
+apps/web/public/maplibre-gl-worker.mjs

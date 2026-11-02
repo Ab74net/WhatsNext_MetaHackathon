@@ -28,6 +28,8 @@ SYNONYMS = {
     "throw pillow": "pillow", "cushion": "pillow", "throw blanket": "blanket",
     "nightstand": "side table", "end table": "side table", "bookshelf": "bookcase",
     "computer monitor": "monitor", "notebook computer": "laptop",
+    "area rug": "rug", "throw rug": "rug", "desk chair": "office chair", "computer chair": "office chair",
+    "bed sheets": "bedding", "sheets": "bedding", "comforter": "bedding", "duvet": "bedding",
 }
 
 

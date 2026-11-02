@@ -1,0 +1,162 @@
+{
+  "_note": "Hand-curated assistance programs for the Spokane 2026 fires. Rules in apps/api/app/assistance.py decide what applies; the model only explains. Never add a deadline the source does not publish.",
+  "verified_at": "2026-11-02",
+  "programs": [
+    {
+      "id": "red-cross",
+      "name": "American Red Cross disaster help",
+      "summary": "Emergency shelter, food and support after a disaster.",
+      "status": "available",
+      "phases": ["response", "recovery"],
+      "applies_if": {},
+      "how": [{"label": "Call 1-800-RED-CROSS", "phone": "1-800-733-2767"}, {"label": "redcross.org", "url": "https://www.redcross.org/get-help.html"}],
+      "deadline": null,
+      "plan": {"response": {"bucket": "today", "text": "Get to a shelter or a safe place to stay"}, "recovery": {"bucket": "this_week", "text": "Ask the Red Cross about recovery support"}},
+      "source_name": "American Red Cross",
+      "source_url": "https://www.redcross.org/get-help.html"
+    },
+    {
+      "id": "wa-211",
+      "name": "Washington 2-1-1",
+      "summary": "One phone number for local shelters, food, housing and the state wildfire grant.",
+      "status": "available",
+      "phases": ["response", "recovery"],
+      "applies_if": {},
+      "how": [{"label": "Dial 2-1-1 (Mon–Sat, 8 a.m.–7 p.m.)", "phone": "2-1-1"}],
+      "deadline": null,
+      "plan": {"response": {"bucket": "today", "text": "Call 2-1-1 to confirm which shelters are open"}},
+      "source_name": "Washington Emergency Management Division",
+      "source_url": "https://mil.wa.gov/wildfire-assistance"
+    },
+    {
+      "id": "insurance-claim",
+      "name": "Start your insurance claim",
+      "summary": "Tell your insurer about the loss and keep a record of every call. A home inventory with photos helps your claim.",
+      "status": "available",
+      "phases": ["response", "recovery"],
+      "applies_if": {"insured": ["yes", "unknown"], "home_damage": ["destroyed", "major", "minor", "unknown"]},
+      "how": [{"label": "Build your claim inventory", "action": "start_claim"}],
+      "deadline": null,
+      "plan": {"response": {"bucket": "this_week", "text": "Call your insurer and start a claim"}, "recovery": {"bucket": "today", "text": "Build your home inventory for your insurance claim", "action": "start_claim"}},
+      "source_name": "Washington Office of the Insurance Commissioner",
+      "source_url": "https://www.insurance.wa.gov/"
+    },
+    {
+      "id": "oic-hotline",
+      "name": "Insurance Commissioner consumer hotline",
+      "summary": "Free help if you have questions or problems with your insurance claim.",
+      "status": "available",
+      "phases": ["response", "recovery"],
+      "applies_if": {"insured": ["yes", "unknown"]},
+      "how": [{"label": "Call 800-562-6900 (Mon–Fri, 8:30 a.m.–4:30 p.m.)", "phone": "800-562-6900"}],
+      "deadline": null,
+      "plan": {"recovery": {"bucket": "this_week", "text": "Call the Insurance Commissioner hotline if your claim stalls"}},
+      "source_name": "Washington Office of the Insurance Commissioner",
+      "source_url": "https://www.insurance.wa.gov/"
+    },
+    {
+      "id": "wa-household-needs-grant",
+      "name": "Washington Household Needs Grant (state Individual Assistance)",
+      "summary": "A state cash grant for households whose primary home was destroyed or had major damage from a wildfire on or after June 14, 2026.",
+      "amount": "$750 (1 person), $1,500 (2–4 people), $2,250 (5 or more)",
+      "eligibility": ["Primary residence destroyed or majorly damaged", "Fire on or after June 14, 2026", "Spokane County is included", "Income and insurance do not disqualify you"],
+      "status": "available",
+      "phases": ["recovery"],
+      "applies_if": {"home_damage": ["destroyed", "major", "unknown"]},
+      "how": [
+        {"label": "Apply online", "url": "http://app.brightharbor.com/signup/wa-fires-individual-assistance-2026"},
+        {"label": "Call 2-1-1", "phone": "2-1-1"},
+        {"label": "In person: S.C.O.P.E. North Station, 33 E Lincoln Rd, Suite 203 (Fri–Sat)"}
+      ],
+      "deadline": {"date": null, "note": "The state's page does not publish an application deadline. Call 2-1-1 to confirm it is still open. Appeals are due within 30 days of a decision notice."},
+      "plan": {"recovery": {"bucket": "today", "text": "Apply for the state Household Needs Grant"}},
+      "source_name": "Washington Emergency Management Division",
+      "source_url": "https://mil.wa.gov/wildfire-assistance"
+    },
+    {
+      "id": "karen-worthy-grant",
+      "name": "Karen Worthy Memorial Wildfire Grant",
+      "summary": "$10,000 for households whose primary home was destroyed by the Old Trails, Autumn Lane or Fairview fires.",
+      "amount": "$10,000 per household",
+      "status": "available",
+      "phases": ["recovery"],
+      "applies_if": {"home_damage": ["destroyed", "unknown"]},
+      "how": [{"label": "karenworthywildfiregrant.com", "url": "https://karenworthywildfiregrant.com"}],
+      "deadline": {"date": null, "note": "No deadline is listed."},
+      "plan": {"recovery": {"bucket": "today", "text": "Apply for the $10,000 Karen Worthy wildfire grant"}},
+      "source_name": "Spokane Region Long-Term Recovery Group",
+      "source_url": "https://srltrg.org/get-help/spokane-complex-fire-resources/"
+    },
+    {
+      "id": "ltrg",
+      "name": "Spokane Region Long-Term Recovery Group",
+      "summary": "Coordinates recovery help for individuals, families and businesses, including case management.",
+      "status": "available",
+      "phases": ["recovery"],
+      "applies_if": {},
+      "how": [{"label": "srltrg.org", "url": "https://srltrg.org/get-help/spokane-complex-fire-resources/"}],
+      "deadline": null,
+      "plan": {"recovery": {"bucket": "this_week", "text": "Contact the Long-Term Recovery Group for case management"}},
+      "source_name": "Spokane Region Long-Term Recovery Group",
+      "source_url": "https://srltrg.org/get-help/spokane-complex-fire-resources/"
+    },
+    {
+      "id": "debris-asbestos",
+      "name": "Debris cleanup and asbestos rules",
+      "summary": "Burned buildings can contain asbestos. Read Spokane Clean Air's property-owner guidance before any debris is removed.",
+      "status": "available",
+      "phases": ["recovery"],
+      "applies_if": {"home_damage": ["destroyed", "major", "unknown"]},
+      "how": [{"label": "Spokane Clean Air guidance", "url": "https://spokanecleanair.org"}],
+      "deadline": null,
+      "plan": {"recovery": {"bucket": "this_week", "text": "Read the asbestos rules before debris is removed"}},
+      "source_name": "Spokane Region Long-Term Recovery Group",
+      "source_url": "https://srltrg.org/get-help/spokane-complex-fire-resources/"
+    },
+    {
+      "id": "replace-documents",
+      "name": "Replace lost IDs and documents",
+      "summary": "Replace your driver license or ID card and Social Security card first; other paperwork often needs them.",
+      "status": "available",
+      "phases": ["recovery"],
+      "applies_if": {"lost_documents": ["yes", "unknown"]},
+      "how": [
+        {"label": "Washington Department of Licensing", "url": "https://www.dol.wa.gov/"},
+        {"label": "Replace a Social Security card", "url": "https://www.ssa.gov/number-card/replace-card"}
+      ],
+      "deadline": null,
+      "plan": {"recovery": {"bucket": "this_week", "text": "Replace your ID and Social Security card"}},
+      "source_name": "Washington DOL and Social Security Administration",
+      "source_url": "https://www.ssa.gov/number-card/replace-card"
+    },
+    {
+      "id": "fema-ia",
+      "name": "FEMA Individual Assistance",
+      "summary": "Federal grants for housing and other needs. Only available after a Major Disaster Declaration that includes Individual Assistance.",
+      "status": "pending",
+      "status_note": "Not available yet. The Aug 4 emergency declaration (EM-3650) does not include aid to individuals. Washington requested a Major Disaster Declaration in late September 2026; no decision has been announced.",
+      "phases": ["response", "recovery"],
+      "applies_if": {},
+      "how": [{"label": "DisasterAssistance.gov (only once approved)", "url": "https://www.disasterassistance.gov/"}],
+      "deadline": {"date": null, "note": "If approved, FEMA will announce a registration deadline. We will show it here."},
+      "plan": {"recovery": {"bucket": "deadlines", "text": "FEMA aid: requested, not approved yet. Watch for a registration deadline"}},
+      "source_name": "FEMA and Spokane Public Radio",
+      "source_url": "https://www.fema.gov/fact-sheet/how-femas-emergency-assistance-benefits-washington-wildfire-response",
+      "extra_sources": [{"name": "Spokane Public Radio, Sept 28, 2026", "url": "https://www.spokanepublicradio.org/2026-09-28/state-request-major-disaster-declaration-wildfire-recovery"}]
+    },
+    {
+      "id": "sba-loans",
+      "name": "SBA disaster loans",
+      "summary": "Low-interest federal loans to repair or replace homes, belongings and businesses.",
+      "status": "not_available",
+      "status_note": "Not available for this disaster yet.",
+      "phases": ["recovery"],
+      "applies_if": {},
+      "how": [{"label": "sba.gov/disaster", "url": "https://www.sba.gov/funding-programs/disaster-assistance"}],
+      "deadline": null,
+      "plan": {"recovery": {"bucket": "deadlines", "text": "SBA disaster loans: not available for this disaster yet"}},
+      "source_name": "Greater Spokane Inc.",
+      "source_url": "https://greaterspokane.org/fire-resources/"
+    }
+  ]
+}

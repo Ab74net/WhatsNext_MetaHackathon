@@ -1,0 +1,60 @@
+{
+  "id": "spokane-2026",
+  "title": "Spokane Complex Fires",
+  "hazard": "wildfire",
+  "place": "Spokane, Washington",
+  "center": [-117.47, 47.72],
+  "zoom": 10,
+  "summary": "The Old Trails, Fairview and Autumn Lane fires started on August 1, 2026 in Spokane County. Reports put losses at about 850 buildings destroyed and about 67,000 people evacuated.",
+  "summary_sources": [
+    {"name": "OPB (news)", "url": "https://www.opb.org/article/2026/08/06/firefighters-spokane-wildfires-tens-of-thousands-remain-evacuated/"},
+    {"name": "NIFC WFIGS fire perimeters", "url": "https://data-nifc.opendata.arcgis.com/"}
+  ],
+  "presets": [
+    {
+      "id": "during",
+      "label": "Aug 2, 2026 · during the fires",
+      "clock": "2026-08-02T09:00:00-07:00",
+      "phase": "response",
+      "replay": true
+    },
+    {
+      "id": "recovery",
+      "label": "Today · recovery",
+      "clock": null,
+      "phase": "recovery",
+      "replay": false
+    }
+  ],
+  "recorded_alerts": [
+    {
+      "id": "rec-old-trails-level3",
+      "title": "Level 3 GO NOW evacuations",
+      "severity": "extreme",
+      "headline": "Spokane County issued Level 3 (GO NOW) evacuation orders for several areas near the Old Trails Fire.",
+      "description": "The fire started near Airway Heights on August 1 and spread toward Spokane's city limits. Leave immediately if you are in a Level 3 area.",
+      "area": "Areas near the Old Trails Fire, Spokane County",
+      "effective": "2026-08-01",
+      "expires": null,
+      "source_name": "CNN (news report of the county's order)",
+      "source_url": "https://www.cnn.com/2026/08/01/us/spokane-washington-wildfire-old-trails",
+      "source_type": "news",
+      "fire": "Old Trails Fire"
+    },
+    {
+      "id": "rec-fmag-old-trails",
+      "title": "FEMA fire-fighting funds authorized",
+      "severity": "minor",
+      "headline": "FEMA authorized a Fire Management Assistance Grant for the Old Trails Fire.",
+      "description": "This pays for fighting the fire. It is not assistance for individuals or families.",
+      "area": "Spokane County",
+      "effective": "2026-08-02",
+      "expires": null,
+      "source_name": "FEMA",
+      "source_url": "https://www.fema.gov/press-release/20260802/fema-authorizes-funds-fight-old-trails-fire-washington",
+      "source_type": "official",
+      "fire": "Old Trails Fire"
+    }
+  ],
+  "verified_at": "2026-11-02"
+}

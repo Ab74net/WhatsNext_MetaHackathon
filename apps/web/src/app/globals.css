@@ -130,3 +130,8 @@ body {
   .mask-draw { animation: none; stroke-dasharray: none; }
   .skeleton { animation: none; }
 }
+
+/* Map: keep MapLibre's zoom buttons below the 911 banner that sits on top of the map. */
+.map-shell .maplibregl-ctrl-top-right {
+  top: 56px;
+}

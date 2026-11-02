@@ -1,0 +1,125 @@
+{
+  "_note": "Hand-seeded for the demo region. Every row has a source and the date it was checked. 'phases' says when it applies: response = during the fires (Aug 2026), recovery = now.",
+  "checked_at": "2026-11-02",
+  "resources": [
+    {
+      "id": "shelter-sfcc",
+      "kind": "shelter",
+      "name": "Spokane Falls Community College evacuation center",
+      "address": "3410 W Whistalks Way, Spokane, WA 99224",
+      "lat": 47.67326,
+      "lon": -117.47005,
+      "phone": null,
+      "hours": "Opened Aug 1, 2026 (small gym)",
+      "notes": "Evacuation center reported open on Aug 1. Call 2-1-1 to confirm before you go.",
+      "phases": [
+        "response"
+      ],
+      "source_name": "KHQ (news)",
+      "source_url": "https://www.khq.com/news/evacuation-shelter-opens-for-spokane-complex-fire-evacuees-as-3-500-acre-fire-burns-north/article_1eaceafb-4992-4df7-95cd-6acc4a9928e3.html",
+      "source_type": "news"
+    },
+    {
+      "id": "shelter-convention-center",
+      "kind": "shelter",
+      "name": "Red Cross shelter, Spokane Convention Center",
+      "address": "334 W Spokane Falls Blvd, Spokane, WA 99201",
+      "lat": 47.66098,
+      "lon": -117.41258,
+      "phone": "1-800-733-2767",
+      "hours": "Opened evening of Aug 1, 2026",
+      "notes": "Food, cots and urgent needs. Pets welcome; free parking.",
+      "phases": [
+        "response"
+      ],
+      "source_name": "American Red Cross via KXLY (news)",
+      "source_url": "https://www.kxly.com/news/red-cross-opens-second-evacuation-shelter-at-spokane-convention-center/article_3a83aedf-b631-4d71-b888-f1c9a2b53372.html",
+      "source_type": "news"
+    },
+    {
+      "id": "animals-fair-expo",
+      "kind": "animal_shelter",
+      "name": "Animal evacuation, Spokane County Fair & Expo Center",
+      "address": "404 N Havana St, Spokane Valley, WA 99202",
+      "lat": 47.66329,
+      "lon": -117.34677,
+      "phone": null,
+      "hours": "Opened Aug 1, 2026",
+      "notes": "For evacuated animals, including large animals and livestock.",
+      "phases": [
+        "response"
+      ],
+      "source_name": "KHQ (news)",
+      "source_url": "https://www.khq.com/news/evacuation-shelter-opens-for-spokane-complex-fire-evacuees-as-3-500-acre-fire-burns-north/article_1eaceafb-4992-4df7-95cd-6acc4a9928e3.html",
+      "source_type": "news"
+    },
+    {
+      "id": "er-holy-family",
+      "kind": "clinic",
+      "name": "Providence Holy Family Hospital (emergency department)",
+      "address": "5633 N Lidgerwood St, Spokane, WA 99208",
+      "lat": 47.70799,
+      "lon": -117.40596,
+      "phone": null,
+      "hours": "Emergency department",
+      "notes": "For injuries or smoke-related breathing problems. In an emergency, call 911.",
+      "phases": [
+        "response",
+        "recovery"
+      ],
+      "source_name": "Providence",
+      "source_url": "https://www.providence.org/locations/wa/holy-family-hospital",
+      "source_type": "official"
+    },
+    {
+      "id": "er-deaconess",
+      "kind": "clinic",
+      "name": "MultiCare Deaconess Hospital (emergency department)",
+      "address": "800 W 5th Ave, Spokane, WA 99204",
+      "lat": 47.65113,
+      "lon": -117.42398,
+      "phone": null,
+      "hours": "Emergency department",
+      "notes": "For injuries or smoke-related breathing problems. In an emergency, call 911.",
+      "phases": [
+        "response",
+        "recovery"
+      ],
+      "source_name": "MultiCare",
+      "source_url": "https://www.multicare.org/location/deaconess-hospital/multicare-deaconess-emergency-department/",
+      "source_type": "official"
+    },
+    {
+      "id": "recovery-scope-north",
+      "kind": "recovery_center",
+      "name": "State wildfire assistance help desk (S.C.O.P.E. North Station)",
+      "address": "33 E Lincoln Rd, Suite 203, Spokane, WA 99208",
+      "lat": 47.72944,
+      "lon": -117.4082,
+      "phone": "2-1-1",
+      "hours": "Fri and Sat, 10 a.m.–5:30 p.m.",
+      "notes": "In-person help applying for the state Household Needs Grant.",
+      "phases": [
+        "recovery"
+      ],
+      "source_name": "Washington Emergency Management Division",
+      "source_url": "https://mil.wa.gov/wildfire-assistance",
+      "source_type": "official"
+    },
+    {
+      "id": "recovery-dac-shadle",
+      "kind": "recovery_center",
+      "name": "Disaster Assistance Center, Shadle Park High School",
+      "address": "4327 N Ash St, Spokane, WA 99205",
+      "lat": 47.69826,
+      "lon": -117.43713,
+      "phone": null,
+      "hours": "Aug 7–11, 2026 (closed now)",
+      "notes": "Insurance Commissioner staff and insurers helped with claims. This center has closed.",
+      "phases": [],
+      "source_name": "Spokane Region Long-Term Recovery Group",
+      "source_url": "https://srltrg.org/get-help/spokane-complex-fire-resources/",
+      "source_type": "official"
+    }
+  ]
+}
