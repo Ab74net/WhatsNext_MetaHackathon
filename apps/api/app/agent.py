@@ -14,7 +14,7 @@ from pydantic import ValidationError
 from . import config, content
 from .alerts import alerts_card
 from .assistance import build_plan
-from .schemas import (AgentRequest, AgentResponse, CaseFile, ClaimStart, EmergencyCard, ResourceList,
+from .schemas import (AgentRequest, AgentResponse, CaseFile, ClaimStart, EmergencyCard, ResourceList, ToolkitLink,
                       UIInstruction)
 
 log = logging.getLogger(__name__)
@@ -53,6 +53,11 @@ TOOLS = [
      "description": "Offer the claims helper, which rebuilds a home inventory from the user's photos for an insurance claim.",
      "parameters": {"type": "object", "additionalProperties": False, "required": ["reason"], "properties": {
          "reason": {"type": "string", "description": "One short sentence spoken to the user, using 'you' (e.g. 'Your photos can show what you owned.')."}}}},
+    {"type": "function", "name": "open_toolkit", "strict": True,
+     "description": "Offer the recovery toolkit: 'documents' for replacing lost IDs, cards, records or mail in the right order; 'insurer_call' for preparing a call with their insurance company.",
+     "parameters": {"type": "object", "additionalProperties": False, "required": ["tab", "reason"], "properties": {
+         "tab": {"type": "string", "enum": ["documents", "insurer_call"]},
+         "reason": {"type": "string", "description": "One short sentence spoken to the user, using 'you'."}}}},
 ]
 
 
@@ -65,7 +70,7 @@ def system_prompt(case: CaseFile) -> str:
 The user is in {s['place']}, affected by the {s['title']} ({s['hazard']}). {when}
 
 How you answer:
-- Use tools. The app shows tool results as cards and on a map. Call get_alerts first in a new situation, find_resources when they need a place or service, build_plan when they ask what to do, show_safety_flow when they ask how to stay safe (evacuating, smoke, going back home), start_claim when they mention insurance, belongings or a claim.
+- Use tools. The app shows tool results as cards and on a map. Call get_alerts first in a new situation, find_resources when they need a place or service, build_plan when they ask what to do, show_safety_flow when they ask how to stay safe (evacuating, smoke, going back home), start_claim when they mention insurance, belongings or a claim, open_toolkit with tab documents when they mention lost IDs, cards, papers or mail, and with tab insurer_call when they are about to call their insurer.
 - Your own text is one or two short, warm sentences that frame the cards, which appear below your message. Do not repeat what the cards show.
 - Never state addresses, phone numbers, dollar amounts, deadlines, program rules or safety instructions in your own words. Those come only from tools. Never invent programs, places or deadlines.
 - If something is unknown or not covered by a tool, say so plainly and suggest calling 2-1-1.
@@ -107,6 +112,9 @@ async def run_tool(name: str, args: dict, case: CaseFile) -> tuple[list[UIInstru
         return [card], summary, case
     if name == "start_claim":
         return [ClaimStart(reason=str(args.get("reason", ""))[:200])], {"shown": True}, case
+    if name == "open_toolkit":
+        tab = args.get("tab") if args.get("tab") in ("documents", "insurer_call") else "documents"
+        return [ToolkitLink(tab=tab, reason=str(args.get("reason", ""))[:200])], {"shown": True}, case
     if name == "show_safety_flow":
         card = content.safety_flow("wildfire", args.get("situation"))
         return [card], {"shown": True, "opened": card.initial}, case
@@ -154,7 +162,7 @@ def _dedupe(ui: list[UIInstruction]) -> list[UIInstruction]:
     last = {}
     for card in ui:
         last[card.type] = card
-    order = ["emergency", "safety_flow", "alerts", "plan", "resources", "claim_start"]
+    order = ["emergency", "safety_flow", "alerts", "plan", "resources", "claim_start", "toolkit_link"]
     return [last[t] for t in order if t in last]
 
 
@@ -178,6 +186,10 @@ class MockAgent:
             plan.append(("show_safety_flow", {"situation": situation}))
         if any(w in text for w in ("insurance", "claim", "belongings", "inventory")):
             plan.append(("start_claim", {"reason": "You mentioned insurance."}))
+        if any(w in text for w in (" id", "license", "passport", "documents", "papers", "birth certificate", "social security", "mail")):
+            plan.append(("open_toolkit", {"tab": "documents", "reason": "You mentioned lost documents."}))
+        elif any(w in text for w in ("call my insur", "calling my insur", "adjuster")):
+            plan.append(("open_toolkit", {"tab": "insurer_call", "reason": "You are getting ready to call your insurer."}))
         ui: list[UIInstruction] = []
         for name, args in plan:
             new_ui, _, case = await run_tool(name, args, case)

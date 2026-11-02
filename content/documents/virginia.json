@@ -1,0 +1,362 @@
+{
+  "_note": "Document replacement order for Virginia. Every field comes from the official page in `sources`, read on last_verified. Never guess: a field that could not be confirmed is left empty and named in `unverified_fields`, and the UI says to call the agency. `verified` is true only when every field shown was confirmed. `prerequisites_verified` says whether the official page itself states the dependency.",
+  "state": "VA",
+  "state_name": "Virginia",
+  "checked_at": "2026-11-02",
+  "phases": [
+    {
+      "id": "48h",
+      "label": "First 48 hours",
+      "why": "Stop fraud, keep medicines going, and make sure mail reaches you."
+    },
+    {
+      "id": "week",
+      "label": "First week",
+      "why": "An ID unlocks most other replacements."
+    },
+    {
+      "id": "later",
+      "label": "Later",
+      "why": "These usually need an ID first, and they are less urgent."
+    }
+  ],
+  "documents": [
+    {
+      "id": "medications",
+      "name": "Medications",
+      "phase": "48h",
+      "issuing_agency": "Your pharmacy and your prescriber",
+      "official_url": "",
+      "prerequisites": [],
+      "prerequisites_verified": true,
+      "needed_items": [],
+      "where": [
+        "phone",
+        "in_person"
+      ],
+      "steps": [
+        "Call your pharmacy and tell them your medicine was lost in the disaster.",
+        "Call the doctor or clinic that prescribed it if the pharmacy asks for a new prescription."
+      ],
+      "phone": "",
+      "disaster_waiver_note": "",
+      "fees_note": "",
+      "last_verified": "2026-11-02",
+      "verified": false,
+      "unverified_fields": [
+        "official_url",
+        "needed_items",
+        "disaster_waiver_note",
+        "fees_note"
+      ],
+      "sources": []
+    },
+    {
+      "id": "bank_cards",
+      "name": "Bank and credit cards",
+      "phase": "48h",
+      "issuing_agency": "The bank or credit union that issued the card",
+      "official_url": "https://consumer.ftc.gov/articles/lost-or-stolen-credit-atm-and-debit-cards",
+      "prerequisites": [],
+      "prerequisites_verified": true,
+      "needed_items": [
+        "The issuer's phone number, from a statement, your online account or the issuer's website"
+      ],
+      "where": [
+        "phone",
+        "online"
+      ],
+      "steps": [
+        "Report the loss to the bank or credit union that issued each card as soon as possible. You can call or use its app.",
+        "Follow up with a letter to the issuer. Keep a copy, and notes from your calls."
+      ],
+      "phone": "",
+      "disaster_waiver_note": "",
+      "fees_note": "",
+      "timing_note": "For debit and ATM cards, how much you could lose depends on how fast you report. Reporting before anyone uses the card means you owe nothing.",
+      "last_verified": "2026-11-02",
+      "verified": true,
+      "unverified_fields": [
+        "disaster_waiver_note",
+        "fees_note"
+      ],
+      "sources": [
+        "https://consumer.ftc.gov/articles/lost-or-stolen-credit-atm-and-debit-cards"
+      ]
+    },
+    {
+      "id": "mail",
+      "name": "Mail",
+      "phase": "48h",
+      "issuing_agency": "U.S. Postal Service",
+      "official_url": "https://www.usps.com/manage/forward.htm",
+      "prerequisites": [],
+      "prerequisites_verified": true,
+      "needed_items": [
+        "Identity verification, online or with photo ID at a Post Office"
+      ],
+      "where": [
+        "online",
+        "in_person"
+      ],
+      "steps": [
+        "If you will be away 15 days to 1 year, request a temporary change of address so mail follows you.",
+        "If you can't verify your identity online, go to a Post Office with photo ID.",
+        "For 3 to 30 days away, USPS Hold Mail keeps your mail at your local Post Office."
+      ],
+      "phone": "",
+      "disaster_waiver_note": "",
+      "fees_note": "Changing your address online has a $1.25 identity verification fee.",
+      "last_verified": "2026-11-02",
+      "verified": true,
+      "unverified_fields": [
+        "disaster_waiver_note"
+      ],
+      "sources": [
+        "https://www.usps.com/manage/forward.htm",
+        "https://www.usps.com/manage/hold-mail.htm"
+      ]
+    },
+    {
+      "id": "license_id",
+      "name": "Driver's license or state ID",
+      "phase": "week",
+      "issuing_agency": "Virginia Department of Motor Vehicles (DMV)",
+      "official_url": "https://www.dmv.virginia.gov/licenses-ids/license/replace",
+      "prerequisites": [],
+      "prerequisites_verified": true,
+      "needed_items": [
+        "In person: a completed Driver's License and Identification Card Application",
+        "In person: one proof of identity document (more for REAL ID)",
+        "In person: a new photo, taken at the DMV"
+      ],
+      "where": [
+        "online",
+        "in_person"
+      ],
+      "steps": [
+        "Try the DMV's online replacement first. It is not available if, for example, you are under 18, need a new photo, or owe the DMV money.",
+        "Otherwise visit a DMV customer service center, with or without an appointment.",
+        "The new card is mailed to you."
+      ],
+      "phone": "",
+      "disaster_waiver_note": "",
+      "fees_note": "$20 for a replacement license, plus a one-time $10 for REAL ID.",
+      "id_card_note": "This DMV page covers driver's licenses and learner's permits. For a state ID card, check with the DMV.",
+      "last_verified": "2026-11-02",
+      "verified": true,
+      "unverified_fields": [
+        "disaster_waiver_note",
+        "phone"
+      ],
+      "sources": [
+        "https://www.dmv.virginia.gov/licenses-ids/license/replace"
+      ]
+    },
+    {
+      "id": "insurance_cards",
+      "name": "Health insurance cards",
+      "phase": "week",
+      "issuing_agency": "Your health insurer, or Medicare",
+      "official_url": "https://www.usa.gov/replace-vital-documents",
+      "prerequisites": [],
+      "prerequisites_verified": true,
+      "needed_items": [],
+      "where": [
+        "online",
+        "phone"
+      ],
+      "steps": [
+        "Medicare: log in to or create a Medicare account online to print a copy or ask for a new card by mail.",
+        "Other health insurance: call the number on your insurer's website and ask for a new card."
+      ],
+      "phone": "",
+      "disaster_waiver_note": "",
+      "fees_note": "",
+      "last_verified": "2026-11-02",
+      "verified": false,
+      "unverified_fields": [
+        "needed_items",
+        "fees_note",
+        "disaster_waiver_note",
+        "steps (private insurers)"
+      ],
+      "sources": [
+        "https://www.usa.gov/replace-vital-documents"
+      ]
+    },
+    {
+      "id": "ss_card",
+      "name": "Social Security card",
+      "phase": "week",
+      "issuing_agency": "Social Security Administration (SSA)",
+      "official_url": "https://www.ssa.gov/ssnumber/",
+      "prerequisites": [
+        "license_id"
+      ],
+      "prerequisites_verified": false,
+      "needed_items": [],
+      "where": [
+        "online",
+        "in_person",
+        "mail"
+      ],
+      "steps": [
+        "Visit the Social Security Administration website to replace your card online, by mail, or in person."
+      ],
+      "phone": "",
+      "disaster_waiver_note": "",
+      "fees_note": "",
+      "last_verified": "2026-11-02",
+      "verified": false,
+      "unverified_fields": [
+        "needed_items",
+        "fees_note",
+        "disaster_waiver_note",
+        "phone",
+        "prerequisites"
+      ],
+      "sources": [
+        "https://www.usa.gov/replace-vital-documents"
+      ]
+    },
+    {
+      "id": "birth_certificate",
+      "name": "Birth certificate",
+      "phase": "later",
+      "issuing_agency": "Virginia Department of Health, Office of Vital Records",
+      "official_url": "https://www.vdh.virginia.gov/vital-records/",
+      "prerequisites": [
+        "license_id"
+      ],
+      "prerequisites_verified": true,
+      "prerequisites_note": "Anyone requesting a vital record must send a copy of their ID. A state photo ID works, and so do other IDs on the VDH list, such as a U.S. passport.",
+      "needed_items": [
+        "A legible copy of your ID (see the VDH list of accepted IDs)"
+      ],
+      "where": [
+        "online",
+        "in_person",
+        "mail"
+      ],
+      "steps": [
+        "Order online, by mail, or at the walk-in lobby in Richmond (8701 Park Central Drive, Suite 100), Monday to Friday, 7 a.m. to 4 p.m.",
+        "Birth records are issued to the person and immediate family members with valid ID."
+      ],
+      "phone": "(804) 662-6200",
+      "disaster_waiver_note": "",
+      "fees_note": "$15 per certified copy (from July 1, 2026).",
+      "last_verified": "2026-11-02",
+      "verified": true,
+      "unverified_fields": [
+        "disaster_waiver_note"
+      ],
+      "sources": [
+        "https://www.vdh.virginia.gov/vital-records/",
+        "https://www.vdh.virginia.gov/vital-records/id-requirements/"
+      ]
+    },
+    {
+      "id": "passport",
+      "name": "Passport",
+      "phase": "later",
+      "issuing_agency": "U.S. Department of State",
+      "official_url": "https://travel.state.gov/en/passports/renew-replace/report-passport-lost-stolen.html",
+      "prerequisites": [
+        "birth_certificate",
+        "license_id"
+      ],
+      "prerequisites_verified": false,
+      "needed_items": [],
+      "where": [
+        "online",
+        "phone",
+        "in_person",
+        "mail"
+      ],
+      "steps": [
+        "Report the lost passport online, by phone at 1-877-487-2778, or by mail (form DS-64). Reporting cancels it but does not replace it.",
+        "To replace it, apply on form DS-11 at a passport acceptance facility. You can report the loss at the same time."
+      ],
+      "phone": "1-877-487-2778",
+      "disaster_waiver_note": "",
+      "fees_note": "",
+      "last_verified": "2026-11-02",
+      "verified": false,
+      "unverified_fields": [
+        "needed_items",
+        "fees_note",
+        "disaster_waiver_note",
+        "prerequisites"
+      ],
+      "sources": [
+        "https://eforms.state.gov/Forms/ds64_pdf.PDF",
+        "https://eforms.state.gov/Forms/ds5504_pdf.PDF"
+      ]
+    },
+    {
+      "id": "car_title",
+      "name": "Vehicle title",
+      "phase": "later",
+      "issuing_agency": "Virginia Department of Motor Vehicles (DMV)",
+      "official_url": "https://www.dmv.virginia.gov/online-services/replace-title",
+      "prerequisites": [],
+      "prerequisites_verified": true,
+      "needed_items": [
+        "You own or co-own the vehicle",
+        "A credit or debit card, or checking account details"
+      ],
+      "where": [
+        "online",
+        "in_person"
+      ],
+      "steps": [
+        "Order online if the title was lost or damaged and nothing on it needs to change.",
+        "The new title is mailed within 5 business days to the first owner listed on the title record."
+      ],
+      "phone": "",
+      "disaster_waiver_note": "",
+      "fees_note": "Ordering online saves $1 compared with other ways.",
+      "last_verified": "2026-11-02",
+      "verified": true,
+      "unverified_fields": [
+        "disaster_waiver_note",
+        "fees_note (base fee)",
+        "phone"
+      ],
+      "sources": [
+        "https://www.dmv.virginia.gov/online-services/replace-title"
+      ]
+    },
+    {
+      "id": "school_work_records",
+      "name": "School or work records",
+      "phase": "later",
+      "issuing_agency": "Your school, college or employer",
+      "official_url": "",
+      "prerequisites": [],
+      "prerequisites_verified": true,
+      "needed_items": [],
+      "where": [
+        "phone",
+        "online"
+      ],
+      "steps": [
+        "Contact the school's records office or your employer's HR department and ask how to request copies."
+      ],
+      "phone": "",
+      "disaster_waiver_note": "",
+      "fees_note": "",
+      "last_verified": "2026-11-02",
+      "verified": false,
+      "unverified_fields": [
+        "official_url",
+        "needed_items",
+        "fees_note",
+        "disaster_waiver_note",
+        "prerequisites"
+      ],
+      "sources": []
+    }
+  ]
+}

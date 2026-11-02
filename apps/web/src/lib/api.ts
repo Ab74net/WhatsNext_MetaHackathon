@@ -1,6 +1,7 @@
 // Thin client for the FastAPI backend. /api/* is forwarded to it by next.config.ts.
 import type {
-  AgentResponse, CaseFile, ChatTurn, FromPhotoResult, Health, InsurerQuestions, InsurerQuestionsRequest, InventoryItem,
+  AgentResponse, CaseFile, ChatTurn, DocumentAnswer, DocumentGuide, DocumentQuestion, DocumentState, FromPhotoResult,
+  Health, InsurerQuestions, InsurerQuestionsRequest, InventoryItem,
   MemoryWeb, MergeResult, PhotoMeta, PhotoResult, Scenario,
 } from "@shared/types";
 
@@ -34,6 +35,9 @@ export const api = {
   // Toolkit. Only non-personal fields are ever sent (the request types allow nothing else).
   insurerQuestions: (req: InsurerQuestionsRequest) =>
     call<InsurerQuestions>("/toolkit/insurer-questions", { method: "POST", ...json(req) }),
+  documentStates: () => call<DocumentState[]>("/toolkit/documents"),
+  documentGuide: (state: string) => call<DocumentGuide>(`/toolkit/documents/${encodeURIComponent(state)}`),
+  askDocuments: (q: DocumentQuestion) => call<DocumentAnswer>("/toolkit/documents/ask", { method: "POST", ...json(q) }),
   health: () => call<Health>("/health"),
   createSession: () => call<{ session_id: string }>("/sessions", { method: "POST" }),
   endSession: (sid: string) => call<{ deleted: boolean }>(`/sessions/${sid}`, { method: "DELETE" }),

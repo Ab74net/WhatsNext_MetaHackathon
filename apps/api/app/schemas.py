@@ -259,6 +259,12 @@ class ClaimStart(BaseModel):
     reason: str
 
 
+class ToolkitLink(BaseModel):
+    type: Literal["toolkit_link"] = "toolkit_link"
+    tab: Literal["documents", "insurer_call"]
+    reason: str
+
+
 class EmergencyCard(BaseModel):
     type: Literal["emergency"] = "emergency"
 
@@ -299,7 +305,7 @@ class SafetyFlowCard(BaseModel):
     initial: str | None
 
 
-UIInstruction = Annotated[AlertsCard | ResourceList | PlanCard | ClaimStart | EmergencyCard | SafetyFlowCard,
+UIInstruction = Annotated[AlertsCard | ResourceList | PlanCard | ClaimStart | ToolkitLink | EmergencyCard | SafetyFlowCard,
                           Field(discriminator="type")]
 
 
@@ -376,3 +382,66 @@ class InsurerQuestion(BaseModel):
 class InsurerQuestions(BaseModel):
     questions: list[InsurerQuestion] = Field(min_length=3, max_length=12)
     tailored: bool  # false: the static base list (Spark unavailable or its output was rejected)
+
+
+# --- Toolkit: document replacement order -------------------------------------------
+# Curated data in content/documents/<state>.json is the source of truth, never the model.
+
+DocPhase = Literal["48h", "week", "later"]
+DocWhere = Literal["online", "in_person", "phone", "mail"]
+
+
+class DocumentPhase(BaseModel):
+    id: DocPhase
+    label: str
+    why: str
+
+
+class DocumentEntry(BaseModel):
+    id: str
+    name: str
+    phase: DocPhase
+    issuing_agency: str
+    official_url: str  # "" when not confirmed
+    prerequisites: list[str]
+    prerequisites_verified: bool
+    prerequisites_note: str = ""
+    needed_items: list[str]
+    where: list[DocWhere]
+    steps: list[str]
+    phone: str
+    disaster_waiver_note: str
+    fees_note: str
+    timing_note: str = ""
+    id_card_note: str = ""
+    last_verified: str
+    verified: bool
+    unverified_fields: list[str]
+    sources: list[str]
+
+
+class DocumentGuide(BaseModel):
+    state: str
+    state_name: str
+    checked_at: str
+    phases: list[DocumentPhase]
+    documents: list[DocumentEntry]
+
+
+class DocumentState(BaseModel):
+    state: str
+    state_name: str
+    available: bool
+
+
+class DocumentQuestion(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    state: str = Field(min_length=2, max_length=2)
+    doc_ids: list[str] = Field(min_length=1, max_length=12)
+    question: str = Field(min_length=3, max_length=300)  # the browser strips numbers and emails first
+
+
+class DocumentAnswer(BaseModel):
+    answer: str = Field(max_length=900)
+    doc_ids: list[str]  # the entries the answer is based on
+    covered: bool  # false: the data file doesn't cover it, so the answer says to call the agency

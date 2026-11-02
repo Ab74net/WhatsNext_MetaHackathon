@@ -9,12 +9,13 @@ from fastapi import FastAPI, Form, HTTPException, UploadFile
 from fastapi.responses import Response
 from pydantic import BaseModel
 
-from . import config, content, export, memory_web, merge, sessions, toolkit
+from . import config, content, documents, export, memory_web, merge, sessions, toolkit
 from .agent import make_agent
 from .images import NotAnImageError, process_upload
 from .model_client import make_client
 from .pipeline import process_photo
-from .schemas import (AgentRequest, AgentResponse, Health, InsurerQuestions, InsurerQuestionsRequest, InventoryItem,
+from .schemas import (AgentRequest, AgentResponse, DocumentAnswer, DocumentGuide, DocumentQuestion, DocumentState,
+                      Health, InsurerQuestions, InsurerQuestionsRequest, InventoryItem,
                       ItemPatch, ManualMerge, MemoryWeb, MergeResult, PhotoEvidence, PhotoMeta, PhotoResult)
 from .valuation import ValuationUnavailable, value_item
 
@@ -291,3 +292,24 @@ async def add_item_from_photo(sid: str, file: UploadFile, category: str = Form(m
 @app.post("/api/toolkit/insurer-questions", response_model=InsurerQuestions)
 async def insurer_questions(req: InsurerQuestionsRequest) -> InsurerQuestions:
     return await toolkit.insurer_questions(client, req)
+
+
+@app.get("/api/toolkit/documents", response_model=list[DocumentState])
+def document_states() -> list[DocumentState]:
+    return documents.states()
+
+
+@app.get("/api/toolkit/documents/{state}", response_model=DocumentGuide)
+def document_guide(state: str) -> DocumentGuide:
+    try:
+        return documents.guide(state)
+    except documents.UnknownState:
+        raise HTTPException(404, "Coming soon for this state. Contact the issuing agency.")
+
+
+@app.post("/api/toolkit/documents/ask", response_model=DocumentAnswer)
+async def ask_about_documents(q: DocumentQuestion) -> DocumentAnswer:
+    try:
+        return await documents.ask(client, q)
+    except documents.UnknownState:
+        raise HTTPException(404, "Coming soon for this state. Contact the issuing agency.")

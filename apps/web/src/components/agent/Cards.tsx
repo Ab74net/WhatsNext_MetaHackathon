@@ -9,7 +9,7 @@ import {
   ArrowRight, CalendarClock, ChevronDown, CircleCheck, ExternalLink, Flame, Info, ListChecks, MapPin, Package,
   Phone, Radio, Sun, TriangleAlert,
 } from "lucide-react";
-import type { AlertsCard, ClaimStart, PlanCard, PlanItem, ResourceList, UIInstruction } from "@shared/types";
+import type { AlertsCard, ClaimStart, PlanCard, PlanItem, ResourceList, ToolkitLink, UIInstruction } from "@shared/types";
 import { Badge, Card } from "@/components/ui";
 import { KIND_STYLE } from "./MapPanel";
 import { SafetyFlowView } from "./SafetyFlow";
@@ -191,6 +191,22 @@ export function ClaimStartView({ card }: { card: ClaimStart }) {
   );
 }
 
+export function ToolkitLinkView({ card }: { card: ToolkitLink }) {
+  const docs = card.tab === "documents";
+  return (
+    <Card className="flex items-center gap-3 p-4">
+      <div className="flex-1">
+        <p className="text-sm font-semibold">{docs ? "Replace lost documents in the right order" : "Get ready for your insurance call"}</p>
+        <p className="text-xs text-muted">{card.reason || (docs ? "Some documents need another one first." : "Questions to ask, and a place for notes.")}</p>
+      </div>
+      <Link href={docs ? "/toolkit#documents" : "/toolkit#insurer-call"}
+        className="inline-flex h-10 items-center gap-1.5 rounded-lg bg-accent px-3.5 text-sm font-semibold text-accent-ink">
+        Open <ArrowRight className="size-4" aria-hidden />
+      </Link>
+    </Card>
+  );
+}
+
 export function EmergencyView() {
   return (
     <div className="flex flex-col gap-3 rounded-lg bg-danger-solid p-4 text-white shadow-pop">
@@ -211,6 +227,7 @@ export function UICard({ card, selectedId, onSelect }: {
     case "plan": return <PlanView card={card} />;
     case "resources": return <ResourcesView card={card} selectedId={selectedId} onSelect={onSelect} />;
     case "claim_start": return <ClaimStartView card={card} />;
+    case "toolkit_link": return <ToolkitLinkView card={card} />;
     case "emergency": return <EmergencyView />;
     case "safety_flow": return <SafetyFlowView card={card} />;
   }

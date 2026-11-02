@@ -85,3 +85,11 @@ def test_scenario_endpoint_has_presets_and_perimeters():
     s = client.get("/api/scenario").json()
     assert [p["id"] for p in s["presets"]] == ["during", "recovery"]
     assert len(s["fire_areas"]["features"]) == 3
+
+
+def test_lost_documents_offers_the_toolkit():
+    from fastapi.testclient import TestClient
+    from app.main import app
+    r = TestClient(app).post("/api/agent", json={"messages": [{"role": "user", "text": "I lost my license and passport in the fire"}]})
+    cards = [c for c in r.json()["ui"] if c["type"] == "toolkit_link"]
+    assert cards and cards[0]["tab"] == "documents"

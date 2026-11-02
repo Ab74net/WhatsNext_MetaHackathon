@@ -227,7 +227,13 @@ export interface SafetyFlowCard {
   initial: string | null;
 }
 
-export type UIInstruction = AlertsCard | ResourceList | PlanCard | ClaimStart | EmergencyCard | SafetyFlowCard;
+export interface ToolkitLink {
+  type: "toolkit_link";
+  tab: "documents" | "insurer_call";
+  reason: string;
+}
+
+export type UIInstruction = AlertsCard | ResourceList | PlanCard | ClaimStart | ToolkitLink | EmergencyCard | SafetyFlowCard;
 
 export interface ChatTurn {
   role: "user" | "assistant";
@@ -317,4 +323,65 @@ export interface InsurerQuestion {
 export interface InsurerQuestions {
   questions: InsurerQuestion[];
   tailored: boolean; // false: the static base list
+}
+
+// --- Toolkit: document replacement order ------------------------------------------
+// Source of truth: content/documents/<state>.json. Empty strings mean "not confirmed".
+
+export type DocPhase = "48h" | "week" | "later";
+export type DocWhere = "online" | "in_person" | "phone" | "mail";
+
+export interface DocumentPhase {
+  id: DocPhase;
+  label: string;
+  why: string;
+}
+
+export interface DocumentEntry {
+  id: string;
+  name: string;
+  phase: DocPhase;
+  issuing_agency: string;
+  official_url: string;
+  prerequisites: string[];
+  prerequisites_verified: boolean;
+  prerequisites_note: string;
+  needed_items: string[];
+  where: DocWhere[];
+  steps: string[];
+  phone: string;
+  disaster_waiver_note: string;
+  fees_note: string;
+  timing_note: string;
+  id_card_note: string;
+  last_verified: string;
+  verified: boolean;
+  unverified_fields: string[];
+  sources: string[];
+}
+
+export interface DocumentGuide {
+  state: string;
+  state_name: string;
+  checked_at: string;
+  phases: DocumentPhase[];
+  documents: DocumentEntry[];
+}
+
+export interface DocumentState {
+  state: string;
+  state_name: string;
+  available: boolean;
+}
+
+export interface DocumentQuestion {
+  state: string;
+  doc_ids: string[];
+  question: string; // redacted on the device first
+}
+
+export interface DocumentAnswer {
+  answer: string;
+  doc_ids: string[];
+  covered: boolean;
 }
