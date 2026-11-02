@@ -66,6 +66,11 @@ export default function Home() {
 
         <MeetWren />
 
+        <section className="flex flex-wrap items-center gap-6 rounded-3xl border border-line bg-blue-soft p-6 sm:p-9" aria-labelledby="aid-intro">
+          <div className="min-w-0 flex-1"><h2 id="aid-intro" className="text-3xl">Find a starting point for support.</h2><p className="mt-3 max-w-xl text-muted">Aid Autopilot helps you explore assistance resources and prepare for the next conversation. Check requirements, gather documents, and keep your next steps together.</p></div>
+          <ButtonLink href="/aid" variant="primary">Explore Aid Autopilot<ArrowRight className="size-4" aria-hidden /></ButtonLink>
+        </section>
+
         <section id="privacy" className="scroll-mt-28" aria-labelledby="promises">
           <h2 id="promises" className="text-3xl">What we promise</h2>
           <ul className="mt-6 grid gap-8 sm:grid-cols-3 sm:gap-10">

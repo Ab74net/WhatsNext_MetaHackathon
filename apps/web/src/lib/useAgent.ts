@@ -33,6 +33,12 @@ function load(): { messages: Message[]; caseFile: CaseFile } {
   return { messages: [], caseFile: DEFAULT_CASE };
 }
 
+// Aid Autopilot offers these demo details for review; it never treats them as a home address.
+export function readSavedAgentCase(): CaseFile | null {
+  const saved = load();
+  return saved.messages?.length && ["spokane", "nrv"].includes(saved.caseFile?.scenario) ? saved.caseFile : null;
+}
+
 export function useAgent() {
   const [scenarios, setScenarios] = useState<ScenarioSummary[]>([]);
   const [scenario, setScenario] = useState<Scenario | null>(null);

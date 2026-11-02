@@ -327,6 +327,53 @@ h1 { font-weight: 800; }
 .map-pin { width: 44px; height: 44px; border-radius: 50%; border: 3px solid var(--pin-ink); color: var(--pin-ink); box-shadow: var(--shadow-pop); display: flex; align-items: center; justify-content: center; transition: transform .15s; }
 
 /* --- Print (Toolkit sheets) ------------------------------------------------------------ */
+/* Aid Autopilot keeps the app shell and adds the mockup's quieter, editorial workspace. */
+.aid-layout { display: grid; grid-template-columns: 210px minmax(0, 1fr); width: 100%; max-width: 1600px; margin-inline: auto; }
+.app-content:has(.aid-layout) > .page-decoration { display: none; }
+.aid-rail { position: sticky; top: 80px; align-self: start; display: flex; flex-direction: column; gap: 36px; height: calc(100dvh - 80px); min-height: 600px; border-right: 1px solid var(--line); padding: 36px 20px 28px; }
+.aid-main { min-width: 0; padding: 44px clamp(24px, 3.3vw, 56px) 40px; }
+.aid-hero { position: relative; display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(230px, .85fr); align-items: center; gap: 22px; margin-bottom: 38px; }
+.aid-feature-label { display: inline-flex; align-items: center; gap: 10px; min-height: 42px; padding: 8px 18px; border: 1px solid var(--line); border-radius: var(--radius-pill); font-size: 14px; font-weight: 600; }
+.aid-heading { max-width: 900px; margin-top: 20px; font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.65rem, 4.3vw, 4.6rem); font-weight: 500; letter-spacing: -.045em; line-height: 1.04; text-wrap: balance; }
+.aid-art { position: relative; height: 350px; align-self: center; }
+.aid-art-blue { position: absolute; inset: 10px 0 0 -8px; border-radius: 48% 48% 5% 5%; background: color-mix(in srgb, var(--deco-blue) 46%, var(--canvas)); }
+.aid-art-coral { position: absolute; right: -30px; top: 35px; width: 47%; height: 53%; border-radius: 50%; background: var(--deco-coral); }
+.aid-art-line { position: absolute; inset: -20px -25px 0 0; width: 100%; height: 100%; }
+.aid-art-photo { position: absolute; inset: auto 0 0; width: 100%; height: 80%; object-fit: cover; object-position: 55% 45%; filter: grayscale(1); clip-path: polygon(0 36%, 12% 29%, 13% 22%, 39% 14%, 47% 7%, 55% 14%, 80% 26%, 100% 42%, 100% 100%, 0 100%); }
+.aid-situation { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 22px; padding: 26px; border: 1px solid var(--line); border-radius: var(--radius-card); background: color-mix(in srgb, var(--surface-2) 72%, var(--canvas)); }
+.aid-category { display: grid; grid-template-columns: 40px minmax(0, 1fr) 44px; column-gap: 12px; align-items: start; background: color-mix(in srgb, var(--surface) 35%, var(--canvas)); }
+.aid-category > div { grid-row: 1 / 3; width: 40px; height: 40px; margin-bottom: 0; }
+.aid-category > h3 { grid-column: 2; font-size: 18px; line-height: 1.25; }
+.aid-category > p { grid-column: 2; margin-top: 7px; font-size: 13px; }
+.aid-category > button { grid-column: 3; grid-row: 1 / 3; width: 44px; height: 44px; align-self: center; justify-content: center; margin: 0; border: 1px solid var(--line); border-radius: var(--radius-pill); }
+.aid-category > button:hover { background: var(--surface-2); }
+.aid-resource { break-inside: avoid; }
+.aid-resource-open { border-color: var(--line-strong); }
+.aid-main h1:focus, .aid-main h2:focus { outline: none; }
+.aid-assistant { background: var(--blue-soft); }
+@media (max-width: 1199px) {
+  .aid-layout { grid-template-columns: 180px minmax(0, 1fr); }
+  .aid-rail { padding-inline: 12px; }
+  .aid-hero { grid-template-columns: minmax(0, 1fr) 220px; }
+  .aid-heading { font-size: 3rem; }
+  .aid-art { height: 300px; }
+}
+@media (max-width: 1023px) {
+  .aid-layout { display: block; }
+  .aid-rail { display: none; }
+  .aid-main { padding: 32px 24px; }
+}
+@media (max-width: 639px) {
+  .aid-main { padding: 26px 20px 32px; }
+  .aid-hero { grid-template-columns: minmax(0, 1fr); gap: 0; margin-bottom: 26px; }
+  .aid-heading { font-size: clamp(2.5rem, 9vw, 3.2rem); }
+  .aid-art { height: 180px; max-width: 320px; width: 100%; margin: 16px 0 0 auto; }
+  .aid-art-coral { right: 0; }
+  .aid-art-line { inset: 0; }
+  .aid-situation { gap: 16px; padding: 22px; }
+  .aid-situation > div { flex-basis: 100%; }
+}
+
 /* Black on white, app chrome hidden; the user's notes print with the sheet. */
 @media print {
   :root, :root[data-theme="dark"] {
@@ -342,4 +389,11 @@ h1 { font-weight: 800; }
   .page-decoration { display: none; }
   body > div > header, nav, [role="dialog"], [aria-label="Guided tour"] { display: none !important; }
   main { padding: 0 !important; }
+  .aid-layout { display: block; }
+  .aid-main { padding: 0; }
+  .aid-rail { display: none !important; }
+  .aid-main:has(.aid-preparation) > :not([aria-label="Assistance resources"]) { display: none !important; }
+  .aid-main:has(.aid-preparation) > [aria-label="Assistance resources"] > :not(:has(.aid-resource-open)) { display: none !important; }
+  .aid-main:has(.aid-preparation) .aid-resource:not(.aid-resource-open) { display: none !important; }
+  .aid-main:has(.aid-preparation) .aid-resource-open { border: 0; box-shadow: none; padding: 0; }
 }

@@ -1,0 +1,52 @@
+[
+  {
+    "id": "fema-ia", "name": "FEMA Individual Assistance", "category": "financial",
+    "description": "Explore federal help for eligible disaster-related needs that remain unmet.",
+    "needs": ["financial", "housing", "belongings"], "hazards": [],
+    "eligibility": ["Your address must be in an area designated for the relevant FEMA assistance.", "FEMA checks individual circumstances; a declaration alone does not establish eligibility."],
+    "documents": ["Identity and contact information, as requested by FEMA", "Damaged-home address and occupancy information", "Insurance information, if applicable", "A list of disaster-related losses and expenses"],
+    "limitations": ["This demo has not checked disaster declarations or your address.", "These are preparation prompts, not an official or exhaustive document list. Confirm requirements with FEMA.", "No award, application window, amount, or deadline is asserted here."],
+    "source": { "name": "USAGov · FEMA disaster assistance", "url": "https://www.usa.gov/disaster-assistance", "checkedAt": "2026-11-02" },
+    "applicationUrl": "https://www.disasterassistance.gov/", "applicationLabel": "Visit FEMA’s application website"
+  },
+  {
+    "id": "red-cross-shelter", "name": "Red Cross shelter services", "category": "housing",
+    "description": "Use the Red Cross directory to check disaster shelter and relief services.",
+    "needs": ["housing", "food", "health"], "hazards": [],
+    "eligibility": ["For people displaced or affected by a disaster; check the provider’s current information.", "Open locations and services depend on the event and must be confirmed directly."],
+    "documents": ["A list of access, medication, or family needs to discuss, if you wish"],
+    "limitations": ["This is a directory link, not a confirmed shelter placement or reservation.", "No open shelter, address, hours, or available bed is asserted.", "The preparation checklist is optional and is not an entry requirement."],
+    "source": { "name": "American Red Cross · shelter directory", "url": "https://www.redcross.org/get-help/disaster-relief-and-recovery-services/find-an-open-shelter.html", "checkedAt": "2026-11-02" },
+    "applicationUrl": "https://www.redcross.org/get-help/disaster-relief-and-recovery-services/find-an-open-shelter.html", "applicationLabel": "Check the shelter directory"
+  },
+  {
+    "id": "disaster-food", "name": "Disaster food assistance (D-SNAP)", "category": "essentials",
+    "description": "Learn about short-term food assistance where a disaster food program is authorized.",
+    "needs": ["food", "financial"], "hazards": [],
+    "eligibility": ["D-SNAP must be authorized for the affected area; individual and state requirements apply.", "Existing SNAP recipients should check their state’s guidance rather than assume a new D-SNAP application is needed."],
+    "documents": ["Identity and affected-address information, as requested by the state", "A record of disaster-related income changes or expenses", "Existing SNAP information, if applicable"],
+    "limitations": ["No D-SNAP activation or application period has been checked for your location.", "Your state agency determines the requirements and eligibility. The checklist is a preparation aid."],
+    "source": { "name": "USAGov · disaster food relief", "url": "https://www.usa.gov/disaster-food-help", "checkedAt": "2026-11-02" },
+    "applicationUrl": "https://www.usa.gov/disaster-food-help", "applicationLabel": "Find official food-assistance guidance"
+  },
+  {
+    "id": "local-recovery", "name": "Local recovery support through 211", "category": "essentials",
+    "description": "Find local organizations that can help you explore housing, food, and other recovery needs.",
+    "needs": ["housing", "food", "health", "belongings", "documents", "financial"], "hazards": [],
+    "eligibility": ["211 is a referral service; each local provider sets its own eligibility rules.", "Ask a local specialist which services are currently available in your area."],
+    "documents": ["A short list of your immediate needs", "City or ZIP code for finding local services, if you choose to share it"],
+    "limitations": ["A referral is not an approval or a guarantee that assistance is available.", "You do not need to complete this checklist to contact 211."],
+    "source": { "name": "United Way 211 · disaster recovery", "url": "https://211.org/get-help/disaster-recovery", "checkedAt": "2026-11-02" },
+    "applicationUrl": "https://211.org/get-help/disaster-recovery", "applicationLabel": "Explore local recovery referrals"
+  },
+  {
+    "id": "flood-insurance", "name": "Flood insurance claim preparation", "category": "financial",
+    "description": "Prepare to contact your flood insurer about losses under an existing policy.",
+    "needs": ["financial", "belongings", "housing"], "hazards": ["flood", "hurricane"],
+    "eligibility": ["This is an insurance-claim pathway for people with applicable flood insurance, not a grant.", "Coverage and any payment depend on your policy and the insurer’s review."],
+    "documents": ["Flood insurance policy and insurer contact information", "An inventory of damaged belongings", "Photos or records you choose to gather for your insurer"],
+    "limitations": ["No policy or coverage has been checked.", "Keep evidence with you; Aid Autopilot does not access or send claim photos.", "Contact your insurer for policy-specific requirements and deadlines."],
+    "source": { "name": "FEMA · National Flood Insurance Program", "url": "https://www.floodsmart.gov/recover/start-a-claim", "checkedAt": "2026-11-02" },
+    "applicationUrl": "https://www.floodsmart.gov/recover/start-a-claim", "applicationLabel": "Read the official claim guide"
+  }
+]

@@ -162,6 +162,14 @@ Warm, editorial look matched to the six references in `scripts/mockupsfornehomep
 
 Light mode is always the first-visit default, regardless of the OS preference. The navigation's sun/moon button saves a choice in localStorage; a head script applies it before paint. Storage failure falls back to light and the toggle still works for that visit. Both themes cover the claims steps, Memory Web, safety cards, Toolkit and tour. The existing map canvas uses a CSS filter in dark mode; no tile provider was added. Printing forces light colors, and exports retain their existing format. See `docs/FRONTEND_REDESIGN.md` for checks and deliberate differences from the mockups.
 
+## Aid Autopilot (`/aid`)
+
+Explore assistance resources through five optional questions, review your situation, filter demo program cards, and prepare a document checklist. Each record has provider links, source-review dates, eligibility limitations, and an explicit demo label. Discovery filters a static catalog by disaster type and needs; it does **not** verify an address, active declarations, availability, deadlines, or eligibility.
+
+Questionnaire answers, saved links, application status and preparation notes stay in memory while navigating the app; reload or **Clear my aid details** clears them. Download JSON or print a preparation summary to keep a copy. Completing a checklist never submits an application. **Ask the assistant** prepares a message containing the selected program and confirmed situation for review; it sends no preparation notes, photos or evidence, and does not send a message automatically. The assistant's map still uses its selected demo scenario.
+
+The catalog is `apps/web/public/aid-programs.json`; the replaceable adapter, validation and filtering live in `apps/web/src/lib/aidAutopilot.ts`. See [Aid Autopilot implementation and test guide](docs/AID_AUTOPILOT.md).
+
 ## Second demo scenario (`/content/nrv`)
 
 Ask Wren has a **Demo scenario** switch: Spokane Complex Fires (default) or a **hypothetical** New River Valley flood modeled on the September 27, 2024 Helene flooding (USGS alert, WVTF, FEMA DR-4831-VA). It is labeled hypothetical in the UI and in Wren's instructions. The places (hospitals, county offices, animal center) and programs (Red Cross, 211 Virginia, NFIP claims, FEMA IA, SBA) are real and sourced; no shelters are listed because real shelters are announced during an event. Safety steps: `content/safety/flood.json`, quoted from Ready.gov: Floods and FloodSmart. Scenario ids live in `ScenarioId` (schemas.py and types.ts); adding one means a new content folder plus that id.

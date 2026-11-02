@@ -3,19 +3,21 @@
 import Link from "next/link";
 import { useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
-import { Compass, FolderCheck, House, MessageCircle, Network, Package, Phone, ShieldCheck } from "lucide-react";
+import { Compass, FolderCheck, House, LifeBuoy, MessageCircle, Network, Package, Phone, ShieldCheck } from "lucide-react";
 import brand from "@shared/brand.json";
 import { TourProvider, useTour } from "@/components/tour/Tour";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { MotionConfig } from "motion/react";
+import { AidProvider } from "@/components/aid/AidProvider";
 
 const NAV = [
   { href: "/agent", label: brand.agentName, icon: MessageCircle },
   { href: "/claims", label: "My Claim", icon: Package },
   { href: "/claims#memory", label: "Memory Web", icon: Network },
+  { href: "/aid", label: "Aid Autopilot", icon: LifeBuoy },
   { href: "/#privacy", label: "Privacy", icon: ShieldCheck },
 ];
-const MOBILE_NAV = [{ href: "/", label: "Home", icon: House }, ...NAV.slice(0, 2), { href: "/toolkit", label: "Toolkit", icon: FolderCheck }];
+const MOBILE_NAV = [{ href: "/", label: "Home", icon: House }, ...NAV.slice(0, 2), { href: "/aid", label: "Aid", icon: LifeBuoy }, { href: "/toolkit", label: "Toolkit", icon: FolderCheck }];
 const subscribeHash = (listener: () => void) => {
   window.addEventListener("hashchange", listener);
   return () => window.removeEventListener("hashchange", listener);
@@ -31,6 +33,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <TourProvider>
+    <AidProvider>
     <MotionConfig reducedMotion="user">
     <div className="app-shell flex min-h-dvh flex-col">
       <a href="#main-content" className="fixed -top-20 left-4 z-50 rounded-full bg-primary px-5 py-3 text-primary-ink focus:top-3">Skip to content</a>
@@ -43,7 +46,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </span>
           </Link>
 
-          <nav className="ml-auto hidden h-full items-center gap-6 lg:flex" aria-label="Main">
+          <nav className="ml-auto hidden h-full items-center gap-4 lg:flex xl:gap-6" aria-label="Main">
             {NAV.map(({ href, label }) => (
               <Link key={href} href={href} aria-current={active(href) ? "page" : undefined}
                 className={`relative flex h-full items-center text-sm font-medium transition-colors ${
@@ -78,6 +81,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="mb-3 flex flex-wrap justify-center gap-5 text-[13px] font-medium text-ink">
           <Link href="/#privacy" className="hover:underline">Privacy</Link>
           <Link href="/toolkit" className="hover:underline">Recovery toolkit</Link>
+          <Link href="/aid" className="hover:underline">Aid Autopilot</Link>
           <TourLink footer />
           <a href="tel:911" className="text-danger hover:underline">In danger? Call 911.</a>
         </div>
@@ -95,6 +99,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </nav>
     </div>
     </MotionConfig>
+    </AidProvider>
     </TourProvider>
   );
 }

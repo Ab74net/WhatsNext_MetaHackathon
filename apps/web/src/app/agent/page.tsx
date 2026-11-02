@@ -13,6 +13,7 @@ import { UICard } from "@/components/agent/Cards";
 import { Button, Card } from "@/components/ui";
 import { WrenAvatar, type WrenMood } from "@/components/Wren";
 import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
+import { useAidAutopilot } from "@/components/aid/AidProvider";
 
 const STATUS: Record<WrenMood, string> = {
   idle: "Disaster recovery assistant · official sources only",
@@ -43,8 +44,9 @@ function TypedText({ text, onDone }: { text: string; onDone: () => void }) {
 
 export default function AgentPage() {
   const agent = useAgent();
+  const { agentDraft, setAgentDraft } = useAidAutopilot();
   const reduced = usePrefersReducedMotion();
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState(() => agentDraft?.text ?? "");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const preset = agent.scenario?.presets.find((p) => p.id === agent.caseFile.preset);
@@ -63,6 +65,7 @@ export default function AgentPage() {
   function submit(text: string) {
     setInput("");
     setSelectedId(null);
+    setAgentDraft(null);
     agent.send(text);
   }
 
@@ -85,6 +88,12 @@ export default function AgentPage() {
               </Button>
             )}
           </div>
+
+          {agentDraft && <div className="border-b border-line bg-blue-soft px-4 py-3 text-sm">
+            <p className="font-semibold">From Aid Autopilot · {agentDraft.programName}</p>
+            <p className="mt-1 text-xs text-muted">Nothing has been sent. Review the prepared message before pressing Send. The map and local recommendations still use the selected demo scenario; your aid location has not been verified.</p>
+            <button type="button" className="mt-1 min-h-11 text-xs font-semibold text-blue underline" onClick={() => { setInput(""); setAgentDraft(null); }}>Discard prepared request</button>
+          </div>}
 
           {agent.scenarios.length > 1 && (
             <div className="flex flex-wrap items-center gap-2 border-b border-line px-4 py-2">
