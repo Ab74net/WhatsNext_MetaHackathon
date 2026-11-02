@@ -290,7 +290,7 @@ function FollowUp({ prep, notes }: { prep: PrepDetails; notes: CallNotes }) {
 function SectionHead({ n, id, title }: { n: number; id: string; title: string }) {
   return (
     <div className="flex items-baseline gap-3 border-b border-line pb-3">
-      <span className="font-serif text-2xl text-accent tabular-nums" aria-hidden>{n}</span>
+      <span className="font-display text-2xl text-accent tabular-nums" aria-hidden>{n}</span>
       <h2 id={id} className="text-2xl">{title}</h2>
     </div>
   );
@@ -304,7 +304,7 @@ function Field({ label, value, onChange, type = "text", large = false }: {
     <div className="flex min-w-0 flex-1 flex-col gap-1.5">
       <label htmlFor={id} className="text-sm text-muted">{label}</label>
       <input id={id} type={type} value={value} onChange={(e) => onChange(e.target.value)} autoComplete="off"
-        className={`h-12 rounded-md bg-surface-2 px-3 text-ink [color-scheme:dark] placeholder:text-subtle print:border print:border-black ${large ? "text-lg" : "text-[15px]"}`} />
+        className={`h-12 rounded-md bg-surface-2 px-3 text-ink placeholder:text-subtle print:border print:border-black ${large ? "text-lg" : "text-[15px]"}`} />
     </div>
   );
 }

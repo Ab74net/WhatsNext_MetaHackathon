@@ -2,18 +2,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Compass, FolderCheck, House, MessageCircle, Package, Phone, ShieldCheck } from "lucide-react";
+import { Compass, FolderCheck, House, MessageCircle, Package, Phone } from "lucide-react";
 import brand from "@shared/brand.json";
 import { TourProvider, useTour } from "@/components/tour/Tour";
 
 const NAV = [
-  { href: "/", label: "Home", icon: House },
-  { href: "/agent", label: `Ask ${brand.agentName}`, short: "Assistant", icon: MessageCircle },
-  { href: "/claims", label: "Claim inventory", short: "Inventory", icon: Package },
+  { href: "/agent", label: brand.agentName, icon: MessageCircle },
+  { href: "/claims", label: "My Claim", icon: Package },
   { href: "/toolkit", label: "Toolkit", icon: FolderCheck },
 ];
+const MOBILE_NAV = [{ href: "/", label: "Home", icon: House }, ...NAV];
 
-// Top bar + left sidebar on desktop, bottom tab bar on phones. The 911 link is always visible.
+// Top bar with text links on desktop, bottom tab bar on phones. The 911 link is always visible,
+// and the "not insurance or legal advice" note sits at the foot of every page.
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const active = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
@@ -21,52 +22,51 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <TourProvider>
     <div className="flex min-h-full flex-col">
-      <header className="sticky top-0 z-30 h-14 border-b border-line bg-canvas">
-        <div className="flex h-full items-center gap-3 px-4">
-          <Link href="/" className="flex items-center gap-2.5">
+      <header className="sticky top-0 z-30 border-b border-line bg-canvas/95">
+        <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-3 px-4 sm:px-6">
+          <Link href="/" className="flex min-w-0 items-center gap-2.5">
             <Mark />
-            <span className="whitespace-nowrap font-serif text-[19px] font-semibold tracking-tight">{brand.projectName}</span>
+            <span className="truncate font-display text-[17px] font-bold tracking-tight">
+              {brand.projectName}<span className="hidden font-medium text-muted sm:inline"> × {brand.partner}</span>
+            </span>
           </Link>
-          <span className="ml-2 hidden items-center gap-1.5 text-xs text-muted md:inline-flex">
-            <ShieldCheck className="size-3.5 text-good" aria-hidden />
-            Private session · nothing stored
-          </span>
-          <TourLink />
-          <a href="tel:911" data-tour="call-911"
-            className="inline-flex h-10 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md bg-danger-soft px-3 text-[13px] font-semibold text-danger transition-colors hover:bg-danger-solid hover:text-white">
-            <Phone className="size-3.5" aria-hidden />
-            <span className="hidden sm:inline">Emergency?</span> Call 911
-          </a>
+
+          <nav className="ml-auto hidden h-full items-center gap-7 md:flex" aria-label="Main">
+            {NAV.map(({ href, label }) => (
+              <Link key={href} href={href} aria-current={active(href) ? "page" : undefined}
+                className={`relative flex h-full items-center text-sm font-medium transition-colors ${
+                  active(href) ? "text-ink" : "text-muted hover:text-ink"}`}>
+                {label}
+                {active(href) && <span className="absolute inset-x-0 bottom-0 h-0.5 rounded-full bg-accent" aria-hidden />}
+              </Link>
+            ))}
+          </nav>
+
+          <div className="ml-auto flex items-center gap-1.5 md:ml-6">
+            <TourLink />
+            <a href="tel:911" data-tour="call-911"
+              className="inline-flex h-10 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 text-[13px] font-semibold text-danger transition-colors hover:bg-danger-soft">
+              <Phone className="size-3.5" aria-hidden /> Call 911
+            </a>
+            <Link href="/agent" className="hidden h-10 items-center rounded-full bg-ink px-4 text-sm font-semibold text-white hover:bg-[#2b2b2b] sm:inline-flex">
+              Get help
+            </Link>
+          </div>
         </div>
       </header>
 
-      <div className="flex flex-1">
-        <nav className="sticky top-14 hidden h-[calc(100dvh_-_3.5rem)] w-56 shrink-0 flex-col gap-0.5 border-r border-line p-3 lg:flex" aria-label="Main">
-          {NAV.map(({ href, label, icon: Icon }) => (
-            <Link key={href} href={href}
-              aria-current={active(href) ? "page" : undefined}
-              className={`relative flex h-11 items-center gap-3 rounded-md px-3 text-[15px] transition-colors ${
-                active(href) ? "bg-surface-2 font-semibold text-ink" : "text-muted hover:bg-surface-2/60 hover:text-ink"}`}>
-              {active(href) && <span className="absolute inset-y-2.5 left-0 w-0.5 rounded-full bg-accent" aria-hidden />}
-              <Icon className={`size-[18px] ${active(href) ? "text-accent" : ""}`} aria-hidden />
-              {label}
-            </Link>
-          ))}
-          <p className="mt-auto px-3 text-xs leading-relaxed text-subtle">
-            General guidance only. Not insurance or legal advice. Every source shows when it was last checked.
-          </p>
-        </nav>
+      <main className="flex min-w-0 flex-1 flex-col">{children}</main>
 
-        <main className="flex min-w-0 flex-1 flex-col pb-20 lg:pb-0">{children}</main>
-      </div>
+      <footer className="border-t border-line px-4 pb-24 pt-5 text-center text-xs text-subtle md:pb-5">
+        General guidance only. Not insurance or legal advice. Every source shows when it was last checked.
+      </footer>
 
-      <nav className="fixed inset-x-0 bottom-0 z-30 flex border-t border-line bg-canvas pb-[env(safe-area-inset-bottom)] lg:hidden" aria-label="Main">
-        {NAV.map(({ href, label, short, icon: Icon }) => (
+      <nav className="fixed inset-x-0 bottom-0 z-30 flex border-t border-line bg-surface pb-[env(safe-area-inset-bottom)] md:hidden" aria-label="Main">
+        {MOBILE_NAV.map(({ href, label, icon: Icon }) => (
           <Link key={href} href={href} aria-current={active(href) ? "page" : undefined}
-            className={`flex min-h-14 flex-1 flex-col items-center gap-0.5 pb-2 pt-1.5 text-[11px] font-medium ${active(href) ? "text-accent" : "text-muted"}`}>
-            <span className={`h-0.5 w-8 rounded-full ${active(href) ? "bg-accent" : "bg-transparent"}`} />
-            <Icon className="mt-1 size-5" aria-hidden />
-            {short ?? label}
+            className={`flex min-h-14 flex-1 flex-col items-center justify-center gap-1 text-[11px] font-medium ${active(href) ? "text-accent" : "text-muted"}`}>
+            <Icon className="size-5" aria-hidden />
+            {label}
           </Link>
         ))}
       </nav>
@@ -80,22 +80,20 @@ function TourLink() {
   const { start } = useTour();
   return (
     <button type="button" onClick={start} aria-label="Take a tour" data-tour-link
-      className="ml-auto inline-flex h-10 items-center gap-1.5 rounded-md px-2.5 text-[13px] font-medium text-muted hover:text-ink">
+      className="inline-flex h-10 items-center gap-1.5 rounded-full px-3 text-[13px] font-medium text-muted hover:bg-surface-2 hover:text-ink">
       <Compass className="size-4" aria-hidden />
-      <span className="hidden sm:inline">Take a tour</span>
+      <span className="hidden lg:inline">Take a tour</span>
     </button>
   );
 }
 
-// Three stacked stones: a trail marker.
+// Three stacked stones: a trail marker. (Not a sparkle.)
 function Mark() {
   return (
-    <span className="flex size-8 items-center justify-center rounded-md bg-accent text-accent-ink">
-      <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden>
-        <ellipse cx="12" cy="18.5" rx="8" ry="3.2" fill="currentColor" />
-        <ellipse cx="12" cy="12.4" rx="5.6" ry="2.7" fill="currentColor" opacity="0.85" />
-        <ellipse cx="12" cy="6.8" rx="3.4" ry="2.1" fill="currentColor" opacity="0.7" />
-      </svg>
-    </span>
+    <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden className="shrink-0 text-ink">
+      <ellipse cx="12" cy="19" rx="8.5" ry="3.3" fill="currentColor" />
+      <ellipse cx="12" cy="12.6" rx="6" ry="2.8" fill="var(--deco-coral)" />
+      <ellipse cx="12" cy="6.9" rx="3.6" ry="2.2" fill="var(--deco-blue)" />
+    </svg>
   );
 }

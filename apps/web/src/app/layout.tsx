@@ -1,18 +1,19 @@
 import type { Metadata, Viewport } from "next";
-import { Geist_Mono, Public_Sans, Source_Serif_4 } from "next/font/google";
+import { Geist_Mono, Inter, Inter_Tight } from "next/font/google";
 import brand from "@shared/brand.json";
 import { AppShell } from "@/components/AppShell";
 import "./globals.css";
 
-// UI text: Public Sans (a civic typeface). Headings: Source Serif 4.
-const publicSans = Public_Sans({
-  variable: "--font-public-sans",
+// UI text: Inter. Headings: Inter Tight, heavy and tightly tracked.
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
-const sourceSerif = Source_Serif_4({
-  variable: "--font-source-serif",
+const interTight = Inter_Tight({
+  variable: "--font-inter-tight",
   subsets: ["latin"],
+  weight: ["500", "600", "700", "800"],
 });
 
 const geistMono = Geist_Mono({
@@ -26,13 +27,13 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#131210",
-  colorScheme: "dark",
+  themeColor: "#faf7f2",
+  colorScheme: "light",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${publicSans.variable} ${sourceSerif.variable} ${geistMono.variable} h-full`}>
+    <html lang="en" className={`${inter.variable} ${interTight.variable} ${geistMono.variable} h-full`}>
       <body className="min-h-full">
         <AppShell>{children}</AppShell>
       </body>

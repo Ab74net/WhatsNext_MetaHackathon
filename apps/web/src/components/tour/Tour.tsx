@@ -71,7 +71,7 @@ function TourOffer({ onStart, onDismiss }: { onStart: () => void; onDismiss: () 
         {/* eslint-disable-next-line @next/next/no-img-element -- small static illustration */}
         <img src="/wren/scene-guide.webp" alt="" width={480} height={351} className="w-20 shrink-0" />
         <div>
-          <p className="font-serif text-lg leading-snug">New here?</p>
+          <p className="font-display text-lg leading-snug">New here?</p>
           <p className="mt-1 text-sm text-muted">A one-minute tour shows how to ask for help and build your claim list.</p>
         </div>
       </div>
@@ -193,7 +193,7 @@ function TourDialog({ step, setStep, onClose }: {
             <X className="size-4" aria-hidden />
           </button>
         </div>
-        <h2 id={titleId} tabIndex={-1} className="mt-1 font-serif text-xl leading-snug outline-none">{s.title}</h2>
+        <h2 id={titleId} tabIndex={-1} className="mt-1 font-display text-xl leading-snug outline-none">{s.title}</h2>
         <p id={bodyId} className="mt-2 text-[15px] leading-relaxed text-muted">{s.body}</p>
         <div className="mt-4 flex gap-1" aria-hidden>
           {TOUR_STEPS.map((_, i) => (

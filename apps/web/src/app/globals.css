@@ -1,35 +1,41 @@
 @import "tailwindcss";
 
-/* Design tokens. One dark, warm theme: charcoal base, warm off-white text, a single amber
-   accent for actions, sage only for "done / safe", a deep red only for emergencies.
-   Use them as Tailwind classes: bg-canvas, bg-surface, text-ink, text-muted, border-line,
-   bg-accent, text-accent, bg-accent-soft, ... Contrast: ink/muted/subtle all pass WCAG AA
-   on canvas, surface and surface-2.
-   Spacing follows Tailwind's 4 px scale; radius is 6-8 px (rounded-md / rounded-lg). */
+/* Design tokens. Light, warm, editorial (docs/design/target-mockup.png).
+   Warm off-white page, white cards with thin warm-gray borders, near-black ink.
+   Coral (accent) marks key states and emergencies; blue is for decoration, map pins and the
+   success check; green only for "open / available / done".
+   Contrast: every text color passes WCAG AA on canvas, surface and surface-2. The mockup's
+   brighter coral (#E5533D) and blue (#2F7FA6) are decorative only (--deco-*), never text.
+   Use as Tailwind classes: bg-canvas, bg-surface, text-ink, text-muted, border-line, bg-accent, ... */
 :root {
-  color-scheme: dark;
-  --canvas: #131210;
-  --surface: #1b1a17;
-  --surface-2: #23221e;
-  --surface-3: #2e2c27;
-  --ink: #f1ece2;
-  --muted: #b8b0a3;
-  --subtle: #9a9184;
-  --line: #34312b;
-  --accent: #e3a548;
-  --accent-hover: #edb661;
-  --accent-ink: #1a1307;
-  --accent-soft: #352a17;
-  --good: #9dbb98;
-  --good-ink: #121a10;
-  --good-soft: #222c20;
-  --warn: #e0bd7c;
-  --warn-soft: #2f2818;
-  --danger: #f2907f;
-  --danger-solid: #b5382a;
-  --danger-soft: #3a1f1a;
-  --shadow-card: 0 0 0 1px rgb(255 255 255 / 0.035), 0 1px 2px rgb(0 0 0 / 0.35);
-  --shadow-pop: 0 0 0 1px rgb(255 255 255 / 0.05), 0 16px 40px rgb(0 0 0 / 0.55);
+  color-scheme: light;
+  --canvas: #faf7f2;
+  --surface: #ffffff;
+  --surface-2: #f4f0e9;
+  --surface-3: #ebe6dd;
+  --ink: #141414;
+  --muted: #57524a;
+  --subtle: #6f695f;
+  --line: #e6e1d8;
+  --line-strong: #b9b2a6;
+  --accent: #c2381f;
+  --accent-hover: #a82f19;
+  --accent-ink: #ffffff;
+  --accent-soft: #fdece7;
+  --blue: #256a8c;
+  --blue-soft: #dcebf3;
+  --good: #1f7a45;
+  --good-ink: #ffffff;
+  --good-soft: #e3f1e8;
+  --warn: #8a5300;
+  --warn-soft: #fbf0dc;
+  --danger: #b42318;
+  --danger-solid: #c2381f;
+  --danger-soft: #fdece7;
+  --deco-coral: #e5533d;
+  --deco-blue: #2f7fa6;
+  --shadow-card: 0 1px 2px rgb(20 20 20 / 0.04);
+  --shadow-pop: 0 12px 32px rgb(20 20 20 / 0.12), 0 0 0 1px rgb(20 20 20 / 0.04);
 }
 
 @theme inline {
@@ -41,10 +47,13 @@
   --color-muted: var(--muted);
   --color-subtle: var(--subtle);
   --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
   --color-accent-ink: var(--accent-ink);
   --color-accent-soft: var(--accent-soft);
+  --color-blue: var(--blue);
+  --color-blue-soft: var(--blue-soft);
   --color-good: var(--good);
   --color-good-ink: var(--good-ink);
   --color-good-soft: var(--good-soft);
@@ -53,11 +62,13 @@
   --color-danger: var(--danger);
   --color-danger-solid: var(--danger-solid);
   --color-danger-soft: var(--danger-soft);
+  --color-deco-coral: var(--deco-coral);
+  --color-deco-blue: var(--deco-blue);
   --color-bg: var(--canvas);
   --shadow-card: var(--shadow-card);
   --shadow-pop: var(--shadow-pop);
-  --font-sans: var(--font-public-sans), system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-serif: var(--font-source-serif), Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-inter), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: var(--font-inter-tight), var(--font-inter), system-ui, sans-serif;
   --font-mono: var(--font-geist-mono);
 }
 
@@ -70,20 +81,23 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Editorial hierarchy: serif headings, sans everything else. */
+/* Big, confident, tight-tracked headings. */
 h1, h2, h3 {
-  font-family: var(--font-serif);
-  font-weight: 600;
-  letter-spacing: -0.012em;
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
   text-wrap: balance;
 }
+h1 { font-weight: 800; }
 
 ::selection { background: var(--accent-soft); color: var(--ink); }
 
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--ink);
   outline-offset: 2px;
 }
+
 /* --- Scan animations ----------------------------------------------------------- */
 
 /* A soft light bar that sweeps down a photo while it is being scanned. */

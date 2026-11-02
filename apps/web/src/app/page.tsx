@@ -1,7 +1,7 @@
-import { ArrowRight, Check, MessageCircle } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import brand from "@shared/brand.json";
 import { ButtonLink } from "@/components/ui";
-import { HeroBackdrop } from "@/components/home/HeroBackdrop";
+import { HomeHero } from "@/components/home/HomeHero";
 
 const STEPS = [
   { title: "Pick photos you already have",
@@ -24,23 +24,23 @@ const PROMISES = [
 export default function Home() {
   return (
     <>
-      <section className="relative isolate flex min-h-[min(88svh,760px)] items-end text-white">
-        <HeroBackdrop />
-        <div className="relative mx-auto flex w-full max-w-5xl flex-col gap-5 px-4 pb-12 pt-32 sm:px-8 sm:pb-16">
-          <p className="text-sm text-white/80">Free and private. No account needed.</p>
-          <h1 className="max-w-2xl text-[2.6rem] leading-[1.05] sm:text-6xl">{brand.tagline}</h1>
-          <p className="max-w-xl text-lg leading-relaxed text-white/85">
-            Get a clear plan for today, find official help near you, and rebuild a claim-ready list of what
-            you owned from the photos already on your phone.
-          </p>
-          <div className="mt-1 flex flex-wrap gap-3">
-            <ButtonLink href="/agent" variant="primary" size="lg">
-              <MessageCircle className="size-[18px]" aria-hidden /> Ask {brand.agentName}
-            </ButtonLink>
-            <ButtonLink href="/claims" size="lg" className="bg-white/10 text-white hover:bg-white/20">
-              Build my claim inventory <ArrowRight className="size-[18px]" aria-hidden />
-            </ButtonLink>
+      <section className="relative overflow-hidden">
+        <div className="mx-auto grid w-full max-w-7xl items-center gap-10 px-4 pb-14 pt-10 sm:px-6 lg:grid-cols-[1fr_1.05fr] lg:gap-6 lg:pb-20 lg:pt-16">
+          <div className="relative z-10 flex flex-col gap-5">
+            <h1 className="text-[2.7rem] leading-[1.02] tracking-[-0.035em] sm:text-6xl lg:text-[4.2rem]">{brand.tagline}</h1>
+            <p className="font-display text-[2rem] font-medium leading-[1.08] tracking-[-0.03em] sm:text-5xl lg:text-[3.4rem]">
+              We’ll help you with what’s next.
+            </p>
+            <p className="max-w-md text-lg text-muted">Find help, document what you lost, and take the next step.</p>
+            <div className="mt-2 flex flex-wrap gap-3">
+              <ButtonLink href="/agent" variant="primary" size="lg">
+                Talk to {brand.agentName} <ArrowRight className="size-[18px]" aria-hidden />
+              </ButtonLink>
+              <ButtonLink href="/claims" variant="secondary" size="lg">Build my claim</ButtonLink>
+            </div>
+            <p className="text-sm text-subtle">Free and private. No account needed.</p>
           </div>
+          <HomeHero />
         </div>
       </section>
 
@@ -55,7 +55,7 @@ export default function Home() {
           <ol className="flex flex-col">
             {STEPS.map((s, i) => (
               <li key={s.title} className="grid grid-cols-[3rem_1fr] gap-x-4 border-t border-line py-5 first:border-t-0 first:pt-0 md:first:border-t md:first:pt-5">
-                <span className="font-serif text-2xl leading-none text-accent tabular-nums" aria-hidden>{String(i + 1).padStart(2, "0")}</span>
+                <span className="font-display text-2xl font-bold leading-none text-accent tabular-nums" aria-hidden>{String(i + 1).padStart(2, "0")}</span>
                 <div>
                   <h3 className="text-lg">{s.title}</h3>
                   <p className="mt-1 text-[15px] text-muted">{s.body}</p>
@@ -93,7 +93,7 @@ export default function Home() {
 // Wren, the assistant, introduced below the steps.
 function MeetWren() {
   return (
-    <section className="grid items-center gap-8 rounded-lg bg-surface p-6 sm:grid-cols-[auto_1fr] sm:p-10" aria-labelledby="wren">
+    <section className="grid items-center gap-8 rounded-3xl border border-line bg-surface p-6 sm:grid-cols-[auto_1fr] sm:p-10" aria-labelledby="wren">
       {/* eslint-disable-next-line @next/next/no-img-element -- small static webp */}
       <img src="/wren/scene-guide.webp" alt={`${brand.agentName}, a friendly first-aid kit, pointing at a screen`}
         width={480} height={351} loading="lazy" className="w-44 sm:w-60" />

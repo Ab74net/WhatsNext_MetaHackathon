@@ -5,7 +5,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { RotateCcw, Send } from "lucide-react";
+import { FileText, HeartPulse, House, MessageCircle, RotateCcw, Send, ShieldAlert } from "lucide-react";
 import brand from "@shared/brand.json";
 import { useAgent } from "@/lib/useAgent";
 import { MapPanel } from "@/components/agent/MapPanel";
@@ -59,15 +59,18 @@ export default function AgentPage() {
   }
 
   return (
-    <div className="grid flex-1 gap-3 p-3 lg:h-[calc(100dvh_-_3.5rem)] lg:flex-none lg:grid-cols-[minmax(380px,520px)_1fr] lg:grid-rows-[minmax(0,1fr)] lg:gap-4 lg:p-4">
+    <div className="mx-auto grid w-full max-w-7xl flex-1 gap-3 p-3 lg:h-[calc(100dvh_-_4rem)] lg:flex-none lg:grid-cols-[minmax(380px,520px)_1fr] lg:grid-rows-[minmax(0,1fr)] lg:gap-4 lg:p-4">
       <div className="order-2 flex h-[75vh] min-h-0 flex-col lg:order-1 lg:h-full">
         <Card className="flex min-h-0 flex-1 flex-col overflow-hidden">
           <div className="flex items-center gap-3 border-b border-line px-4 py-3">
             <WrenAvatar mood={mood} size={44} />
             <div className="min-w-0 flex-1">
-              <p className="font-semibold leading-tight">{brand.agentName}</p>
-              <p className={`truncate text-xs ${mood === "idle" ? "text-muted" : "text-accent"}`} aria-live="polite">{STATUS[mood]}</p>
+              <p className="font-display text-lg font-bold leading-tight">{brand.agentName}</p>
+              <p className="truncate text-xs text-muted" aria-live="polite">{mood === "idle" ? "Your disaster recovery assistant" : STATUS[mood]}</p>
             </div>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-good-soft px-2.5 py-1 text-xs font-semibold text-good">
+              <span className="size-1.5 rounded-full bg-good" aria-hidden /> Online
+            </span>
             {agent.messages.length > 0 && (
               <Button variant="ghost" size="sm" onClick={() => { agent.reset(); setSelectedId(null); }} aria-label="New conversation">
                 <RotateCcw className="size-4" />
@@ -84,8 +87,8 @@ export default function AgentPage() {
                   return (
                     <button key={sc.id} role="radio" aria-checked={on}
                       onClick={() => { if (!on) { agent.chooseScenario(sc.id); setSelectedId(null); } }}
-                      className={`min-h-9 rounded-md px-3 text-xs font-semibold transition-colors ${
-                        on ? "bg-accent text-accent-ink" : "bg-surface-2 text-muted hover:text-ink"}`}>
+                      className={`min-h-9 rounded-full px-3.5 text-xs font-semibold transition-colors ${
+                        on ? "bg-ink text-white" : "border border-line text-muted hover:text-ink"}`}>
                       {sc.title}{sc.hypothetical ? " (hypothetical)" : ""}
                     </button>
                   );
@@ -96,12 +99,12 @@ export default function AgentPage() {
 
           <div className="flex items-center gap-2 border-b border-line px-4 py-2">
             <span className="text-xs font-medium text-muted">{agent.scenario?.title ?? "Scenario"}:</span>
-            <div className="flex rounded-lg bg-surface-2 p-0.5" role="tablist">
+            <div className="flex rounded-full bg-surface-2 p-1" role="tablist">
               {(agent.scenario?.presets ?? []).map((p) => (
                 <button key={p.id} role="tab" aria-selected={p.id === agent.caseFile.preset}
                   onClick={() => { agent.setPreset(p.id); setSelectedId(null); }}
-                  className={`h-7 rounded-md px-2.5 text-xs font-semibold transition ${
-                    p.id === agent.caseFile.preset ? "bg-surface text-accent shadow-card" : "text-muted hover:text-ink"}`}>
+                  className={`min-h-8 rounded-full px-3 text-xs font-semibold transition ${
+                    p.id === agent.caseFile.preset ? "bg-surface text-ink shadow-card ring-1 ring-line" : "text-muted hover:text-ink"}`}>
                   {p.label}
                 </button>
               ))}
@@ -135,7 +138,7 @@ export default function AgentPage() {
               {agent.messages.map((m) => (
                 <motion.div key={m.id} data-msg data-role={m.role} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-2.5">
                   {m.role === "user" ? (
-                    <p className="max-w-[85%] self-end rounded-lg rounded-br-sm bg-accent px-3.5 py-2 text-[15px] text-accent-ink">{m.text}</p>
+                    <p className="max-w-[85%] self-end rounded-2xl rounded-br-md bg-blue-soft px-4 py-2.5 text-[15px] text-ink">{m.text}</p>
                   ) : (
                     <>
                       <div className="flex items-start gap-2.5">
@@ -166,23 +169,26 @@ export default function AgentPage() {
 
           {agent.messages.length < 2 && !agent.pending && (
             <div className="flex flex-wrap gap-1.5 px-4 pb-2">
-              {(agent.scenario?.suggestions[agent.caseFile.preset] ?? []).map((s) => (
-                <button key={s} onClick={() => submit(s)}
-                  className="rounded-md bg-surface-2 px-3 py-2 text-left text-[13px] text-ink transition-colors hover:bg-accent-soft hover:text-accent">
-                  {s}
-                </button>
-              ))}
+              {(agent.scenario?.suggestions[agent.caseFile.preset] ?? []).map((s) => {
+                const Icon = chipIcon(s);
+                return (
+                  <button key={s} onClick={() => submit(s)}
+                    className="inline-flex min-h-10 items-center gap-2 rounded-full border border-line bg-surface px-3.5 py-2 text-left text-[13px] text-ink transition-colors hover:border-ink">
+                    <Icon className="size-4 shrink-0 text-muted" aria-hidden /> {s}
+                  </button>
+                );
+              })}
             </div>
           )}
 
           <form data-tour="agent-input" onSubmit={(e) => { e.preventDefault(); submit(input); }} className="border-t border-line p-3">
-            <div className="flex items-center gap-2 rounded-lg bg-surface-2 py-1.5 pl-4 pr-1.5 focus-within:ring-2 focus-within:ring-accent">
+            <div className="flex items-center gap-2 rounded-full border border-line bg-surface py-1.5 pl-5 pr-1.5 focus-within:border-ink">
               <input value={input} onChange={(e) => setInput(e.target.value)} placeholder={`Message ${brand.agentName}`}
                 aria-label={`Message ${brand.agentName}`} maxLength={1000}
                 className="min-w-0 flex-1 bg-transparent text-[15px] outline-none placeholder:text-subtle" />
               <button type="submit" disabled={!input.trim() || agent.pending} aria-label="Send"
-                className="flex size-10 items-center justify-center rounded-md bg-accent text-accent-ink disabled:opacity-40">
-                <Send className="size-4" aria-hidden />
+                className="flex size-10 items-center justify-center rounded-full text-accent hover:bg-accent-soft disabled:text-subtle disabled:hover:bg-transparent">
+                <Send className="size-5" aria-hidden />
               </button>
             </div>
             <p className="mt-1.5 px-2 text-[11px] text-subtle">General guidance only, not insurance or legal advice or local emergency instructions.</p>
@@ -196,4 +202,14 @@ export default function AgentPage() {
       </div>
     </div>
   );
+}
+
+// A small icon for each quick-reply chip, picked from its wording.
+function chipIcon(text: string) {
+  const t = text.toLowerCase();
+  if (/shelter|stay|tonight|home|house|dog/.test(t)) return House;
+  if (/claim|insurance|id|papers|document/.test(t)) return FileText;
+  if (/hospital|hurt/.test(t)) return HeartPulse;
+  if (/safe|evacuat|rising|drive/.test(t)) return ShieldAlert;
+  return MessageCircle;
 }
