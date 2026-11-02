@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Compass, House, MessageCircle, Package, Phone, ShieldCheck } from "lucide-react";
+import { Compass, FolderCheck, House, MessageCircle, Package, Phone, ShieldCheck } from "lucide-react";
 import brand from "@shared/brand.json";
 import { TourProvider, useTour } from "@/components/tour/Tour";
 
@@ -10,6 +10,7 @@ const NAV = [
   { href: "/", label: "Home", icon: House },
   { href: "/agent", label: `Ask ${brand.agentName}`, short: "Assistant", icon: MessageCircle },
   { href: "/claims", label: "Claim inventory", short: "Inventory", icon: Package },
+  { href: "/toolkit", label: "Toolkit", icon: FolderCheck },
 ];
 
 // Top bar + left sidebar on desktop, bottom tab bar on phones. The 911 link is always visible.

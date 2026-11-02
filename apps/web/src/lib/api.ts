@@ -1,7 +1,7 @@
 // Thin client for the FastAPI backend. /api/* is forwarded to it by next.config.ts.
 import type {
-  AgentResponse, CaseFile, ChatTurn, FromPhotoResult, Health, InventoryItem, MemoryWeb, MergeResult, PhotoMeta,
-  PhotoResult, Scenario,
+  AgentResponse, CaseFile, ChatTurn, FromPhotoResult, Health, InsurerQuestions, InsurerQuestionsRequest, InventoryItem,
+  MemoryWeb, MergeResult, PhotoMeta, PhotoResult, Scenario,
 } from "@shared/types";
 
 export class ApiError extends Error {
@@ -31,6 +31,9 @@ export type ExportFormat = "pdf" | "xlsx" | "csv";
 export type ItemPatch = Partial<Pick<InventoryItem, "category" | "brand" | "model" | "condition" | "user_confirmed">>;
 
 export const api = {
+  // Toolkit. Only non-personal fields are ever sent (the request types allow nothing else).
+  insurerQuestions: (req: InsurerQuestionsRequest) =>
+    call<InsurerQuestions>("/toolkit/insurer-questions", { method: "POST", ...json(req) }),
   health: () => call<Health>("/health"),
   createSession: () => call<{ session_id: string }>("/sessions", { method: "POST" }),
   endSession: (sid: string) => call<{ deleted: boolean }>(`/sessions/${sid}`, { method: "DELETE" }),

@@ -9,13 +9,13 @@ from fastapi import FastAPI, Form, HTTPException, UploadFile
 from fastapi.responses import Response
 from pydantic import BaseModel
 
-from . import config, content, export, memory_web, merge, sessions
+from . import config, content, export, memory_web, merge, sessions, toolkit
 from .agent import make_agent
 from .images import NotAnImageError, process_upload
 from .model_client import make_client
 from .pipeline import process_photo
-from .schemas import (AgentRequest, AgentResponse, Health, InventoryItem, ItemPatch, ManualMerge, MemoryWeb, MergeResult,
-                      PhotoEvidence, PhotoMeta, PhotoResult)
+from .schemas import (AgentRequest, AgentResponse, Health, InsurerQuestions, InsurerQuestionsRequest, InventoryItem,
+                      ItemPatch, ManualMerge, MemoryWeb, MergeResult, PhotoEvidence, PhotoMeta, PhotoResult)
 from .valuation import ValuationUnavailable, value_item
 
 logging.basicConfig(level=logging.INFO)
@@ -282,3 +282,12 @@ async def add_item_from_photo(sid: str, file: UploadFile, category: str = Form(m
     )
     session.items[item.id] = item
     return FromPhotoResult(item=item, photo=meta)
+
+
+# --- Recovery toolkit -------------------------------------------------------------------------
+# No personal data reaches these routes: requests are strict schemas of non-personal fields.
+
+
+@app.post("/api/toolkit/insurer-questions", response_model=InsurerQuestions)
+async def insurer_questions(req: InsurerQuestionsRequest) -> InsurerQuestions:
+    return await toolkit.insurer_questions(client, req)

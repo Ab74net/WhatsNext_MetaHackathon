@@ -152,3 +152,14 @@ h1, h2, h3 {
 .map-shell .maplibregl-ctrl-top-right {
   top: 56px;
 }
+
+/* --- Print (Toolkit sheets) ------------------------------------------------------------ */
+/* Black on white, app chrome hidden; the user's notes print with the sheet. */
+@media print {
+  :root {
+    --canvas: #fff; --surface: #fff; --surface-2: #fff; --surface-3: #fff;
+    --ink: #000; --muted: #333; --subtle: #555; --line: #999; --accent: #000; --good: #000;
+  }
+  body > div > header, nav, [role="dialog"], [aria-label="Guided tour"] { display: none !important; }
+  main { padding: 0 !important; }
+}

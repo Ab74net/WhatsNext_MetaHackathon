@@ -298,3 +298,23 @@ export interface FromPhotoResult {
   item: InventoryItem;
   photo: PhotoMeta;
 }
+
+// --- Toolkit: insurer-call prep --------------------------------------------------
+// The request carries only these two non-personal fields; everything else stays on device.
+
+export type Hazard = "wildfire" | "flood" | "hurricane" | "tornado" | "earthquake" | "other";
+
+export interface InsurerQuestionsRequest {
+  hazard: Hazard;
+  has_inventory: boolean;
+}
+
+export interface InsurerQuestion {
+  text: string;
+  why: string;
+}
+
+export interface InsurerQuestions {
+  questions: InsurerQuestion[];
+  tailored: boolean; // false: the static base list
+}

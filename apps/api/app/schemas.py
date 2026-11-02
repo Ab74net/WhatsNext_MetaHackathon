@@ -5,7 +5,7 @@ InventoryItem follows the stable item schema in README.md; export and UI depend 
 
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 Condition = Literal["good", "worn", "damaged", "unknown"]
 Evidence = Literal["seen_in_photo", "inferred"]
@@ -353,3 +353,26 @@ class MemoryWeb(BaseModel):
     rooms: list[MemoryRoom]
     suggestions: list[MemorySuggestion]
     grades: dict[str, EvidenceGrade]
+
+
+# --- Toolkit: insurer-call prep ----------------------------------------------------
+# Privacy: the request carries ONLY the hazard type and whether the user has an inventory.
+# Policy numbers, names, addresses and call notes never leave the browser.
+
+Hazard = Literal["wildfire", "flood", "hurricane", "tornado", "earthquake", "other"]
+
+
+class InsurerQuestionsRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")  # reject anything else a client tries to send
+    hazard: Hazard
+    has_inventory: bool
+
+
+class InsurerQuestion(BaseModel):
+    text: str = Field(min_length=8, max_length=200)
+    why: str = Field(max_length=200)
+
+
+class InsurerQuestions(BaseModel):
+    questions: list[InsurerQuestion] = Field(min_length=3, max_length=12)
+    tailored: bool  # false: the static base list (Spark unavailable or its output was rejected)
