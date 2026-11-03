@@ -44,6 +44,18 @@ The generation script is `scripts/prepare_intro_photos.py`; output metadata is r
 | `house2.png` | active flames; too sensational next to a calmer aftermath image |
 | `flood3.jpg` | actually a burned house, not a flood; iPhone EXIF suggests a personal photo; the wildfire slot is already filled |
 
+## Our Story photographs
+
+The developer supplied `scripts/nrv_photos/` as a collection from the 2024 New River Valley flooding. All four JPEGs were inspected. None has reliable EXIF location or capture-date metadata. Captions identify the collection generally and do not infer individual addresses, towns or dates. Source rights/photographer credits have not been supplied or verified.
+
+| Public prefix | Original | Visible content | Preparation |
+| --- | --- | --- | --- |
+| `story/neighborhood-*.webp` | `3.jpg` | aerial view of floodwater around houses and streets | hero; resize only, original 4:3 ratio |
+| `story/high-water-*.webp` | `2.jpg` | floodwater, camper and supermarket sign | gallery; resize only, original ratio |
+| `story/aftermath-*.webp` | `4.jpg` | blue house, muddy street, damaged belongings and parked car | gallery; resize only, original 3:2 ratio |
+
+`1.jpg` shows identifiable people wading through floodwater and is not used. `scripts/prepare_story_photos.py` generates responsive WebPs without EXIF/GPS/XMP/ICC metadata and a manifest. Raw originals are unchanged and ignored by Git.
+
 ## Wren mascot
 
 | File | Source | Used on |

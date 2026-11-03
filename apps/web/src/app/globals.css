@@ -159,6 +159,9 @@ img { max-width: 100%; }
 .ui-card { border-radius: var(--radius-card); }
 .app-shell { position: relative; isolation: isolate; overflow-x: clip; }
 .app-content { position: relative; z-index: 1; }
+.app-more-pages { position: fixed; inset: auto 12px calc(70px + env(safe-area-inset-bottom)) auto; margin: 0; width: min(300px, calc(100vw - 24px)); padding: 8px; border: 1px solid var(--line); border-radius: 20px; background: var(--surface); color: var(--ink); box-shadow: var(--shadow-pop); }
+.app-more-pages::backdrop { background: transparent; }
+@media (min-width: 1280px) { .app-more-pages { display: none; } }
 .page-decoration { position: absolute; z-index: -1; pointer-events: none; }
 .page-decoration-blue { width: 250px; height: 350px; right: -215px; top: 180px; border-radius: 50%; background: var(--deco-blue); transform: rotate(-25deg); }
 .page-decoration-coral { width: 180px; height: 220px; left: -165px; top: 670px; border-radius: 38px; background: var(--deco-coral); transform: rotate(-35deg); }

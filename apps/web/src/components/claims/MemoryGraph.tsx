@@ -1,58 +1,66 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type RefObject } from "react";
 import { Check, Expand, House, Minus, Move, Plus, RotateCcw } from "lucide-react";
 import type { InventoryItem, MemoryWeb } from "@shared/types";
-import { buildMemoryGraph, connectionPath, fitGraph, HOME_ID, MAX_ZOOM, MIN_ZOOM, zoomGraph, type GraphSelection, type GraphView, type MemoryGraph as Graph, type MemoryNode, type NodePosition, type Point } from "@/lib/memoryGraph";
+import { buildMemoryGraph, connectionPath, fitGraph, HOME_ID, MAX_ZOOM, MIN_ZOOM, zoomGraph, type GraphSelection, type GraphView, type MemoryGraph as Graph, type MemoryNode, type MemoryViewport, type Point } from "@/lib/memoryGraph";
+import { MemoryGestures } from "@/lib/memoryGestures";
 import { Button, Card } from "@/components/ui";
 
 const INITIAL_VIEW: GraphView = { x: 450, y: 300, k: 1 };
-const midpoint = (a: Point, b: Point): Point => ({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 });
-const distance = (a: Point, b: Point) => Math.hypot(b.x - a.x, b.y - a.y);
-
-export function MemoryGraph({ web, items, dismissed, added, selected, onSelect }: {
+export function MemoryGraph({ web, items, dismissed, added, selected, onSelect, viewportRef }: {
   web: MemoryWeb; items: Record<string, InventoryItem>; dismissed: Set<string>; added: Record<string, string>;
   selected: GraphSelection | null; onSelect: (selection: GraphSelection | null) => void;
+  viewportRef: RefObject<MemoryViewport>;
 }) {
   const canvas = useRef<SVGSVGElement>(null);
-  const positions = useRef(new Map<string, NodePosition>());
   const [graph, setGraph] = useState<Graph>({ nodes: [], edges: [] });
   const [size, setSize] = useState({ width: 900, height: 600 });
-  const measured = useRef({ width: 900, height: 600 });
+  const measured = useRef(size);
   const [view, setView] = useState(INITIAL_VIEW);
-  const current = useRef(INITIAL_VIEW);
+  const current = useRef(view);
   const fitted = useRef(false);
-  const pointers = useRef(new Map<number, Point>());
-  const gesture = useRef<{ origin: Point; dragged: boolean; nodeId: string | null } | null>(null);
-  const suppressClick = useRef(false);
+  const gesture = useRef(new MemoryGestures());
   const [dragging, setDragging] = useState(false);
-  const updateView = useCallback((next: GraphView) => { current.current = next; setView(next); }, []);
+  const updateView = useCallback((next: GraphView) => {
+    current.current = next;
+    viewportRef.current.view = next;
+    setView(next);
+  }, [viewportRef]);
 
   useEffect(() => {
     // The external layout runs only after React commits. Existing positions are pinned;
     // appearance/price/confirmation updates never restart a live force simulation.
     const frame = requestAnimationFrame(() => {
-      const next = buildMemoryGraph(web, items, dismissed, added, positions.current);
-      for (const n of next.nodes) positions.current.set(n.id, { x: n.x, y: n.y, width: n.width, height: n.height });
+      const next = buildMemoryGraph(web, items, dismissed, added, viewportRef.current.positions);
+      for (const n of next.nodes) viewportRef.current.positions.set(n.id, { x: n.x, y: n.y, width: n.width, height: n.height });
       setGraph(next);
     });
     return () => cancelAnimationFrame(frame);
-  }, [web, items, dismissed, added]);
+  }, [web, items, dismissed, added, viewportRef]);
 
   useEffect(() => {
     const element = canvas.current;
     if (!element) return;
+    const saved = viewportRef.current.view, savedSize = viewportRef.current.size;
+    let first = true;
+    if (saved) fitted.current = true;
     const observer = new ResizeObserver(([entry]) => {
       const width = Math.max(1, entry.contentRect.width), height = Math.max(1, entry.contentRect.height);
       const old = measured.current;
-      if (old.width === width && old.height === height) return;
-      if (fitted.current) updateView({ ...current.current, x: current.current.x + (width - old.width) / 2, y: current.current.y + (height - old.height) / 2 });
+      if (first && saved) {
+        updateView({ ...saved, x: saved.x + (savedSize ? (width - savedSize.width) / 2 : 0), y: saved.y + (savedSize ? (height - savedSize.height) / 2 : 0) });
+      } else if (fitted.current && (old.width !== width || old.height !== height)) {
+        updateView({ ...current.current, x: current.current.x + (width - old.width) / 2, y: current.current.y + (height - old.height) / 2 });
+      }
+      first = false;
       measured.current = { width, height };
-      setSize({ width, height });
+      viewportRef.current.size = { width, height };
+      if (old.width !== width || old.height !== height) setSize({ width, height });
     });
     observer.observe(element);
     return () => observer.disconnect();
-  }, [updateView]);
+  }, [updateView, viewportRef]);
 
   useEffect(() => {
     if (!graph.nodes.length) return;
@@ -77,48 +85,37 @@ export function MemoryGraph({ web, items, dismissed, added, selected, onSelect }
     return () => element.removeEventListener("wheel", wheel);
   }, [updateView]);
 
+  useEffect(() => {
+    const element = canvas.current, tracking = gesture.current;
+    const cancel = () => {
+      for (const id of tracking.cancel()) if (element?.hasPointerCapture(id)) element.releasePointerCapture(id);
+      setDragging(false);
+    };
+    const visibility = () => { if (document.hidden) cancel(); };
+    window.addEventListener("blur", cancel);
+    document.addEventListener("visibilitychange", visibility);
+    return () => { tracking.cancel(); window.removeEventListener("blur", cancel); document.removeEventListener("visibilitychange", visibility); };
+  }, []);
+
   function local(event: ReactPointerEvent<SVGSVGElement>): Point {
     const rect = event.currentTarget.getBoundingClientRect();
     return { x: event.clientX - rect.left, y: event.clientY - rect.top };
   }
   function pointerDown(event: ReactPointerEvent<SVGSVGElement>) {
     if (event.pointerType === "mouse" && event.button !== 0) return;
-    const point = local(event);
-    pointers.current.set(event.pointerId, point);
-    if (pointers.current.size === 1) {
-      gesture.current = { origin: point, dragged: false, nodeId: (event.target as Element).closest("[data-node-id]")?.getAttribute("data-node-id") ?? null };
-    } else if (gesture.current) gesture.current.dragged = true;
+    gesture.current.down(event.pointerId, local(event), (event.target as Element).closest("[data-node-id]")?.getAttribute("data-node-id") ?? null);
     event.currentTarget.setPointerCapture(event.pointerId);
   }
   function pointerMove(event: ReactPointerEvent<SVGSVGElement>) {
-    const previous = pointers.current.get(event.pointerId);
-    if (!previous) return;
-    const before = [...pointers.current.values()];
-    const point = local(event);
-    pointers.current.set(event.pointerId, point);
-    const after = [...pointers.current.values()];
-    if (gesture.current && distance(gesture.current.origin, point) > 4) gesture.current.dragged = true;
-    if (!gesture.current?.dragged) return;
+    const next = gesture.current.move(event.pointerId, local(event), current.current);
+    if (!next) return;
     event.preventDefault(); setDragging(true);
-    if (before.length >= 2) {
-      const oldCenter = midpoint(before[0], before[1]), center = midpoint(after[0], after[1]);
-      const next = zoomGraph(current.current, oldCenter, distance(after[0], after[1]) / Math.max(1, distance(before[0], before[1])));
-      updateView({ ...next, x: next.x + center.x - oldCenter.x, y: next.y + center.y - oldCenter.y });
-    } else updateView({ ...current.current, x: current.current.x + point.x - previous.x, y: current.current.y + point.y - previous.y });
+    updateView(next);
   }
   function pointerUp(event: ReactPointerEvent<SVGSVGElement>) {
-    const down = gesture.current;
-    pointers.current.delete(event.pointerId);
+    gesture.current.up(event.pointerId, event.type !== "pointerup");
     if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
-    if (!pointers.current.size) {
-      setDragging(false); gesture.current = null;
-      if (down && !down.dragged && down.nodeId && event.type !== "pointercancel") {
-        const n = graph.nodes.find((node) => node.id === down.nodeId);
-        if (n) select(n);
-      }
-      suppressClick.current = true;
-      requestAnimationFrame(() => { suppressClick.current = false; });
-    }
+    setDragging(gesture.current.dragging);
   }
   function select(node: MemoryNode) {
     onSelect(selected?.kind === node.kind && selected.id === node.entityId ? null : { kind: node.kind, id: node.entityId });
@@ -141,8 +138,13 @@ export function MemoryGraph({ web, items, dismissed, added, selected, onSelect }
       </div>
     </div>
     <svg ref={canvas} viewBox={`0 0 ${size.width} ${size.height}`} className={`memory-canvas ${dragging ? "is-dragging" : ""}`} role="group" aria-label={`Memory web: ${web.rooms.length} rooms. Scroll to zoom, drag to pan. Tab to a node and press Enter for details.`}
-      onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={pointerUp}
-      onClickCapture={(event) => { if (suppressClick.current) { event.stopPropagation(); event.preventDefault(); } }}>
+      onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={pointerUp} onLostPointerCapture={pointerUp}
+      onClick={(event) => {
+        if (event.detail === 0) return; // Keyboard and assistive activation is handled on the node.
+        const id = gesture.current.click();
+        const node = graph.nodes.find((node) => node.id === id);
+        if (node) select(node);
+      }}>
       <g data-graph-transform transform={`translate(${view.x} ${view.y}) scale(${view.k})`}>
         {graph.edges.map((edge) => {
           const a = lookup.get(edge.source), b = lookup.get(edge.target);
@@ -160,8 +162,9 @@ export function MemoryGraph({ web, items, dismissed, added, selected, onSelect }
           return <g key={node.id} data-node-id={node.id} data-node-kind={node.kind} transform={`translate(${node.x} ${node.y})`}
             className="memory-node" role="button" tabIndex={0} aria-pressed={on}
             aria-label={suggestion ? `Did you own ${node.label}?` : node.label}
-            onClick={() => select(node)}
-            onFocus={() => {
+            onClick={(event) => { if (event.detail === 0) select(node); }}
+            onFocus={(event) => {
+              if (!event.currentTarget.matches(":focus-visible")) return;
               const x = node.x * current.current.k + current.current.x, y = node.y * current.current.k + current.current.y;
               if (x < 50 || x > size.width - 50 || y < 40 || y > size.height - 40) centerNode(node);
             }}

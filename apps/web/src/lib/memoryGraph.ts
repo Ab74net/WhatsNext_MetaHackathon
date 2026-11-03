@@ -13,6 +13,18 @@ export interface MemoryNode extends SimulationNodeDatum {
 export interface MemoryEdge { source: string; target: string; kind: "home" | "owns" | "suggests" }
 export interface MemoryGraph { nodes: MemoryNode[]; edges: MemoryEdge[] }
 export interface GraphView extends Point { k: number }
+export interface MemoryViewport {
+  positions: Map<string, NodePosition>;
+  view: GraphView | null;
+  size: { width: number; height: number } | null;
+}
+export interface MemoryReview {
+  selected: GraphSelection | null;
+  dismissed: Set<string>;
+  added: Record<string, string>;
+}
+export const emptyMemoryReview = (): MemoryReview => ({ selected: null, dismissed: new Set(), added: {} });
+export const emptyMemoryViewport = (): MemoryViewport => ({ positions: new Map(), view: null, size: null });
 export const MIN_ZOOM = 0.12;
 export const MAX_ZOOM = 3;
 export const HOME_ID = "__home";
@@ -99,14 +111,17 @@ export function buildMemoryGraph(web: MemoryWeb, items: Record<string, Inventory
   }
   const hub = nodes.get(HOME_ID)!;
   hub.fx = 0; hub.fy = 0; hub.x = 0; hub.y = 0; fixed.add(HOME_ID);
-  const sim = forceSimulation(list)
-    .force("link", forceLink<MemoryNode, { source: string | MemoryNode; target: string | MemoryNode }>(edges.map((e) => ({ source: e.source, target: e.target }))).id((n) => n.id).distance(170).strength(.35))
-    .force("charge", forceManyBody().strength(-450))
-    .force("x", forceX<MemoryNode>(0).strength(.035))
-    .force("y", forceY<MemoryNode>(0).strength(.035))
-    .force("collision", forceCollide<MemoryNode>((n) => Math.hypot(n.width / 2, n.height / 2) + 12))
-    .stop();
-  for (let i = 0; i < 200; i++) sim.tick();
+  // Metadata edits and removals need no simulation when every survivor is pinned.
+  if (fixed.size < list.length) {
+    const sim = forceSimulation(list)
+      .force("link", forceLink<MemoryNode, { source: string | MemoryNode; target: string | MemoryNode }>(edges.map((e) => ({ source: e.source, target: e.target }))).id((n) => n.id).distance(170).strength(.35))
+      .force("charge", forceManyBody().strength(-450))
+      .force("x", forceX<MemoryNode>(0).strength(.035))
+      .force("y", forceY<MemoryNode>(0).strength(.035))
+      .force("collision", forceCollide<MemoryNode>((n) => Math.hypot(n.width / 2, n.height / 2) + 12))
+      .stop();
+    for (let i = 0; i < 200; i++) sim.tick();
+  }
   const placed = list.filter((n) => fixed.has(n.id));
   for (const n of list.filter((n) => !fixed.has(n.id))) {
     // New confirmations can reuse a former suggestion position without moving neighbors.

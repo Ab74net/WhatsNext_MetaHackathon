@@ -46,3 +46,25 @@ Graph checks exercise real wheel and mouse events, two-touch pinch, keyboard sel
 The existing full Aid Autopilot browser regression also passed on the final build: optional questions, filtering, preparation and JSON/printing, memory-only navigation/reload behavior, reviewed assistant handoff without notes, and loading/error/retry/empty states.
 
 For a final real demo, run `npm run dev`. Check OS theme on a fresh visit, select a manual theme, reload, and navigate. Scan consented staged photos, confirm inventory, open Memory Web from the header, zoom/pan/pinch, add an item with evidence, refresh, and check its review/export line. Inspect price sources and download all formats. On a phone, use Fit for an overview and zoom to read individual labels. Check safety citations and 911 banners, the Toolkit printout, Aid preparation and the tour.
+
+## Memory Web follow-up and Our Story
+
+The follow-up request identified moving, zooming and selecting in Memory Web as the problem. The renderer previously selected on pointer release, then suppressed the browser click for one animation frame. That timing window was fragile for delayed touch activation. It also did not release interrupted gestures on lost capture or window blur. `lib/memoryGestures.ts` now tracks pan/pinch and consumes each native click once, handles cancellation, and resets when the page loses visibility or focus. Mouse focus no longer recenters an edge node; keyboard focus still brings offscreen nodes into view.
+
+The graph's cache and review state were component-local, so moving to Review or Export discarded positions, camera, selections, dismissals and suggestion-to-inventory links. `useClaimSession.ts` now owns that memory-only state and resets it at session end. ResizeObserver restores the saved view using the measured canvas dimensions. Metadata edits with all surviving nodes pinned skip force simulation. Room details include newly confirmed belongings immediately; invalid selections show the instructions instead of an empty panel. Smaller screens have a selected-details button beneath the graph.
+
+`/our-story` is a prerendered App Router page using the shared shell, theme tokens and CTA buttons. Its first-person story uses only the supplied biography, identifies the project as developing, and explains that AI output requires verification. `our-story/story.css` provides the editorial serif layout; `components/story/StoryReveals.tsx` adds optional entry motion without hiding content before JavaScript. Reduced motion skips those effects.
+
+The page uses `nrv_photos/3.jpg` for the aerial hero, then `2.jpg` and `4.jpg` for the gallery. Nine public WebP variants retain the originals' aspect ratios and omit EXIF/GPS/XMP/ICC metadata. All four supplied JPEGs were inspected. Event captions rely on the developer's collection description, with no inferred individual locations/dates; credits and unverified licensing are recorded in `IMAGE_CREDITS.md`.
+
+Our Story is linked from the desktop header and footer. Below 1280px, the five-slot bottom navigation includes an accessible native **More** popover for Our Story, Memory Web, Toolkit and Privacy. The active page is highlighted; Escape and outside clicks close the popover. Existing routes remain available.
+
+Verification for this follow-up:
+
+- `npm run lint`, `node node_modules/typescript/bin/tsc --noEmit`, and `npm run build` passed in `apps/web`; the build includes `/our-story`.
+- `npm run test:web` passed all 36 tests, including six new gesture regression cases. Backend source and schemas were unchanged.
+- Isolated headless Chrome inspected every story section and all three loaded photographs at 320, 390, 768, 1024, 1280 and 1440px in both themes, with no page overflow. Theme-token contrast checks, active navigation, mobile menu/Escape, both CTAs and reduced motion passed. Desktop/light and phone/dark screenshots were visually reviewed.
+- In the production preview, native wheel/drag/pinch, mouse and touch activation, interrupted pointer capture, stable refresh/error handling, evidence confirmation rollback/retry, dismissal and Review/Export round trips passed. Positions/camera and the resulting four-item inventory were checked, as were PDF/XLSX/CSV downloads, Toolkit, printing, tour and blocked-storage fallback. This used an isolated mock backend and synthetic evidence, not live model calls.
+- Pillow verified all nine new public image variants had no source metadata. No source photograph was cropped or overwritten.
+
+The final build passed after clearing two stale generated output directories (`.next/server/app/our-story` and `our-story.segments`) with native PowerShell. OneDrive had marked these directories as reparse points, which caused Next's Node cleanup to fail with EPERM. No tracked source or original photos were removed.

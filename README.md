@@ -164,7 +164,15 @@ The system theme is used until the user chooses light or dark with the navigatio
 
 Memory Web now supports cursor-centered wheel zoom, drag panning, touch pinch, zoom controls, Reset and Fit. It uses the existing d3-force/SVG stack with non-overlapping labels, cached positions, and curved links. Refresh preserves the camera and graph; a suggestion turns into a confirmed node only after evidence and a successful server confirmation. The header link and `/claims#memory` also provide an empty state before inventory exists.
 
+The graph's camera, positions, selection, confirmed-suggestion mapping and dismissals also survive trips between the claim steps. Pointer gestures handle delayed touch clicks, cancellation, lost capture and leaving the window. This state stays in the claim session's memory and clears when the session ends.
+
 The slideshow starts with the five files in `scripts/photostoplayfirst/` in natural order, then the original five images. Metadata-free WebPs and the generated introduction manifest ship in `apps/web/public/hero/`; rebuild those copies with `apps/api/.venv/Scripts/python scripts/prepare_intro_photos.py`. Sources 3 and 4 are cropped to exclude foreground people. The raw sources remain unchanged and git-ignored.
+
+## Our Story (`/our-story`)
+
+A personal account of the founder's experience as a Virginia Tech student during the 2024 New River Valley flooding, and why this developing project exists. The editorial page reuses the app shell, shared theme tokens and buttons. It is linked in the desktop header, footer and the smaller-screen **More** menu, which also provides Memory Web, Toolkit and Privacy links.
+
+Three supplied NRV photos (`scripts/nrv_photos/3.jpg`, `2.jpg`, `4.jpg`) ship as uncropped, responsive WebPs with source metadata removed. Rebuild them with `apps/api/.venv/Scripts/python scripts/prepare_story_photos.py`. Originals remain unchanged and ignored. Event captions use the developer's description of the collection; the files have no reliable location/date metadata, so the page does not assign specific locations or dates to individual images. Photo rights remain unverified; see `docs/IMAGE_CREDITS.md`.
 
 ## Aid Autopilot (`/aid`)
 

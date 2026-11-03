@@ -28,9 +28,9 @@ type AskState = { status: "idle" } | { status: "checking" } | { status: "found";
 
 export function MemoryStep({ session, onExport, onBack }: { session: ClaimSession; onExport: () => void; onBack?: () => void }) {
   const { memory, loadMemoryWeb, items, photos } = session;
-  const [selected, setSelected] = useState<Selection>(null);
-  const [dismissed, setDismissed] = useState<Set<string>>(new Set());
-  const [added, setAdded] = useState<Record<string, string>>({}); // suggestion id -> new item id
+  const { selected: requestedSelection, dismissed, added } = session.memoryReview;
+  const details = useRef<HTMLDivElement>(null);
+  const setSelected = (selected: Selection) => session.setMemoryReview((old) => ({ ...old, selected }));
   const hasConfirmed = Object.values(items).some((item) => item.user_confirmed);
 
   useEffect(() => {
@@ -44,6 +44,12 @@ export function MemoryStep({ session, onExport, onBack }: { session: ClaimSessio
   }, [photos]);
 
   const web = memory.status === "done" ? memory.web : memory.status === "loading" || memory.status === "error" ? memory.previous ?? null : null;
+  const selected = requestedSelection && (
+    requestedSelection.kind === "hub" ||
+    requestedSelection.kind === "item" && items[requestedSelection.id]?.user_confirmed ||
+    requestedSelection.kind === "room" && web?.rooms.some((r) => r.id === requestedSelection.id) ||
+    requestedSelection.kind === "suggestion" && web?.suggestions.some((s) => s.id === requestedSelection.id) && !dismissed.has(requestedSelection.id) && !items[added[requestedSelection.id]]?.user_confirmed
+  ) ? requestedSelection : null;
 
   const suggestionsLeft = web ? web.suggestions.filter((s) => !dismissed.has(s.id) && !items[added[s.id]]?.user_confirmed).length : 0;
 
@@ -95,25 +101,26 @@ export function MemoryStep({ session, onExport, onBack }: { session: ClaimSessio
       </Card>
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_340px]">
-        <MemoryGraph web={web} items={items} dismissed={dismissed} added={added} selected={selected} onSelect={setSelected} />
-
-        <Card className="self-start p-6 sm:p-7 lg:sticky lg:top-24" data-memory-details role="region" aria-label="Belonging details" aria-live="polite">
-          <SidePanel selected={selected} session={session} web={web} metaById={metaById}
+        <MemoryGraph web={web} items={items} dismissed={dismissed} added={added} selected={selected} onSelect={setSelected} viewportRef={session.memoryViewport} />
+        {selected && <Button className="lg:hidden" onClick={() => details.current?.scrollIntoView({ block: "start", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" })}>View selected belonging details <ArrowRight className="size-4 rotate-90" aria-hidden /></Button>}
+        <div ref={details} className="self-start scroll-mt-24 lg:sticky lg:top-24"><Card className="p-6 sm:p-7" data-memory-details role="region" aria-label="Belonging details" aria-live="polite">
+          <SidePanel selected={selected} session={session} web={web} metaById={metaById} added={added}
             onClose={() => setSelected(null)}
-            onDismiss={(s) => { setDismissed((d) => new Set(d).add(s.id)); setSelected(null); }}
-            onAdded={(s, item) => { setAdded((a) => ({ ...a, [s.id]: item.id })); setSelected({ kind: "item", id: item.id }); }}
+            onDismiss={(s) => session.setMemoryReview((old) => ({ ...old, dismissed: new Set(old.dismissed).add(s.id), selected: null }))}
+            onAdded={(s, item) => session.setMemoryReview((old) => ({ ...old, added: { ...old.added, [s.id]: item.id }, selected: { kind: "item", id: item.id } }))}
             suggestionsLeft={suggestionsLeft} />
-        </Card>
+        </Card></div>
       </div>
     </div>
   );
 }
 
-function SidePanel({ selected, session, web, metaById, onClose, onDismiss, onAdded, suggestionsLeft }: {
+function SidePanel({ selected, session, web, metaById, added, onClose, onDismiss, onAdded, suggestionsLeft }: {
   selected: Selection;
   session: ClaimSession;
   web: NonNullable<Extract<ClaimSession["memory"], { status: "done" }>["web"]>;
   metaById: Record<string, PhotoMeta>;
+  added: Record<string, string>;
   onClose: () => void;
   onDismiss: (s: MemorySuggestion) => void;
   onAdded: (s: MemorySuggestion, item: InventoryItem) => void;
@@ -141,11 +148,12 @@ function SidePanel({ selected, session, web, metaById, onClose, onDismiss, onAdd
 
   if (selected.kind === "room") {
     const room = web.rooms.find((r) => r.id === selected.id);
+    const roomItems = [...new Set([...(room?.item_ids ?? []), ...web.suggestions.filter((s) => s.room_id === selected.id).map((s) => added[s.id]).filter(Boolean)])];
     return (
       <div>
         {header(room?.name ?? "Room")}
         <ul className="flex flex-col gap-1 text-sm">
-          {room?.item_ids.map((iid) => session.items[iid]?.user_confirmed && <li key={iid} className="capitalize">{session.items[iid].category}</li>)}
+          {roomItems.map((iid) => session.items[iid]?.user_confirmed && <li key={iid} className="capitalize">{session.items[iid].category}</li>)}
         </ul>
       </div>
     );

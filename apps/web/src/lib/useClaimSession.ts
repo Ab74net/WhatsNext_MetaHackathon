@@ -7,6 +7,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Health, InventoryItem, MemoryWeb, MergeGroup, PhotoMeta, PhotoResult } from "@shared/types";
 import { api, pool, type ExportFormat, type ItemPatch } from "./api";
+import { emptyMemoryReview, emptyMemoryViewport } from "./memoryGraph";
 
 export type ScanStatus = "queued" | "uploading" | "scanning" | "done" | "duplicate" | "error";
 
@@ -35,6 +36,8 @@ export function useClaimSession() {
   const [merge, setMerge] = useState<MergeState>({ status: "idle" });
   const [valuing, setValuing] = useState<Record<string, ValueState>>({});
   const [memory, setMemory] = useState<WebState>({ status: "idle" });
+  const [memoryReview, setMemoryReview] = useState(emptyMemoryReview);
+  const memoryViewport = useRef(emptyMemoryViewport());
   const [sessionId, setSessionId] = useState<string | null>(null);
   const sessionRef = useRef<string | null>(null);
   const itemsRef = useRef(items);
@@ -215,13 +218,15 @@ export function useClaimSession() {
     setMerge({ status: "idle" });
     setValuing({});
     setMemory({ status: "idle" });
+    setMemoryReview(emptyMemoryReview());
+    memoryViewport.current = emptyMemoryViewport();
   }, []);
 
   const photoUrl = (pid: string) => (sessionId ? api.photoUrl(sessionId, pid) : "");
   const exportUrl = (fmt: ExportFormat) => (sessionId ? api.exportUrl(sessionId, fmt) : "#");
 
   return {
-    health, healthError, sessionId, photos, items, merge, valuing, memory,
+    health, healthError, sessionId, photos, items, merge, valuing, memory, memoryReview, setMemoryReview, memoryViewport,
     scan, patchItem, confirmPhoto, removeItem, runMerge, mergeItems, splitItem, valueItem, loadMemoryWeb, addFromPhoto,
     endSession, photoUrl, exportUrl,
   };

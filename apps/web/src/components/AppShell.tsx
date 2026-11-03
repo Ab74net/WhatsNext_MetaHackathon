@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Compass, FolderCheck, House, LifeBuoy, MessageCircle, Network, Package, Phone, ShieldCheck } from "lucide-react";
+import { BookOpen, Compass, FolderCheck, House, LifeBuoy, Menu, MessageCircle, Network, Package, Phone, ShieldCheck } from "lucide-react";
 import brand from "@shared/brand.json";
 import { TourProvider, useTour } from "@/components/tour/Tour";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -15,9 +15,11 @@ const NAV = [
   { href: "/claims", label: "My Claim", icon: Package },
   { href: "/claims#memory", label: "Memory Web", icon: Network },
   { href: "/aid", label: "Aid Autopilot", icon: LifeBuoy },
+  { href: "/our-story", label: "Our Story", icon: BookOpen },
   { href: "/#privacy", label: "Privacy", icon: ShieldCheck },
 ];
-const MOBILE_NAV = [{ href: "/", label: "Home", icon: House }, ...NAV.slice(0, 2), { href: "/aid", label: "Aid", icon: LifeBuoy }, { href: "/toolkit", label: "Toolkit", icon: FolderCheck }];
+const MOBILE_NAV = [{ href: "/", label: "Home", icon: House }, ...NAV.slice(0, 2), { href: "/aid", label: "Aid", icon: LifeBuoy }];
+const MORE_NAV = [NAV[2], { href: "/toolkit", label: "Recovery toolkit", icon: FolderCheck }, NAV[4], NAV[5]];
 
 // Top bar with text links on desktop, bottom tab bar on phones. The 911 link is always visible,
 // and the "not insurance or legal advice" note sits at the foot of every page.
@@ -42,7 +44,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </span>
           </Link>
 
-          <nav className="ml-auto hidden h-full items-center gap-4 lg:flex xl:gap-6" aria-label="Main">
+          <nav className="ml-auto hidden h-full items-center gap-4 xl:flex 2xl:gap-6" aria-label="Main">
             {NAV.map(({ href, label }) => (
               <Link key={href} href={href} aria-current={active(href) ? "page" : undefined}
                 onClick={(event) => { if (href.includes("#") && href.split("#")[0] === pathname) { event.preventDefault(); replaceHash(`#${href.split("#")[1]}`); } }}
@@ -74,18 +76,29 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {children}
       </main>
 
-      <footer className="border-t border-line px-4 pb-24 pt-5 text-center text-xs text-subtle lg:pb-5">
+      <footer className="border-t border-line px-4 pb-24 pt-5 text-center text-xs text-subtle xl:pb-5">
         <div className="mb-3 flex flex-wrap justify-center gap-5 text-[13px] font-medium text-ink">
           <Link href="/#privacy" className="hover:underline">Privacy</Link>
           <Link href="/toolkit" className="hover:underline">Recovery toolkit</Link>
           <Link href="/aid" className="hover:underline">Aid Autopilot</Link>
+          <Link href="/our-story" aria-current={active("/our-story") ? "page" : undefined} className="hover:underline">Our Story</Link>
           <TourLink footer />
           <a href="tel:911" className="text-danger hover:underline">In danger? Call 911.</a>
         </div>
         General guidance only. Not insurance or legal advice. Every source shows when it was last checked.
       </footer>
 
-      <nav className="fixed inset-x-0 bottom-0 z-30 flex border-t border-line bg-surface pb-[env(safe-area-inset-bottom)] lg:hidden" aria-label="Main">
+      <div id="more-pages" popover="auto" className="app-more-pages">
+        <nav aria-label="More pages">
+          {MORE_NAV.map(({ href, label, icon: Icon }) => <Link key={href} href={href} aria-current={active(href) ? "page" : undefined}
+            className={`flex min-h-12 items-center gap-3 rounded-xl px-4 text-sm font-medium hover:bg-surface-2 ${active(href) ? "bg-blue-soft text-blue" : "text-ink"}`}
+            onClick={(event) => {
+              event.currentTarget.closest<HTMLDivElement>("[popover]")?.hidePopover();
+              if (href.includes("#") && href.split("#")[0] === pathname) { event.preventDefault(); replaceHash(`#${href.split("#")[1]}`); }
+            }}><Icon className="size-5" aria-hidden />{label}</Link>)}
+        </nav>
+      </div>
+      <nav className="fixed inset-x-0 bottom-0 z-30 flex border-t border-line bg-surface pb-[env(safe-area-inset-bottom)] xl:hidden" aria-label="Main">
         {MOBILE_NAV.map(({ href, label, icon: Icon }) => (
           <Link key={href} href={href} aria-current={active(href) ? "page" : undefined}
             className={`flex min-h-14 flex-1 flex-col items-center justify-center gap-1 text-[11px] font-medium ${active(href) ? "text-accent" : "text-muted"}`}>
@@ -93,6 +106,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             {label}
           </Link>
         ))}
+        <button type="button" popoverTarget="more-pages" aria-label="More pages"
+          className={`flex min-h-14 flex-1 flex-col items-center justify-center gap-1 text-[11px] font-medium ${MORE_NAV.some(({ href }) => active(href)) ? "text-accent" : "text-muted"}`}>
+          <Menu className="size-5" aria-hidden /><span>More</span>
+        </button>
       </nav>
     </div>
     </MotionConfig>
