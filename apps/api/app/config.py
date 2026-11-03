@@ -21,11 +21,20 @@ def _load_dotenv(path: Path) -> None:
 
 _load_dotenv(REPO_ROOT / ".env")
 
-MODEL_API_KEY = os.environ.get("MODEL_API_KEY", "")
+def _model_keys(env: dict[str, str]) -> tuple[str, str, str]:
+    """Spark powers claims and Wren; SAM may use its own Meta API key."""
+    default = env.get("MODEL_API_KEY", "").strip()
+    wren = env.get("WREN_API_KEY", "").strip() or default
+    spark = default or wren
+    sam = env.get("SAM_API_KEY", "").strip() or spark
+    return spark, sam, wren
+
+
+SPARK_API_KEY, SAM_API_KEY, WREN_API_KEY = _model_keys(os.environ)
 MODEL_BASE_URL = os.environ.get("MODEL_BASE_URL", "https://api.meta.ai/v1")
 
 # Mock mode returns fake, clearly labeled results so the UI can be tested without a key.
-MOCK = os.environ.get("MOCK", "").lower() in ("1", "true") or not MODEL_API_KEY
+MOCK = os.environ.get("MOCK", "").lower() in ("1", "true") or not SPARK_API_KEY
 
 # Standard mode only: contributor variants let Meta train on user photos.
 SPARK_MODEL = "muse-spark-1.3"

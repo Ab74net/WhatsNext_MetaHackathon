@@ -71,8 +71,8 @@ export default function ClaimsPage() {
       )}
       {session.health?.mock && (
         <Notice tone="warn" icon={<TriangleAlert className="size-4" />}>
-          <strong>Mock mode.</strong> No API key is set, so every photo shows the same fake sofa, lamp and rug.
-          Add MODEL_API_KEY to .env and restart the backend.
+          <strong>Mock mode.</strong> Photo results are simulated, so every photo shows the same fake sofa, lamp and rug.
+          To use live models, set MODEL_API_KEY or WREN_API_KEY in .env, leave MOCK off, and restart the backend.
         </Notice>
       )}
 

@@ -1,9 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type RefObject } from "react";
-import { Check, Expand, House, Minus, Move, Plus, RotateCcw } from "lucide-react";
+import { Check, Expand, House, Minus, Move, Plus, RotateCcw, X } from "lucide-react";
 import type { InventoryItem, MemoryWeb } from "@shared/types";
-import { buildMemoryGraph, connectionPath, fitGraph, HOME_ID, MAX_ZOOM, MIN_ZOOM, zoomGraph, type GraphSelection, type GraphView, type MemoryGraph as Graph, type MemoryNode, type MemoryViewport, type Point } from "@/lib/memoryGraph";
+import { buildMemoryGraph, connectionPath, fitGraph, HOME_ID, MAX_ZOOM, MIN_ZOOM, relatedSuggestions, zoomGraph, type GraphSelection, type GraphView, type MemoryGraph as Graph, type MemoryNode, type MemoryViewport, type Point } from "@/lib/memoryGraph";
 import { MemoryGestures } from "@/lib/memoryGestures";
 import { Button, Card } from "@/components/ui";
 
@@ -124,6 +124,13 @@ export function MemoryGraph({ web, items, dismissed, added, selected, onSelect, 
     updateView({ ...current.current, x: size.width / 2 - node.x * current.current.k, y: size.height / 2 - node.y * current.current.k });
   }
   const selectedNode = graph.nodes.find((n) => n.entityId === selected?.id && n.kind === selected.kind);
+  const related = relatedSuggestions(web, selected, dismissed, added, items);
+  const popupWidth = Math.min(288, Math.max(1, size.width - 24));
+  const popupX = selectedNode ? selectedNode.x * view.k + view.x : 0;
+  const popupY = selectedNode ? selectedNode.y * view.k + view.y : 0;
+  const popupVisible = !!selectedNode && related.length > 0 && popupX >= 0 && popupX <= size.width && popupY >= 0 && popupY <= size.height;
+  const popupLeft = Math.max(12, Math.min(size.width - popupWidth - 12, popupX + 22));
+  const popupTop = Math.max(12, Math.min(size.height - 270, popupY + 30));
   const lookup = new Map(graph.nodes.map((n) => [n.id, n]));
 
   return <Card className="memory-graph min-w-0 overflow-hidden">
@@ -137,6 +144,7 @@ export function MemoryGraph({ web, items, dismissed, added, selected, onSelect, 
         <Button size="sm" aria-label="Fit to view" onClick={() => updateView(fitGraph(graph.nodes, size.width, size.height))}><Expand className="size-4" aria-hidden />Fit</Button>
       </div>
     </div>
+    <div className="relative">
     <svg ref={canvas} viewBox={`0 0 ${size.width} ${size.height}`} className={`memory-canvas ${dragging ? "is-dragging" : ""}`} role="group" aria-label={`Memory web: ${web.rooms.length} rooms. Scroll to zoom, drag to pan. Tab to a node and press Enter for details.`}
       onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={pointerUp} onLostPointerCapture={pointerUp}
       onClick={(event) => {
@@ -161,6 +169,8 @@ export function MemoryGraph({ web, items, dismissed, added, selected, onSelect, 
           const label = node.label.length > 29 ? `${node.label.slice(0, 28)}…` : node.label;
           return <g key={node.id} data-node-id={node.id} data-node-kind={node.kind} transform={`translate(${node.x} ${node.y})`}
             className="memory-node" role="button" tabIndex={0} aria-pressed={on}
+            aria-expanded={on && popupVisible ? true : undefined}
+            aria-controls={on && popupVisible ? "memory-related-suggestions" : undefined}
             aria-label={suggestion ? `Did you own ${node.label}?` : node.label}
             onClick={(event) => { if (event.detail === 0) select(node); }}
             onFocus={(event) => {
@@ -184,6 +194,24 @@ export function MemoryGraph({ web, items, dismissed, added, selected, onSelect, 
         })}
       </g>
     </svg>
+    {popupVisible && selectedNode && <div id="memory-related-suggestions" className="absolute z-10 flex max-h-64 flex-col overflow-hidden rounded-xl border border-line-strong bg-surface p-3 shadow-xl" style={{ left: popupLeft, top: popupTop, width: popupWidth }} role="region" aria-label={`Related suggestions for ${selectedNode.label}`}>
+      <div className="flex items-start gap-2">
+        <div className="min-w-0 flex-1"><p className="text-sm font-semibold">Related things to check</p><p className="truncate text-xs text-muted">From {selectedNode.label}</p></div>
+        <button type="button" onClick={() => onSelect(null)} aria-label="Close related suggestions" className="rounded p-1 text-muted hover:bg-surface-2 hover:text-ink"><X className="size-4" aria-hidden /></button>
+      </div>
+      <div className="mt-2 flex min-h-0 flex-col gap-1 overflow-y-auto">
+        {related.map((s) => <button key={s.id} type="button" className="flex items-center justify-between gap-2 rounded-lg border border-dashed border-line-strong px-3 py-2 text-left text-sm hover:border-blue hover:bg-blue-soft focus-visible:outline-2 focus-visible:outline-blue" onClick={() => {
+          onSelect({ kind: "suggestion", id: s.id });
+          requestAnimationFrame(() => {
+            const details = document.querySelector<HTMLElement>("[data-memory-details]");
+            details?.focus({ preventScroll: true });
+            if (window.matchMedia("(max-width: 1023px)").matches) details?.scrollIntoView({ block: "start", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
+          });
+        }}><span className="min-w-0 truncate first-letter:uppercase">{s.name}</span><span className="shrink-0 font-semibold text-blue">Review →</span></button>)}
+      </div>
+      <p className="mt-2 text-xs text-muted">Only add things you can show in a photo.</p>
+    </div>}
+    </div>
     <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line px-4 py-3 text-xs text-muted">
       <div className="flex flex-wrap gap-x-4 gap-y-2">
         <span className="flex items-center gap-1.5"><span className="h-3 w-5 rounded-full border border-ink" />Room</span>

@@ -42,6 +42,7 @@ One-line pitch: *a visual disaster-recovery agent that shows you where to go and
 Checked against the official docs on Oct 30 and with live calls on Oct 31: Spark structured output on images works, and so does SAM with base64 images.
 
 - **Base URL:** `https://api.meta.ai/v1` (the `api.ai.meta.com` URL from third-party sources is wrong). Auth: `Authorization: Bearer $MODEL_API_KEY`. The OpenAI SDK works when you set `baseURL`. Chat Completions (OpenAI-compatible) and Messages (Anthropic-compatible) endpoints also exist.
+- **API keys:** One `MODEL_API_KEY` works for every model. Optionally set `SAM_API_KEY` for photo segmentation and `WREN_API_KEY` for Wren's Muse Spark calls. If `MODEL_API_KEY` is empty, `WREN_API_KEY` also powers Spark claim image understanding. Keep real keys only in the untracked `.env` file.
 - **Model IDs:** `muse-spark-1.3` (also 1.2, 1.1), `muse-wonder-1.0` (preview, $4 / $20 per M tokens), `sam-3.1`, `muse-image-1.0` ($0.01 per image), `muse-voice-transcribe-1.0` ($0.18 per hour, `POST /v1/asr/transcribe`). The `-contributor` variants exist and **are banned here**: under them Meta may train on prompts and files. Standard mode content "is not used to train Meta models". The docs state no retention period.
 - **Muse Spark 1.3:** $1.25 input / $0.15 cached input / $4.25 output per M tokens. Context of 1,048,576 tokens. Web-search grounding costs an extra $2.50 per 1,000 queries.
 - **Rate limits** (per team): Spark and SAM each allow 3,000 RPM; Spark also has 4M TPM. These limits will not constrain us.
@@ -142,7 +143,7 @@ Item schema (keep stable; export and UI depend on it):
 ## Running locally (Windows)
 
 1. One-time setup: `npm run setup` (installs Node packages and creates `apps/api/.venv`). Python 3.15 needs `--only-binary=:all:`, which the setup script already passes.
-2. Copy `.env.example` to `.env` and set `MODEL_API_KEY`. Without a key the backend runs in **mock mode** (fake, clearly labeled results).
+2. Copy `.env.example` to `.env` and set `MODEL_API_KEY` or `WREN_API_KEY`. Optionally set `SAM_API_KEY` and `WREN_API_KEY` to route those calls through separate Meta keys. Without a Spark-capable key the backend runs in **mock mode** (fake, clearly labeled results).
 3. `npm run dev` starts FastAPI on :8000 and Next.js on :3000. Open http://localhost:3000/claims. The browser only talks to Next, which forwards `/api/*` to FastAPI.
    - The backend restarts automatically when a `.py` file changes (via `watchfiles`; uvicorn's own `--reload` hangs on Python 3.15 on Windows). A restart **clears all sessions**, because photos are kept in memory only.
    - If a port is stuck or the app seems to run old code: `npm run stop`, then `npm run dev`.

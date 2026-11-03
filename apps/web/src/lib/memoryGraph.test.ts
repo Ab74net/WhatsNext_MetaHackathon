@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import type { InventoryItem, MemoryWeb } from "@shared/types";
-import { buildMemoryGraph, fitGraph, MAX_ZOOM, MIN_ZOOM, overlap, zoomGraph } from "./memoryGraph.ts";
+import { buildMemoryGraph, fitGraph, MAX_ZOOM, MIN_ZOOM, overlap, relatedSuggestions, zoomGraph } from "./memoryGraph.ts";
 
 function item(id: string, category = `Belonging ${id}`): InventoryItem {
   return { id, category, brand: null, model: null, condition: "good", confidence: .9, evidence: "seen_in_photo", photos: [], estimated_replacement_usd: null, user_confirmed: true };
@@ -42,6 +42,14 @@ test("unconfirmed or failed confirmations never become solid inventory nodes", (
   const graph = buildMemoryGraph(web, { ...items, new: { ...item("new"), user_confirmed: false } }, new Set(), { s0: "new" }, cache());
   assert.ok(graph.nodes.some((n) => n.id === "suggestion:s0"));
   assert.equal(graph.nodes.some((n) => n.id === "item:new"), false);
+});
+test("item and room clicks offer only their active related prompts", () => {
+  const dismissed = new Set(["s1"]);
+  const added = { s2: "new" };
+  const confirmed = { ...items, new: item("new") };
+  assert.deepEqual(relatedSuggestions(web, { kind: "item", id: "0" }, dismissed, added, confirmed).map((s) => s.id), ["s0"]);
+  assert.deepEqual(relatedSuggestions(web, { kind: "room", id: "living" }, dismissed, added, confirmed).map((s) => s.id), web.suggestions.map((s) => s.id).filter((id) => id !== "s1" && id !== "s2"));
+  assert.deepEqual(relatedSuggestions(web, { kind: "hub", id: "__home" }, dismissed, added, confirmed), []);
 });
 test("zoom preserves the world point under the cursor and clamps scale", () => {
   const before = { x: 120, y: -70, k: .8 }, point = { x: 350, y: 240 };

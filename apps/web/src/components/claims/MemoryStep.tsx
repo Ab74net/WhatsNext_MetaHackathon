@@ -103,7 +103,7 @@ export function MemoryStep({ session, onExport, onBack }: { session: ClaimSessio
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_340px]">
         <MemoryGraph web={web} items={items} dismissed={dismissed} added={added} selected={selected} onSelect={setSelected} viewportRef={session.memoryViewport} />
         {selected && <Button className="lg:hidden" onClick={() => details.current?.scrollIntoView({ block: "start", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" })}>View selected belonging details <ArrowRight className="size-4 rotate-90" aria-hidden /></Button>}
-        <div ref={details} className="self-start scroll-mt-24 lg:sticky lg:top-24"><Card className="p-6 sm:p-7" data-memory-details role="region" aria-label="Belonging details" aria-live="polite">
+        <div ref={details} className="self-start scroll-mt-24 lg:sticky lg:top-24"><Card className="p-6 sm:p-7" data-memory-details role="region" aria-label="Belonging details" aria-live="polite" tabIndex={-1}>
           <SidePanel selected={selected} session={session} web={web} metaById={metaById} added={added}
             onClose={() => setSelected(null)}
             onDismiss={(s) => session.setMemoryReview((old) => ({ ...old, dismissed: new Set(old.dismissed).add(s.id), selected: null }))}

@@ -123,7 +123,11 @@ class ModelError(RuntimeError):
 
 class MetaModelClient:
     def __init__(self) -> None:
-        self.client = AsyncOpenAI(base_url=config.MODEL_BASE_URL, api_key=config.MODEL_API_KEY)
+        self.client = AsyncOpenAI(base_url=config.MODEL_BASE_URL, api_key=config.SPARK_API_KEY)
+        self.sam_client = (self.client if config.SAM_API_KEY == config.SPARK_API_KEY else
+                           AsyncOpenAI(base_url=config.MODEL_BASE_URL, api_key=config.SAM_API_KEY))
+        self.wren_client = (self.client if config.WREN_API_KEY == config.SPARK_API_KEY else
+                            AsyncOpenAI(base_url=config.MODEL_BASE_URL, api_key=config.WREN_API_KEY))
         self.sam_image_mode: str | None = None  # "data_url" or "file_id", learned on first success
 
     async def identify(self, jpeg: bytes) -> PhotoIdentification:
@@ -149,7 +153,7 @@ class MetaModelClient:
         raise ModelError(f"Spark returned invalid JSON twice: {last_error}")
 
     async def _segment_once(self, prompt: str, image_part: dict) -> list[Mask]:
-        stream = await self.client.responses.create(
+        stream = await self.sam_client.responses.create(
             model=config.SAM_MODEL,
             input=[{"type": "message", "role": "user",
                     "content": [{"type": "input_text", "text": prompt}, image_part]}],
@@ -170,14 +174,14 @@ class MetaModelClient:
                 if self.sam_image_mode == "data_url":
                     raise
                 log.warning("SAM rejected data URL (%s); trying Files API", type(err).__name__)
-        uploaded = await self.client.files.create(file=("photo.jpg", jpeg, "image/jpeg"), purpose="user_data")
+        uploaded = await self.sam_client.files.create(file=("photo.jpg", jpeg, "image/jpeg"), purpose="user_data")
         try:
             masks = await self._segment_once(prompt, {"type": "input_image", "file_id": uploaded.id})
             self.sam_image_mode = "file_id"
             return masks
         finally:
             try:
-                await self.client.files.delete(uploaded.id)
+                await self.sam_client.files.delete(uploaded.id)
             except Exception:
                 log.warning("could not delete uploaded file %s", uploaded.id)
 

@@ -1,6 +1,6 @@
 import { forceCollide, forceLink, forceManyBody, forceSimulation, forceX, forceY } from "d3-force";
 import type { SimulationNodeDatum } from "d3-force";
-import type { InventoryItem, MemoryWeb } from "@shared/types";
+import type { InventoryItem, MemorySuggestion, MemoryWeb } from "@shared/types";
 
 export type NodeKind = "hub" | "room" | "item" | "suggestion";
 export interface GraphSelection { kind: NodeKind; id: string }
@@ -28,6 +28,14 @@ export const emptyMemoryViewport = (): MemoryViewport => ({ positions: new Map()
 export const MIN_ZOOM = 0.12;
 export const MAX_ZOOM = 3;
 export const HOME_ID = "__home";
+
+export function relatedSuggestions(web: MemoryWeb, selected: GraphSelection | null, dismissed: Set<string>, added: Record<string, string>, items: Record<string, InventoryItem>): MemorySuggestion[] {
+  if (selected?.kind !== "item" && selected?.kind !== "room") return [];
+  return web.suggestions.filter((s) =>
+    !dismissed.has(s.id) && !items[added[s.id]]?.user_confirmed &&
+    (selected.kind === "room" ? s.room_id === selected.id : s.related_item_ids.includes(selected.id))
+  );
+}
 
 export function nodeWidth(label: string, kind: NodeKind) {
   if (kind === "hub") return 136;

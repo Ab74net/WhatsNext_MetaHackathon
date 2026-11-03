@@ -199,4 +199,4 @@ class MockAgent:
 
 
 def make_agent(model_client):
-    return MockAgent() if config.MOCK else MetaAgent(model_client.client)
+    return MockAgent() if config.MOCK else MetaAgent(model_client.wren_client)
