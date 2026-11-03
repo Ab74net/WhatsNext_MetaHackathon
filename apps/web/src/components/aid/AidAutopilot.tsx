@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, ArrowRight, Banknote, Bookmark, Check, CircleAlert, House, LifeBuoy, MapPin, MessageCircle, Network, Package, Pencil, RotateCcw, Search, ShieldCheck, UserRound } from "lucide-react";
+import { ArrowLeft, ArrowRight, Bookmark, Check, CircleAlert, House, LifeBuoy, MapPin, MessageCircle, Network, Package, Pencil, RotateCcw, Search, ShieldCheck, UserRound } from "lucide-react";
 import brand from "@shared/brand.json";
 import { api } from "@/lib/api";
 import { readSavedAgentCase } from "@/lib/useAgent";
@@ -12,12 +12,7 @@ import { Button, Card, EmptyState, Notice, Skeleton } from "@/components/ui";
 import { useAidAutopilot } from "./AidProvider";
 import { SituationForm } from "./SituationForm";
 import { ResourceCard } from "./ResourceCard";
-
-const CATEGORIES = [
-  { id: "financial" as const, icon: Banknote, body: "Explore help with disaster-related costs and getting back on your feet." },
-  { id: "housing" as const, icon: House, body: "Find a starting point for shelter and temporary housing support." },
-  { id: "essentials" as const, icon: Package, body: "Look for help with food, medicine, and the things you need each day." },
-];
+import { AID_CATEGORIES, AidLandingCards } from "./AidLandingCards";
 type SearchState = { status: "idle" | "loading" } | { status: "done"; programs: AidProgram[] } | { status: "error"; message: string };
 
 export function AidAutopilot() {
@@ -112,6 +107,10 @@ export function AidAutopilot() {
           <p className="mt-3 text-muted">A starting point for your next step. The provider makes the eligibility decision.</p>
         </header>}
 
+        {view === "home" ? <AidLandingCards situation={situation} hasDetails={hasDetails} previousCase={previousCase} caseError={caseError}
+          onDetails={() => navigate("questions")}
+          onPrevious={() => { if (previousCase) setSuggestedSituation({ ...situation, disaster: previousCase.disaster, location: previousCase.location }); navigate("questions"); }}
+          onExplore={(id) => discover(situation, id)} onAsk={() => ask(null)} /> : <>
         <section className="aid-situation" aria-labelledby="aid-situation-title">
           <House className="mt-1 hidden size-8 shrink-0 sm:block" aria-hidden />
           <div className="min-w-0 flex-1">
@@ -132,16 +131,10 @@ export function AidAutopilot() {
           <Button onClick={() => navigate("questions")} size="sm"><Pencil className="size-4" aria-hidden />{hasDetails ? "Update" : "Add details"}</Button>
         </section>
 
-        {view === "home" ? <section className="mt-9" aria-labelledby="aid-support-title">
-          <div className="mb-6 flex items-start gap-3"><LifeBuoy className="mt-1 size-6 text-accent" aria-hidden /><div><h2 id="aid-support-title" className="text-2xl">Support to explore</h2><p className="mt-2 text-sm text-muted">Start with what you need most. Availability and eligibility still need checking.</p></div></div>
-          <div className="grid gap-4 xl:grid-cols-3">{CATEGORIES.map(({ id, icon: Icon, body }) => <Card key={id} className="aid-category p-5">
-            <div className="mb-4 flex size-11 items-center justify-center rounded-full bg-blue-soft text-blue"><Icon className="size-5" aria-hidden /></div><h3 className="text-xl">{CATEGORY_LABELS[id]}</h3><p className="mt-3 text-sm leading-relaxed text-muted">{body}</p>
-            <button onClick={() => discover(situation, id)} className="mt-4 flex min-h-11 w-full items-center justify-between gap-2 text-left text-sm font-semibold"><span className="sr-only">Explore {CATEGORY_LABELS[id]}</span><ArrowRight className="size-5" aria-hidden /></button>
-          </Card>)}</div>
-        </section> : <section className="mt-7" aria-label="Assistance resources">
+        <section className="mt-7" aria-label="Assistance resources">
           <Notice tone="blue" icon={<ShieldCheck className="size-4" />}><strong>Demo discovery.</strong> Sample records link to real provider guidance. Your location, current program availability, and eligibility have not been verified.</Notice>
           <div className="my-6 flex flex-wrap items-center gap-2" aria-label="Filter resources">
-            {(["all", ...CATEGORIES.map((c) => c.id)] as const).map((key) => <button key={key} onClick={() => setCategory(key)} aria-pressed={category === key} className={`min-h-11 rounded-full border px-4 text-sm font-semibold ${category === key ? "border-primary bg-primary text-primary-ink" : "border-line bg-surface text-ink hover:border-ink"}`}>{key === "all" ? "All resources" : CATEGORY_LABELS[key]}</button>)}
+            {(["all", ...AID_CATEGORIES.map((c) => c.id)] as const).map((key) => <button key={key} onClick={() => setCategory(key)} aria-pressed={category === key} className={`min-h-11 rounded-full border px-4 text-sm font-semibold ${category === key ? "border-primary bg-primary text-primary-ink" : "border-line bg-surface text-ink hover:border-ink"}`}>{key === "all" ? "All resources" : CATEGORY_LABELS[key]}</button>)}
             <button onClick={() => setSavedOnly((v) => !v)} aria-pressed={savedOnly} className={`inline-flex min-h-11 items-center gap-2 rounded-full border px-4 text-sm font-semibold ${savedOnly ? "border-primary bg-primary text-primary-ink" : "border-line bg-surface text-ink"}`}><Bookmark className="size-4" aria-hidden />Saved links</button>
           </div>
           <label className="mb-6 flex min-h-12 items-center gap-3 rounded-xl border border-line-strong bg-surface px-4"><Search className="size-4 shrink-0 text-muted" aria-hidden /><span className="sr-only">Search resources</span><input value={query} onChange={(e) => setQuery(e.target.value)} maxLength={100} placeholder="Search resources" className="min-w-0 flex-1 bg-transparent py-3 text-sm outline-none" /></label>
@@ -152,12 +145,13 @@ export function AidAutopilot() {
             {!shown.length && <Card><EmptyState icon={<Search className="size-5" />} title={savedOnly ? "No saved links in this view" : "No resources in this view"} body="Try another category or clear the filters. This demo catalog is a starting point, not a complete list of local support." action={<Button onClick={() => { setCategory("all"); setSavedOnly(false); setQuery(""); }}>Clear filters</Button>} /></Card>}
             <div className="flex flex-col gap-4">{shown.map((program) => <ResourceCard key={program.id} program={program} open={selected === program.id} onToggle={() => setSelected(selected === program.id ? null : program.id)} preparing={preparing.has(program.id)} onPrepare={() => { setPreparing((p) => new Set(p).add(program.id)); setSelected(program.id); }} situation={situation} prep={preparations[program.id] ?? EMPTY_PREPARATION} onChange={(p) => updatePrep(program.id, p)} onAsk={() => ask(program)} />)}</div>
           </>}
-        </section>}
+        </section>
 
         <Card className="aid-assistant mt-8 flex flex-wrap items-center gap-5 bg-blue-soft p-6 sm:p-7" data-tour="aid-assistant">
           <MessageCircle className="size-8 shrink-0 text-blue" aria-hidden /><div className="min-w-0 flex-1"><h2 className="text-xl">Need help applying?</h2><p className="mt-2 max-w-xl text-sm text-muted">{brand.agentName} can help explain requirements, gather documents, and prepare application answers.</p><p className="mt-2 text-xs text-muted">A request is prepared for your review. Nothing is sent until you press Send; notes and checklists are excluded.</p></div>
           <Button onClick={() => ask(programs.find((p) => p.id === selected) ?? null)} variant="primary">Ask {brand.agentName}<ArrowRight className="size-4" aria-hidden /></Button>
         </Card>
+        </>}
         <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-5 text-xs text-muted print:hidden"><p>Details and progress stay in memory. Reloading clears them. No applications are submitted here.</p>{(hasDetails || hasSearched || Object.keys(preparations).length > 0) && <Button variant="ghost" size="sm" onClick={clear}>Clear my aid details</Button>}</div>
       </>}
     </div>
