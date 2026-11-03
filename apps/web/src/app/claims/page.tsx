@@ -2,7 +2,7 @@
 
 // Claims helper: choose photos -> scan -> review -> export.
 
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Trash2, TriangleAlert } from "lucide-react";
 import { useClaimSession } from "@/lib/useClaimSession";
@@ -12,6 +12,7 @@ import { ReviewStep } from "@/components/claims/ReviewStep";
 import { ExportStep } from "@/components/claims/ExportStep";
 import { MemoryStep } from "@/components/claims/MemoryStep";
 import { Button, Notice, Stepper } from "@/components/ui";
+import { replaceHash, useLocationHash } from "@/lib/useLocationHash";
 
 type Step = "select" | "scan" | "review" | "remember" | "export";
 const STEPS: { key: Step; label: string }[] = [
@@ -24,16 +25,14 @@ const STEPS: { key: Step; label: string }[] = [
 
 export default function ClaimsPage() {
   const session = useClaimSession();
-  const [step, setStep] = useState<Step>("select");
+  const [requestedStep, setRequestedStep] = useState<Step>("select");
+  const hash = useLocationHash();
   const itemList = Object.values(session.items);
-  const hasConfirmed = itemList.some((i) => i.user_confirmed);
-  // A header link can reveal the existing Memory Web step without leaving this session.
-  useEffect(() => {
-    const reveal = () => { if (window.location.hash === "#memory" && hasConfirmed) setStep("remember"); };
-    reveal();
-    window.addEventListener("hashchange", reveal);
-    return () => window.removeEventListener("hashchange", reveal);
-  }, [hasConfirmed]);
+  const step: Step = hash === "#memory" ? "remember" : requestedStep === "remember" ? (itemList.length ? "review" : "select") : requestedStep;
+  const setStep = useCallback((next: Step) => {
+    setRequestedStep(next);
+    replaceHash(next === "remember" ? "#memory" : "");
+  }, []);
   const reachable: Record<Step, boolean> = {
     select: true,
     scan: session.photos.length > 0,
@@ -87,7 +86,7 @@ export default function ClaimsPage() {
           {step === "review" && (
             <ReviewStep session={session} onAddMore={() => setStep("select")} onExport={() => setStep("remember")} />
           )}
-          {step === "remember" && <MemoryStep session={session} onExport={() => setStep("export")} />}
+          {step === "remember" && <MemoryStep session={session} onExport={() => setStep("export")} onBack={() => setStep(itemList.length ? "review" : "select")} />}
           {step === "export" && <ExportStep session={session} onBack={() => setStep("remember")} />}
         </motion.div>
       </AnimatePresence>

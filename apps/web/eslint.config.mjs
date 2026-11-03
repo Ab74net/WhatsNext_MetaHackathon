@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Generated verbatim from maplibre-gl by predev/prebuild; never lint vendor bundles.
+    "public/maplibre-gl-worker.mjs",
   ]),
 ]);
 

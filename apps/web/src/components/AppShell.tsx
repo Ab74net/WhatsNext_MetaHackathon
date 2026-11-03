@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
 import { Compass, FolderCheck, House, LifeBuoy, MessageCircle, Network, Package, Phone, ShieldCheck } from "lucide-react";
 import brand from "@shared/brand.json";
@@ -9,6 +8,7 @@ import { TourProvider, useTour } from "@/components/tour/Tour";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { MotionConfig } from "motion/react";
 import { AidProvider } from "@/components/aid/AidProvider";
+import { replaceHash, useLocationHash } from "@/lib/useLocationHash";
 
 const NAV = [
   { href: "/agent", label: brand.agentName, icon: MessageCircle },
@@ -18,16 +18,12 @@ const NAV = [
   { href: "/#privacy", label: "Privacy", icon: ShieldCheck },
 ];
 const MOBILE_NAV = [{ href: "/", label: "Home", icon: House }, ...NAV.slice(0, 2), { href: "/aid", label: "Aid", icon: LifeBuoy }, { href: "/toolkit", label: "Toolkit", icon: FolderCheck }];
-const subscribeHash = (listener: () => void) => {
-  window.addEventListener("hashchange", listener);
-  return () => window.removeEventListener("hashchange", listener);
-};
 
 // Top bar with text links on desktop, bottom tab bar on phones. The 911 link is always visible,
 // and the "not insurance or legal advice" note sits at the foot of every page.
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const hash = useSyncExternalStore(subscribeHash, () => window.location.hash, () => "");
+  const hash = useLocationHash();
   const active = (href: string) => href.includes("#") ? `${pathname}${hash}` === href
     : href === "/" ? pathname === "/" && !hash : pathname.startsWith(href) && hash !== "#memory";
 
@@ -49,6 +45,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <nav className="ml-auto hidden h-full items-center gap-4 lg:flex xl:gap-6" aria-label="Main">
             {NAV.map(({ href, label }) => (
               <Link key={href} href={href} aria-current={active(href) ? "page" : undefined}
+                onClick={(event) => { if (href.includes("#") && href.split("#")[0] === pathname) { event.preventDefault(); replaceHash(`#${href.split("#")[1]}`); } }}
                 className={`relative flex h-full items-center text-sm font-medium transition-colors ${
                   active(href) ? "text-ink" : "text-muted hover:text-ink"}`}>
                 {label}

@@ -1,6 +1,7 @@
 // Homepage hero images. Files live in public/hero/ as <name>-<width>.webp, made from the
 // originals in scripts/PicsForHomepagehackathon (EXIF stripped, people cropped out).
 // Credits and licence status: docs/IMAGE_CREDITS.md.
+import { INTRO_PHOTOS } from "./introPhotos.ts";
 
 export type HeroImage = {
   name: string;
@@ -8,10 +9,10 @@ export type HeroImage = {
   alt: string;
   widths: number[];
   /** 24 px wide, shown blurred until the real image arrives. */
-  blur: string;
+  blur?: string;
 };
 
-export const HERO_IMAGES: HeroImage[] = [
+export const ORIGINAL_HERO_IMAGES: HeroImage[] = [
   {
     name: "wildfire",
     hazard: "Wildfire",
@@ -48,6 +49,9 @@ export const HERO_IMAGES: HeroImage[] = [
     blur: "data:image/webp;base64,UklGRrwAAABXRUJQVlA4ILAAAAAwBQCdASoYABEAPtFcp04oJSOiKAqpABoJYgCsL8CApvZ0mf307mzAJrvI64IImahcAAD+zdDIiYoKuZxkZmKkXYz5nbaPNtmUL5TwyOptGjvXWMlih3yc8/py29hJ/a1h/R/zusjxWIxQF6p9/xUcIeUwoDAZOSIevPrcvf+BJ5eAsqEaUaHMRQImlb3EHsmWeCJMum+IyP08yF9XaSd0gzHMkB9sCez3QQ4MRqFcAA==",
   },
 ];
+
+// Deterministic natural source order first, then every original slide in its existing order.
+export const HERO_IMAGES: HeroImage[] = [...INTRO_PHOTOS, ...ORIGINAL_HERO_IMAGES];
 
 export function heroSrc(img: HeroImage) {
   const largest = img.widths[img.widths.length - 1];

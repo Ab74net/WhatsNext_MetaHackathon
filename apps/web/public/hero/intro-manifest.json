@@ -1,0 +1,64 @@
+[
+  {
+    "sourceFile": "1.jpg",
+    "name": "intro-1",
+    "hazard": "Wildfire",
+    "alt": "Orange wildfire smoke rising above trees and a hillside at night.",
+    "widths": [
+      768,
+      1280,
+      1920
+    ],
+    "width": 5842,
+    "height": 3895
+  },
+  {
+    "sourceFile": "2.jpg",
+    "name": "intro-2",
+    "hazard": "Wildfire recovery",
+    "alt": "The remaining walls and chimney of a fire-damaged home at sunset.",
+    "widths": [
+      768,
+      1100
+    ],
+    "width": 1100,
+    "height": 733
+  },
+  {
+    "sourceFile": "3.png",
+    "name": "intro-3",
+    "hazard": "Flood",
+    "alt": "A wooden house leaning into floodwater beside a grassy riverbank.",
+    "widths": [
+      768,
+      982
+    ],
+    "width": 982,
+    "height": 780
+  },
+  {
+    "sourceFile": "4.jpg",
+    "name": "intro-4",
+    "hazard": "Storm recovery",
+    "alt": "An opened home with a missing roof, exposed framing, and damaged belongings.",
+    "widths": [
+      768,
+      1280,
+      1920
+    ],
+    "width": 2800,
+    "height": 3333
+  },
+  {
+    "sourceFile": "5.png",
+    "name": "intro-5",
+    "hazard": "House fire",
+    "alt": "Fire and smoke rising from a house, viewed from across the street.",
+    "widths": [
+      768,
+      798
+    ],
+    "width": 798,
+    "height": 450
+  }
+]

@@ -193,10 +193,13 @@ img { max-width: 100%; }
 .inventory-thumb { width: 112px; height: 82px; }
 .inventory-price { font-size: 20px; font-weight: 700; letter-spacing: -.02em; }
 .inventory-actions { display: flex; flex-direction: column; align-items: end; gap: 8px; }
-.memory-graph { overflow: auto; }
-.memory-graph svg { min-width: 640px; }
+.memory-graph { overflow: hidden; }
+.memory-canvas { display: block; width: 100%; height: clamp(460px, 62vh, 660px); min-width: 0; touch-action: none; overscroll-behavior: contain; user-select: none; cursor: grab; background: var(--surface); }
+.memory-canvas.is-dragging { cursor: grabbing; }
+.memory-node { cursor: pointer; }
+.memory-node:hover .memory-node-shape { stroke: var(--blue); stroke-width: 2.5px; }
+.memory-node:focus-visible .memory-node-shape { stroke: var(--focus-ring); stroke-width: 4px; }
 .memory-graph [role='button']:focus-visible { outline: none; }
-.memory-graph [role='button']:focus-visible rect { stroke: var(--focus-ring); stroke-width: 4px; }
 .theme-transition, .theme-transition :where(header, footer, main, button, a, input, select, textarea, .ui-card) { transition: color .15s ease, background-color .15s ease, border-color .15s ease; }
 :root[data-theme="dark"] .hero-photo { box-shadow: inset 0 0 0 1px var(--line); }
 :root[data-theme="dark"] .hero-slide { filter: brightness(.85); }

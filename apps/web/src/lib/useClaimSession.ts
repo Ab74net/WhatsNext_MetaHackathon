@@ -22,7 +22,7 @@ export interface ScanPhoto {
 
 export type MergeState = { status: "idle" } | { status: "running" } | { status: "done"; merges: MergeGroup[] } | { status: "error"; error: string };
 export type ValueState = { status: "loading" } | { status: "error"; error: string };
-export type WebState = { status: "idle" } | { status: "loading" } | { status: "done"; web: MemoryWeb } | { status: "error"; error: string };
+export type WebState = { status: "idle" } | { status: "loading"; previous?: MemoryWeb } | { status: "done"; web: MemoryWeb } | { status: "error"; error: string; previous?: MemoryWeb };
 
 const PARALLEL = 6;
 const message = (e: unknown) => (e instanceof Error ? e.message : String(e));
@@ -101,15 +101,18 @@ export function useClaimSession() {
 
   const patchItem = useCallback(async (id: string, patch: ItemPatch) => {
     const sid = sessionRef.current;
-    if (!sid) return;
+    if (!sid) return null;
+    const before = itemsRef.current[id];
     setItems((prev) => ({ ...prev, [id]: { ...prev[id], ...patch } }));
     try {
       const saved = await api.patchItem(sid, id, patch);
       setItems((prev) => ({ ...prev, [id]: saved }));
+      return saved;
     } catch {
       // Roll back to the server's copy if the edit was rejected.
       const fresh = await api.patchItem(sid, id, {}).catch(() => null);
-      if (fresh) setItems((prev) => ({ ...prev, [id]: fresh }));
+      if (fresh || before) setItems((prev) => ({ ...prev, [id]: fresh ?? before }));
+      return null;
     }
   }, []);
 
@@ -178,11 +181,11 @@ export function useClaimSession() {
   const loadMemoryWeb = useCallback(async () => {
     const sid = sessionRef.current;
     if (!sid) return;
-    setMemory({ status: "loading" });
+    setMemory((old) => ({ status: "loading", previous: old.status === "done" ? old.web : old.status === "loading" || old.status === "error" ? old.previous : undefined }));
     try {
       setMemory({ status: "done", web: await api.memoryWeb(sid) });
     } catch (e) {
-      setMemory({ status: "error", error: message(e) });
+      setMemory((old) => ({ status: "error", error: message(e), previous: old.status === "loading" ? old.previous : undefined }));
     }
   }, []);
 

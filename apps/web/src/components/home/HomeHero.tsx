@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { Pause, Play } from "lucide-react";
 import { HERO_IMAGES, heroSrc } from "@/lib/heroImages";
 import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
@@ -17,19 +17,32 @@ export function HomeHero({ children }: { children: ReactNode }) {
   const reduced = usePrefersReducedMotion();
   const [paused, setPaused] = useState(false);
   const [slide, setSlide] = useState({ index: 0, prev: -1, reach: 2 });
+  const images = useRef<(HTMLImageElement | null)[]>([]);
+  const requested = useRef(0);
+  const failed = useRef(new Set<number>());
   const running = !reduced && !paused;
+
+  const ready = useCallback(async (index: number, img: HTMLImageElement) => {
+    try { await img.decode(); } catch { return; }
+    if (requested.current !== index || !img.naturalWidth) return;
+    setSlide((s) => s.index === index ? s : { index, prev: s.index, reach: Math.max(s.reach, Math.min(HERO_IMAGES.length, index + 2)) });
+  }, []);
+
+  const show = useCallback((index: number) => {
+    let next = index;
+    for (let tries = 0; tries < HERO_IMAGES.length && failed.current.has(next); tries++) next = (next + 1) % HERO_IMAGES.length;
+    if (failed.current.has(next)) return; // Keep the last good frame if a request fails.
+    requested.current = next;
+    setSlide((s) => ({ ...s, reach: Math.max(s.reach, Math.min(HERO_IMAGES.length, next + 2)) }));
+    const img = images.current[next];
+    if (img?.complete && img.naturalWidth) void ready(next, img);
+  }, [ready]);
 
   useEffect(() => {
     if (!running) return;
-    const t = setInterval(() => setSlide(({ index, reach }) => {
-      const next = (index + 1) % HERO_IMAGES.length;
-      return { index: next, prev: index, reach: Math.min(HERO_IMAGES.length, Math.max(reach, next + 2)) };
-    }), SLIDE_MS);
-    return () => clearInterval(t);
-  }, [running]);
-
-  const show = (i: number) => setSlide(({ index, reach }) =>
-    i === index ? { index, prev: -1, reach } : { index: i, prev: index, reach: Math.min(HERO_IMAGES.length, Math.max(reach, i + 2)) });
+    const t = setTimeout(() => show((slide.index + 1) % HERO_IMAGES.length), SLIDE_MS);
+    return () => clearTimeout(t);
+  }, [running, slide.index, show]);
 
   return (
     <div className="home-hero">
@@ -43,13 +56,15 @@ export function HomeHero({ children }: { children: ReactNode }) {
         </svg>
         <div className="hero-photo">
         {HERO_IMAGES.slice(0, slide.reach).map((img, i) => {
-          if (reduced && i !== slide.index) return null;
           const state = i === slide.index ? "is-active" : i === slide.prev ? "is-leaving" : "";
           return (
             // eslint-disable-next-line @next/next/no-img-element -- pre-sized webp set with srcset
             <img key={img.name} {...heroSrc(img)} sizes="(min-width: 768px) 50vw, 100vw" alt={i === slide.index ? img.alt : ""}
+              ref={(el) => { images.current[i] = el; }}
               aria-hidden={i !== slide.index} decoding="async"
-              loading={i === 0 ? "eager" : "lazy"} fetchPriority={i === 0 ? "high" : "low"}
+              loading="eager" fetchPriority={i === 0 ? "high" : "low"}
+              onLoad={(event) => { if (requested.current === i) void ready(i, event.currentTarget); }}
+              onError={() => { failed.current.add(i); if (requested.current === i) show((i + 1) % HERO_IMAGES.length); }}
               className={`hero-slide ${state} ${paused ? "is-paused" : ""}`} />
           );
         })}
@@ -80,7 +95,7 @@ export function HomeHero({ children }: { children: ReactNode }) {
           ))}
         </div>
         {!reduced && (
-          <button type="button" onClick={() => setPaused((p) => !p)}
+          <button type="button" onClick={() => { requested.current = slide.index; setPaused((p) => !p); }}
             aria-label={paused ? "Play photos" : "Pause photos"}
             className="inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-line bg-surface text-ink hover:bg-surface-2">
             {paused ? <Play className="size-4" aria-hidden /> : <Pause className="size-4" aria-hidden />}

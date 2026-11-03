@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Inter, Inter_Tight } from "next/font/google";
 import brand from "@shared/brand.json";
 import { AppShell } from "@/components/AppShell";
+import { THEME_BOOTSTRAP } from "@/lib/theme";
 import "./globals.css";
 
 // UI text: Inter. Headings: Inter Tight, heavy and tightly tracked.
@@ -35,7 +36,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" data-theme="light" suppressHydrationWarning className={`${inter.variable} ${interTight.variable} ${geistMono.variable} h-full`}>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: `try{var t=localStorage.getItem('what-next-theme');document.documentElement.dataset.theme=t==='dark'?'dark':'light'}catch(e){document.documentElement.dataset.theme='light'}` }} />
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOTSTRAP }} />
       </head>
       <body className="min-h-full">
         <AppShell>{children}</AppShell>

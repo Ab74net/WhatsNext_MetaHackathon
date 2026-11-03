@@ -4,7 +4,7 @@ Visual references: the six PNGs in `scripts/mockupsfornehomepage/`.
 
 The homepage now uses a large two-column composition, an organic photo crop, flat blue/coral shapes, and a full-width thumbnail strip. The shared header, typography, pill buttons, bordered cards, scan checklist, item rows, graph nodes, export summary, Toolkit and safety cards use the same tokens. Names continue to come from the shared brand file.
 
-Light is the default even when the OS prefers dark. The theme button stores only the theme choice; a head script applies that choice before paint. Storage reads/writes are optional. Print colors are forced light. The dark map filters the existing canvas, keeping its provider and attribution.
+The current theme policy follows the OS when no manual preference exists, as requested in the subsequent frontend audit. The theme button stores only the theme choice; the shared resolver applies it before paint and observes later OS changes. Blocked storage falls back to the OS, and a manual choice still works for that visit. Print colors are forced light. The dark map filters the existing canvas, keeping its provider and attribution. See `FRONTEND_AUDIT.md` for the current graph, photography and regression checks.
 
 ## Deliberate differences
 
@@ -27,7 +27,7 @@ These checks use mock model results; they do not verify live model accuracy, liv
 
 ## Manual demo check
 
-1. On a fresh visit, confirm light mode. Toggle dark, reload, navigate between screens, then return to light.
+1. On a fresh visit, confirm the theme follows the OS. Toggle to the other theme, reload and navigate; the manual choice should persist.
 2. Ask the assistant for a plan and resources. Select a map pin, inspect its source, and check the replay/hypothetical labels and emergency banner.
 3. Select staged photos. Scan, edit and confirm an item; filter the review list and try manual merge/split if needed.
 4. Open Memory Web. Use Tab and Enter on a suggestion; add photo evidence and confirm before it enters the claim.

@@ -17,6 +17,20 @@ dropped. Alt text is in `apps/web/src/lib/heroImages.ts`.
 | `earthquake-*.webp` | `earthquake3.avif` | cropped to the building and sky, which removes the rescuers and a shop phone number | none in metadata | unverified |
 | `tornado-*.webp` | `house3.png` | resize | none in metadata | unverified |
 
+## New introductory sequence
+
+The developer selected these five files in `scripts/photostoplayfirst/` for the first five slideshow positions. They are followed by all five original slides listed above. Source filenames establish a natural, deterministic order. The build helper writes resized WebPs with EXIF, GPS, XMP and embedded source metadata removed; raw originals are unchanged and excluded from Git.
+
+| Order | Public prefix | Source | Preparation | Source / licence |
+| --- | --- | --- | --- | --- |
+| 1 | `intro-1-*.webp` | `1.jpg` | resize | developer-provided; licence not supplied |
+| 2 | `intro-2-*.webp` | `2.jpg` | resize | developer-provided; licence not supplied |
+| 3 | `intro-3-*.webp` | `3.png` | crop left foreground people, resize | developer-provided; licence not supplied |
+| 4 | `intro-4-*.webp` | `4.jpg` | crop left foreground people, resize | developer-provided; licence not supplied |
+| 5 | `intro-5-*.webp` | `5.png` | resize | developer-provided; licence not supplied |
+
+The generation script is `scripts/prepare_intro_photos.py`; output metadata is recorded in `public/hero/intro-manifest.json` and `src/lib/introPhotos.ts`. No exact duplicate was found among the five new source images.
+
 ## Not used
 
 | Original | Reason |

@@ -160,7 +160,11 @@ All hand-checked on Nov 2, 2026. Every row has a source URL; news sources are la
 
 Warm, editorial look matched to the six references in `scripts/mockupsfornehomepage/`. Shared colors, type, spacing and radii live in `apps/web/src/app/globals.css`; shared pill buttons, bordered cards and the stepper live in `components/ui.tsx`. Fonts: Inter (UI) and Inter Tight (headings). The wordmark reads `projectName × partner` from `packages/shared/brand.json`.
 
-Light mode is always the first-visit default, regardless of the OS preference. The navigation's sun/moon button saves a choice in localStorage; a head script applies it before paint. Storage failure falls back to light and the toggle still works for that visit. Both themes cover the claims steps, Memory Web, safety cards, Toolkit and tour. The existing map canvas uses a CSS filter in dark mode; no tile provider was added. Printing forces light colors, and exports retain their existing format. See `docs/FRONTEND_REDESIGN.md` for checks and deliberate differences from the mockups.
+The system theme is used until the user chooses light or dark with the navigation toggle. The centralized resolver in `apps/web/src/lib/theme.ts` applies the saved choice before paint, follows OS changes when no manual choice exists, and synchronizes other tabs. If storage is blocked, the system preference and an in-memory manual choice still work. Both themes cover claims, Memory Web, safety cards, Toolkit, Aid Autopilot and the tour. Printing forces light colors. The map retains its existing provider and attribution. See `docs/FRONTEND_REDESIGN.md` and `docs/FRONTEND_AUDIT.md` for verification details.
+
+Memory Web now supports cursor-centered wheel zoom, drag panning, touch pinch, zoom controls, Reset and Fit. It uses the existing d3-force/SVG stack with non-overlapping labels, cached positions, and curved links. Refresh preserves the camera and graph; a suggestion turns into a confirmed node only after evidence and a successful server confirmation. The header link and `/claims#memory` also provide an empty state before inventory exists.
+
+The slideshow starts with the five files in `scripts/photostoplayfirst/` in natural order, then the original five images. Metadata-free WebPs and the generated introduction manifest ship in `apps/web/public/hero/`; rebuild those copies with `apps/api/.venv/Scripts/python scripts/prepare_intro_photos.py`. Sources 3 and 4 are cropped to exclude foreground people. The raw sources remain unchanged and git-ignored.
 
 ## Aid Autopilot (`/aid`)
 

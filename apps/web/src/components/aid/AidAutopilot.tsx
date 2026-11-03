@@ -25,7 +25,7 @@ export function AidAutopilot() {
   const aid = useAidAutopilot();
   const { situation, setSituation, preparations, setPreparations, hasSearched, setHasSearched, setAgentDraft } = aid;
   const [view, setView] = useState<"home" | "questions" | "results">(hasSearched ? "results" : "home");
-  const [search, setSearch] = useState<SearchState>({ status: "idle" });
+  const [search, setSearch] = useState<SearchState>({ status: hasSearched ? "loading" : "idle" });
   const [attempt, setAttempt] = useState(0);
   const [category, setCategory] = useState<"all" | AidCategory>("all");
   const [savedOnly, setSavedOnly] = useState(false);
@@ -50,7 +50,6 @@ export function AidAutopilot() {
   useEffect(() => {
     if (!hasSearched) return;
     const controller = new AbortController();
-    setSearch({ status: "loading" });
     demoAidAdapter.discover(situation, controller.signal).then(({ programs }) => {
       if (!controller.signal.aborted) setSearch({ status: "done", programs });
     }).catch((error) => { if (!controller.signal.aborted) setSearch({ status: "error", message: error instanceof Error ? error.message : "We couldn’t load resources. Please try again." }); });
@@ -62,6 +61,7 @@ export function AidAutopilot() {
     requestAnimationFrame(() => { titleRef.current?.focus(); window.scrollTo({ top: 0, behavior: "instant" }); });
   }
   function discover(next: AidSituation, filter: typeof category = "all") {
+    setSearch({ status: "loading" });
     setSuggestedSituation(null);
     setSituation({ ...next, location: next.location.trim() }); setHasSearched(true); setCategory(filter);
     setQuery(""); setSavedOnly(false); setSelected(null); setAttempt((n) => n + 1); navigate("results");
@@ -146,7 +146,7 @@ export function AidAutopilot() {
           </div>
           <label className="mb-6 flex min-h-12 items-center gap-3 rounded-xl border border-line-strong bg-surface px-4"><Search className="size-4 shrink-0 text-muted" aria-hidden /><span className="sr-only">Search resources</span><input value={query} onChange={(e) => setQuery(e.target.value)} maxLength={100} placeholder="Search resources" className="min-w-0 flex-1 bg-transparent py-3 text-sm outline-none" /></label>
           {(search.status === "loading" || search.status === "idle") && <div role="status" className="flex flex-col gap-4"><p className="text-sm text-muted">Finding resources to explore…</p><Skeleton className="h-44 w-full rounded-3xl" /><Skeleton className="h-44 w-full rounded-3xl" /></div>}
-          {search.status === "error" && <Card className="p-7"><div role="alert"><Notice tone="danger" icon={<CircleAlert className="size-4" />}>{search.message}</Notice></div><Button className="mt-5" onClick={() => setAttempt((n) => n + 1)}><RotateCcw className="size-4" aria-hidden />Try again</Button></Card>}
+          {search.status === "error" && <Card className="p-7"><div role="alert"><Notice tone="danger" icon={<CircleAlert className="size-4" />}>{search.message}</Notice></div><Button className="mt-5" onClick={() => { setSearch({ status: "loading" }); setAttempt((n) => n + 1); }}><RotateCcw className="size-4" aria-hidden />Try again</Button></Card>}
           {search.status === "done" && <>
             <p className="mb-4 text-sm text-muted" role="status">{shown.length} resource{shown.length === 1 ? "" : "s"} to explore{savedOnly ? " · saved links only" : ""}</p>
             {!shown.length && <Card><EmptyState icon={<Search className="size-5" />} title={savedOnly ? "No saved links in this view" : "No resources in this view"} body="Try another category or clear the filters. This demo catalog is a starting point, not a complete list of local support." action={<Button onClick={() => { setCategory("all"); setSavedOnly(false); setQuery(""); }}>Clear filters</Button>} /></Card>}
