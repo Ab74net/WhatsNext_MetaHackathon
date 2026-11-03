@@ -49,4 +49,19 @@ export const TOUR_STEPS: TourStep[] = [
     title: "Export your claim",
     body: "Download a spreadsheet and a PDF with a photo beside each item. This is a helper, not insurance or legal advice.",
   },
+  {
+    path: "/aid", anchor: "aid-overview",
+    title: "Explore Aid Autopilot",
+    body: "Answer a few optional questions to explore financial, housing and everyday support. These are demo resources; check availability and eligibility with the provider.",
+  },
+  {
+    path: "/aid", anchor: "aid-assistant",
+    title: `Ask ${A} before you apply`,
+    body: `Prepare a question for ${A} and review it before sending. Your preparation notes and checklists stay out of the message. No applications are submitted here.`,
+  },
+  {
+    path: "/our-story", anchor: "story-origin",
+    title: "Why we’re building this",
+    body: `The idea began with a Virginia Tech student's firsthand experience of the 2024 New River Valley floods. Our Story shares the personal inspiration behind ${brand.projectName}.`,
+  },
 ];

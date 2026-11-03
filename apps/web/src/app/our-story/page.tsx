@@ -46,7 +46,7 @@ export default function OurStoryPage() {
       <div className="story-section-label"><span>01</span><p>The beginning</p></div>
       <div className="story-origin-grid">
         <div className="story-prose">
-          <h2 id="story-origin-title" className="story-heading">It started <em>close to home.</em></h2>
+          <h2 id="story-origin-title" className="story-heading" data-tour="story-origin">It started <em>close to home.</em></h2>
           <p>As a Virginia Tech student, I experienced the 2024 flooding in Virginia’s New River Valley firsthand. Seeing the damage made it clear how quickly a disaster can disrupt homes, communities and everyday life.</p>
           <p>What stayed with me was the question of what happens afterward.</p>
           <p>When someone loses their home or possessions, they’re also expected to navigate insurance claims, remember what they owned, find assistance and make difficult decisions. All while dealing with an incredibly stressful situation.</p>

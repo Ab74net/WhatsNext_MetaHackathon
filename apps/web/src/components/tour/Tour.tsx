@@ -48,7 +48,9 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
     setStep(null);
     markSeen();
     // The opener may be gone (the first-visit offer unmounts); fall back to the nav link.
-    const back = opener.current?.isConnected ? opener.current : document.querySelector<HTMLElement>("[data-tour-link]");
+    const origin = opener.current;
+    const back = origin?.isConnected && origin.tabIndex >= 0 && origin.getClientRects().length ? origin
+      : [...document.querySelectorAll<HTMLElement>("[data-tour-link]")].find((link) => link.getClientRects().length > 0);
     back?.focus?.();
   }, []);
 
@@ -66,13 +68,13 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
 function TourOffer({ onStart, onDismiss }: { onStart: () => void; onDismiss: () => void }) {
   return (
     <div role="region" aria-label="Guided tour"
-      className="fixed inset-x-4 bottom-20 z-40 mx-auto max-w-sm rounded-2xl border border-line bg-surface p-4 shadow-pop lg:bottom-6 lg:left-auto lg:right-6 lg:mx-0">
+      className="fixed inset-x-4 bottom-20 z-40 mx-auto max-w-sm rounded-2xl border border-line bg-surface p-4 shadow-pop xl:bottom-6 xl:left-auto xl:right-6 xl:mx-0">
       <div className="flex items-start gap-3">
         {/* eslint-disable-next-line @next/next/no-img-element -- small static illustration */}
         <img src="/wren/scene-guide.webp" alt="" width={480} height={351} className="w-20 shrink-0" />
         <div>
           <p className="font-display text-lg leading-snug">New here?</p>
-          <p className="mt-1 text-sm text-muted">A one-minute tour shows how to ask for help and build your claim list.</p>
+          <p className="mt-1 text-sm text-muted">A short tour of getting help, building your claim, exploring aid, and the story behind this project.</p>
         </div>
       </div>
       <div className="mt-3 flex gap-2">
@@ -99,37 +101,48 @@ function TourDialog({ step, setStep, onClose }: {
   const [rect, setRect] = useState<Rect | null>(null);
   const [vw, setVw] = useState(1024);
   const [vh, setVh] = useState(768);
+  const [cardHeight, setCardHeight] = useState(320);
 
   // Go to the step's page.
   useEffect(() => {
     if (pathname !== s.path) router.push(s.path);
   }, [s.path, pathname, router]);
 
-  // Track the anchor every frame (it may mount late, move, or resize), and scroll it into view once.
+  // Track late mounts and layout shifts. Route scroll restoration can run after our first
+  // scroll, so reframe an offscreen target once the initial smooth scroll has settled.
   useEffect(() => {
     let raf = 0;
     let scrolled = false;
+    let settleAt = 0;
     let prev = "";
     const tick = () => {
-      const el = document.querySelector<HTMLElement>(`[data-tour="${s.anchor}"]`);
-      if (el && !scrolled) {
-        el.scrollIntoView({ block: "center", behavior: reduced ? "auto" : "smooth" });
+      const el = pathname === s.path ? document.querySelector<HTMLElement>(`[data-tour="${s.anchor}"]`) : null;
+      let r = el?.getBoundingClientRect();
+      const top = el && document.querySelector(".app-shell > header")?.contains(el) ? 0 : 80;
+      const bottom = window.innerHeight - (window.innerWidth < 1280 ? 56 : 16);
+      const visible = r ? Math.max(0, Math.min(bottom, r.bottom) - Math.max(top, r.top)) : 0;
+      const offscreen = r && visible < Math.min(r.height, bottom - top) * .65;
+      if (el && r && r.width > 0 && (!scrolled || (offscreen && performance.now() >= settleAt))) {
+        el.scrollIntoView({ block: "center", behavior: !scrolled && !reduced ? "smooth" : "auto" });
         scrolled = true;
+        settleAt = performance.now() + 600;
+        r = el.getBoundingClientRect();
       }
-      const r = el?.getBoundingClientRect();
       const next = r && r.width > 0 ? { top: r.top, left: r.left, width: r.width, height: r.height } : null;
-      const key = `${JSON.stringify(next)}|${window.innerWidth}|${window.innerHeight}`;
+      const height = dialogRef.current?.offsetHeight ?? 320;
+      const key = `${JSON.stringify(next)}|${window.innerWidth}|${window.innerHeight}|${height}`;
       if (key !== prev) {
         prev = key;
         setRect(next);
         setVw(window.innerWidth);
         setVh(window.innerHeight);
+        setCardHeight(height);
       }
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [s.anchor, reduced]);
+  }, [s.anchor, s.path, pathname, reduced]);
 
   // Focus the dialog heading on every step so screen readers announce it.
   useEffect(() => {
@@ -152,14 +165,15 @@ function TourDialog({ step, setStep, onClose }: {
 
   const phone = vw < 640;
   const pad = 6;
+  const spaceNeeded = cardHeight + pad + GAP + 16;
   let cardStyle: React.CSSProperties;
   if (phone) {
     // Dock at whichever edge keeps the highlighted element visible.
     const lowTarget = rect && rect.top + rect.height / 2 > vh / 2 && rect.height < vh / 2;
     cardStyle = lowTarget ? { left: 16, right: 16, top: 64 } : { left: 16, right: 16, bottom: 16 };
-  } else if (rect && vh - (rect.top + rect.height) > 240) {
+  } else if (rect && vh - (rect.top + rect.height) > spaceNeeded) {
     cardStyle = { top: rect.top + rect.height + pad + GAP, left: clampLeft(rect.left, vw) };
-  } else if (rect && rect.top > 240) {
+  } else if (rect && rect.top > spaceNeeded) {
     cardStyle = { bottom: vh - rect.top + pad + GAP, left: clampLeft(rect.left, vw) };
   } else if (rect) {
     // Large anchor (the map, the message list): sit inside its lower-left corner.
@@ -182,8 +196,8 @@ function TourDialog({ step, setStep, onClose }: {
           }} />
       )}
       <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={titleId} aria-describedby={bodyId}
-        className={`absolute rounded-2xl border border-line bg-surface p-5 shadow-pop ${ease}`}
-        style={{ width: phone ? undefined : CARD_W, ...cardStyle }}>
+        className={`absolute overflow-y-auto rounded-2xl border border-line bg-surface p-5 shadow-pop ${ease}`}
+        style={{ width: phone ? undefined : CARD_W, maxHeight: Math.max(120, vh - (phone ? 80 : 32)), ...cardStyle }}>
         <div className="flex items-start justify-between gap-3">
           <p className="text-xs font-medium tracking-wide text-muted">
             Step {step + 1} of {TOUR_STEPS.length}

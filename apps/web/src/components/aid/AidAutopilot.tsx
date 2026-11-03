@@ -93,7 +93,7 @@ export function AidAutopilot() {
         <SituationForm initial={suggestedSituation ?? situation} onCancel={() => { setSuggestedSituation(null); navigate(hasSearched ? "results" : "home"); }} onComplete={(s) => discover(s)} />
       </> : <>
         {view === "home" ? <header className="aid-hero">
-          <div className="relative z-10">
+          <div className="relative z-10" data-tour="aid-overview">
             <span className="aid-feature-label"><LifeBuoy className="size-4 text-accent" aria-hidden />Aid Autopilot</span>
             <h1 ref={titleRef} tabIndex={-1} className="aid-heading">Discover assistance you may be eligible for.</h1>
             <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted sm:text-lg">Let us find the right programs and resources based on your situation.</p>
@@ -106,7 +106,7 @@ export function AidAutopilot() {
             {/* eslint-disable-next-line @next/next/no-img-element -- retained local, optimized reference asset */}
             <img src="/hero/earthquake-768.webp" width={768} height={420} alt="" className="aid-art-photo" decoding="async" />
           </div>
-        </header> : <header className="mb-7">
+        </header> : <header className="mb-7" data-tour="aid-overview">
           <Button variant="ghost" size="sm" onClick={() => navigate("home")} className="mb-5"><ArrowLeft className="size-4" aria-hidden />Aid Autopilot</Button>
           <h1 ref={titleRef} tabIndex={-1} className="page-title">Resources worth exploring</h1>
           <p className="mt-3 text-muted">A starting point for your next step. The provider makes the eligibility decision.</p>
@@ -154,7 +154,7 @@ export function AidAutopilot() {
           </>}
         </section>}
 
-        <Card className="aid-assistant mt-8 flex flex-wrap items-center gap-5 bg-blue-soft p-6 sm:p-7">
+        <Card className="aid-assistant mt-8 flex flex-wrap items-center gap-5 bg-blue-soft p-6 sm:p-7" data-tour="aid-assistant">
           <MessageCircle className="size-8 shrink-0 text-blue" aria-hidden /><div className="min-w-0 flex-1"><h2 className="text-xl">Need help applying?</h2><p className="mt-2 max-w-xl text-sm text-muted">{brand.agentName} can help explain requirements, gather documents, and prepare application answers.</p><p className="mt-2 text-xs text-muted">A request is prepared for your review. Nothing is sent until you press Send; notes and checklists are excluded.</p></div>
           <Button onClick={() => ask(programs.find((p) => p.id === selected) ?? null)} variant="primary">Ask {brand.agentName}<ArrowRight className="size-4" aria-hidden /></Button>
         </Card>

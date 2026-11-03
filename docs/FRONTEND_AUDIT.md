@@ -68,3 +68,11 @@ Verification for this follow-up:
 - Pillow verified all nine new public image variants had no source metadata. No source photograph was cropped or overwritten.
 
 The final build passed after clearing two stale generated output directories (`.next/server/app/our-story` and `our-story.segments`) with native PowerShell. OneDrive had marked these directories as reparse points, which caused Next's Node cleanup to fail with EPERM. No tracked source or original photos were removed.
+
+## Guided tour extension
+
+The tour now has 11 stops. After the original assistant and claims steps, it introduces Aid Autopilot discovery, the reviewed handoff to the assistant, and the personal inspiration in Our Story. Aid anchors cover both the landing and existing-results views without resetting provider state or sending a message. The first-visit offer describes the expanded scope, while the existing seen preference is preserved.
+
+Browser walkthroughs exposed two positioning issues: route scroll restoration could move the Aid highlight offscreen when returning from Our Story, and a fixed estimate of dialog height could clip cards on tablets. Anchor tracking now waits for the target route and reframes after scroll restoration or content shifts; card placement uses its measured height with a bounded scrollable dialog. Closing the tour chooses a visible tour launcher when the original opener is gone or cannot receive focus. The first-visit offer also uses the shell's current mobile-navigation breakpoint.
+
+Verification passed: lint, TypeScript, production build and all 36 frontend tests. Headless Chrome walked all 11 stops and Back/Done at 1440, 768, 390 and 320px in both themes, checking visible highlights and dialog bounds. It also verified existing Aid results and saved links, Escape, Skip, replay, reduced motion, focus restoration and no automatic assistant sends or browser exceptions. Backend requests used the isolated mock server. New desktop and phone tour screenshots are ignored local artifacts under `scripts/out/redesign/tour-*`.
