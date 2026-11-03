@@ -4,6 +4,7 @@ import { ArrowRight, Banknote, ChevronRight, Flame, House, LifeBuoy, MapPin, Mes
 import brand from "@shared/brand.json";
 import { CATEGORY_LABELS, type AidCategory, type AidSituation } from "@/lib/aidAutopilot";
 import { Button, Card } from "@/components/ui";
+import "./AidLandingCards.css";
 
 export const AID_CATEGORIES: { id: AidCategory; icon: LucideIcon; body: string }[] = [
   { id: "financial", icon: Banknote, body: "Explore help with disaster-related costs and getting back on your feet." },

@@ -357,37 +357,6 @@ h1 { font-weight: 800; }
 .aid-resource-open { border-color: var(--line-strong); }
 .aid-main h1:focus, .aid-main h2:focus { outline: none; }
 .aid-assistant { background: var(--blue-soft); }
-.aid-overview-card { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); overflow: hidden; }
-.aid-overview-col { display: flex; min-width: 0; flex-direction: column; padding: 30px clamp(18px, 2vw, 32px); }
-.aid-overview-col + .aid-overview-col { border-left: 1px dashed var(--line); }
-.aid-overview-heading { display: flex; min-height: 56px; align-items: center; gap: 14px; }
-.aid-overview-heading h2 { min-width: 0; font-size: clamp(1.45rem, 1.85vw, 1.95rem); line-height: 1.12; }
-.aid-icon-badge { display: inline-flex; width: 52px; height: 52px; flex: none; align-items: center; justify-content: center; border-radius: 50%; background: var(--blue-soft); color: var(--blue); }
-.aid-icon-badge-accent { background: var(--accent-soft); color: var(--accent); }
-.aid-overview-description { min-height: 112px; margin-top: 20px; color: var(--muted); font-size: 15px; line-height: 1.55; }
-.aid-overview-action { display: flex; min-height: 68px; align-items: flex-start; }
-.aid-overview-list { margin-top: 10px; border-top: 1px dashed var(--line); }
-.aid-overview-row { display: flex; width: 100%; min-height: 96px; align-items: center; gap: 12px; border-bottom: 1px dashed var(--line); padding: 12px 4px; text-align: left; transition: background-color .16s; }
-.aid-overview-row:last-child { border-bottom: 0; }
-.aid-overview-row:hover, .aid-overview-row:focus-visible { background: var(--surface-2); }
-.aid-overview-row .aid-icon-badge { width: 44px; height: 44px; }
-.aid-overview-row .aid-icon-badge svg { width: 21px; height: 21px; }
-.aid-overview-row-copy { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: 3px; }
-.aid-overview-row-title { color: var(--ink); font-size: 16px; font-weight: 700; line-height: 1.25; }
-.aid-overview-row-subtitle { color: var(--muted); font-size: 12px; line-height: 1.35; overflow-wrap: anywhere; }
-.aid-overview-row-action { display: inline-flex; flex: none; align-items: center; gap: 1px; color: var(--ink); font-size: 12px; font-weight: 700; }
-.aid-overview-chevron { transition: transform .16s; }
-.aid-overview-note { margin-top: 4px; color: var(--muted); font-size: 12px; line-height: 1.5; }
-.aid-overview-illustration { display: block; width: min(100%, 270px); height: auto; align-self: center; margin-top: auto; padding-top: 18px; }
-@media (prefers-reduced-motion: no-preference) {
-  .aid-overview-row:hover .aid-overview-chevron, .aid-overview-row:focus-visible .aid-overview-chevron { transform: translateX(4px); }
-}
-@media (max-width: 1279px) {
-  .aid-overview-card { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .aid-overview-col-assistant { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) 240px; column-gap: 24px; border-top: 1px dashed var(--line); border-left: 0 !important; }
-  .aid-overview-col-assistant > :not(.aid-overview-illustration) { grid-column: 1; }
-  .aid-overview-col-assistant .aid-overview-illustration { grid-column: 2; grid-row: 1 / 5; align-self: center; padding-top: 0; }
-}
 @media (max-width: 1199px) {
   .aid-layout { grid-template-columns: 180px minmax(0, 1fr); }
   .aid-rail { padding-inline: 12px; }
@@ -409,19 +378,6 @@ h1 { font-weight: 800; }
   .aid-art-line { inset: 0; }
   .aid-situation { gap: 16px; padding: 22px; }
   .aid-situation > div { flex-basis: 100%; }
-}
-@media (max-width: 767px) {
-  .aid-overview-card { grid-template-columns: minmax(0, 1fr); }
-  .aid-overview-col { padding: 24px 20px; }
-  .aid-overview-col + .aid-overview-col { border-top: 1px dashed var(--line); border-left: 0; }
-  .aid-overview-col-assistant { display: flex; }
-  .aid-overview-heading h2 { font-size: 1.55rem; }
-  .aid-overview-description { min-height: 0; margin-top: 16px; }
-  .aid-overview-action { min-height: 0; margin-top: 20px; }
-  .aid-overview-action-spacer { display: none; }
-  .aid-overview-list { margin-top: 20px; }
-  .aid-overview-col-assistant .aid-overview-illustration { width: min(100%, 245px); align-self: center; margin-top: 20px; }
-  .aid-overview-note { margin-top: 16px; }
 }
 
 /* Black on white, app chrome hidden; the user's notes print with the sheet. */
