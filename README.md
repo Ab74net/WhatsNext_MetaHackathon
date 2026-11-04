@@ -1,4 +1,4 @@
-# What Next
+﻿# What Next
 
 **Lost your home? Start here.**
 
@@ -6,7 +6,7 @@ What Next helps people find their next step after a disaster: locate recovery re
 
 Wren, the visual assistant, turns questions into maps, action cards, and sourced guidance. The claims helper uses Meta Muse Spark and SAM 3.1 to identify and outline belongings, then lets the user review them before exporting an inventory.
 
-Built by James, a Virginia Tech student, for the **Meta × Cerebral Valley AI Hackathon, indie developer track**. The idea grew from experiencing the 2024 flooding in Virginia's New River Valley; the app's **Our Story** page explains that personal starting point.
+Built by Ashraf A. , a Virginia Tech student, for the **Meta × Cerebral Valley AI Hackathon, indie developer track**. The idea grew from experiencing the 2024 flooding in Virginia's New River Valley; the app's **Our Story** page explains that personal starting point.
 
 [Judge walkthrough](#judge-walkthrough) · [Run locally](#run-locally) · [Meta model integration](#meta-model-integration) · [Privacy and safeguards](#privacy-and-safeguards)
 
