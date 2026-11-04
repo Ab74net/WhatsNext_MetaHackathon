@@ -58,7 +58,7 @@ export default function ClaimsPage() {
           </p>
         </div>
         {session.sessionId && (
-          <Button variant="ghost" size="sm" onClick={() => { session.endSession(); setStep("select"); }}>
+          <Button variant="ghost" size="sm" loading={session.ending} onClick={async () => { if (await session.endSession()) setStep("select"); }}>
             <Trash2 className="size-4" aria-hidden /> Finish and delete photos
           </Button>
         )}
@@ -69,6 +69,7 @@ export default function ClaimsPage() {
           Can’t reach the backend ({session.healthError}). Is it running? Start everything with <code>npm run dev</code>.
         </Notice>
       )}
+      {session.actionError && <div role="alert"><Notice tone="danger" icon={<TriangleAlert className="size-4" />}>{session.actionError}</Notice></div>}
       {session.health?.mock && (
         <Notice tone="warn" icon={<TriangleAlert className="size-4" />}>
           <strong>Mock mode.</strong> Photo results are simulated, so every photo shows the same fake sofa, lamp and rug.

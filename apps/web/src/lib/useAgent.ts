@@ -3,7 +3,7 @@
 // Assistant conversation state. Kept in sessionStorage (this tab only, cleared when it
 // closes) so the conversation survives a trip to the claims helper and back.
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type {
   AlertsCard, CaseFile, ResourceList, Scenario, ScenarioId, ScenarioPresetId, ScenarioSummary, UIInstruction,
 } from "@shared/types";
@@ -47,6 +47,18 @@ export function useAgent() {
   const [pending, setPending] = useState(false);
   const [typingId, setTypingId] = useState<string | null>(null); // reply currently being typed out
   const [loaded, setLoaded] = useState(false);
+  const requestId = useRef(0);
+  const controller = useRef<AbortController | null>(null);
+
+  const cancelPending = useCallback(() => {
+    requestId.current += 1;
+    controller.current?.abort();
+    controller.current = null;
+    setPending(false);
+    setTypingId(null);
+  }, []);
+
+  useEffect(() => cancelPending, [cancelPending]);
 
   useEffect(() => {
     // Restore after mount (sessionStorage doesn't exist during server rendering).
@@ -74,41 +86,51 @@ export function useAgent() {
 
   const send = useCallback(async (text: string) => {
     const trimmed = text.trim();
-    if (!trimmed || pending) return;
+    if (!trimmed || controller.current) return;
+    const id = ++requestId.current;
+    const active = new AbortController();
+    controller.current = active;
     const userMsg: Message = { id: crypto.randomUUID(), role: "user", text: trimmed };
     const history = [...messages, userMsg];
     setMessages(history);
     setPending(true);
     try {
-      const res = await api.agent(history.filter((m) => !m.error).map(({ role, text }) => ({ role, text })), caseFile);
+      const res = await api.agent(history.filter((m) => !m.error).map(({ role, text }) => ({ role, text })), caseFile, active.signal);
+      if (id !== requestId.current || active.signal.aborted) return;
       setCaseFile(res.case);
-      const id = crypto.randomUUID();
-      setTypingId(id);
-      setMessages((prev) => [...prev, { id, role: "assistant", text: res.message, ui: res.ui }]);
+      const messageId = crypto.randomUUID();
+      setTypingId(messageId);
+      setMessages((prev) => [...prev, { id: messageId, role: "assistant", text: res.message, ui: res.ui }]);
     } catch (e) {
+      if (id !== requestId.current || active.signal.aborted) return;
       setMessages((prev) => [...prev, {
         id: crypto.randomUUID(), role: "assistant", error: true,
         text: `I couldn't respond just now (${e instanceof Error ? e.message : "network error"}). If you are in danger, call 911. For local help, call 2-1-1.`,
       }]);
     } finally {
-      setPending(false);
+      if (id === requestId.current) {
+        controller.current = null;
+        setPending(false);
+      }
     }
-  }, [messages, caseFile, pending]);
+  }, [messages, caseFile]);
 
   const doneTyping = useCallback(() => setTypingId(null), []);
 
   const setPreset = useCallback((preset: ScenarioPresetId) => {
     // A different point in time is a different situation: start a fresh conversation.
+    cancelPending();
     setCaseFile((c) => ({ ...DEFAULT_CASE, scenario: c.scenario, preset }));
     setMessages([]);
-  }, []);
+  }, [cancelPending]);
 
   // A different demo scenario is a different place and disaster: fresh conversation and map.
   const chooseScenario = useCallback((id: ScenarioId) => {
+    cancelPending();
     setScenario(null);
     setCaseFile({ ...DEFAULT_CASE, scenario: id });
     setMessages([]);
-  }, []);
+  }, [cancelPending]);
 
   const reset = useCallback(() => setPreset(caseFile.preset), [setPreset, caseFile.preset]);
 

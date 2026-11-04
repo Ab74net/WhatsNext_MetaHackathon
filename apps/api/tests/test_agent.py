@@ -18,13 +18,16 @@ def no_network(monkeypatch):
 
 
 @pytest.mark.parametrize("text", ["My son is hurt", "I can't breathe", "we're trapped in the house",
-                                  "the fire is coming toward us", "smoke is inside the house", "she's bleeding"])
+                                  "the fire is coming toward us", "smoke is inside the house", "she's bleeding",
+                                  "I'm hurt", "I’m hurt", "We're hurt", "We’re hurt", "You're hurt",
+                                  "My child is hurt", "Our neighbor is hurt", "I can’t breathe"])
 def test_emergencies_are_caught(text):
     assert is_emergency(text)
 
 
 @pytest.mark.parametrize("text", ["My home burned down last month", "The fire destroyed my house",
-                                  "Where can I stay tonight?", "How do I start an insurance claim?"])
+                                  "Where can I stay tonight?", "How do I start an insurance claim?",
+                                  "I'm not hurt", "My feelings are hurt", "My son was hurt last year"])
 def test_ordinary_requests_are_not_emergencies(text):
     assert not is_emergency(text)
 
@@ -79,6 +82,18 @@ def test_agent_stops_at_911_for_emergencies():
     r = client.post("/api/agent", json={"messages": [{"role": "user", "text": "my dad is hurt and can't breathe"}]}).json()
     assert [c["type"] for c in r["ui"]] == ["emergency"] and "911" in r["message"]
     assert r["tools_used"] == []
+
+
+def test_contracted_injury_stops_before_live_model_call():
+    import asyncio
+    from app.agent import MetaAgent
+    from app.schemas import AgentRequest
+
+    # No client is supplied: reaching a model/tool call would fail the test.
+    request = AgentRequest.model_validate({"messages": [{"role": "user", "text": "I’m hurt"}]})
+    result = asyncio.run(MetaAgent(None).respond(request))
+    assert [card.type for card in result.ui] == ["emergency"]
+    assert result.tools_used == []
 
 
 def test_scenario_endpoint_has_presets_and_perimeters():

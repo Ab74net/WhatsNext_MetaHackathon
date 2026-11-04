@@ -23,7 +23,9 @@ BRAND = config.BRAND
 
 EMERGENCY = re.compile(
     r"\b(injur\w*|bleeding|unconscious|not breathing|can'?t breathe|cannot breathe|trouble breathing|"
-    r"trapped|chest pain|heart attack|overdos\w*|seizure|stroke|(someone|he|she|they|i)('?s| is| am| are)? hurt|"
+    r"trapped|chest pain|heart attack|overdos\w*|seizure|stroke|"
+    r"(someone|somebody|he|she|they|we|you|i|my (son|daughter|child|kid|baby|dad|mom|partner))"
+    r"('s|'m|'re| is| am| are)? hurt|is hurt|"
     r"burn(ed|t) (my|his|her|their) (skin|hand|arm|leg|face)|in danger|fire is (here|coming|near|close)|"
     r"flames (are )?(near|close|here|outside)|smoke (is )?(inside|in the house))\b",
     re.IGNORECASE,
@@ -81,7 +83,8 @@ Current case file: home_damage={case.home_damage}, insured={case.insured}, lost_
 
 
 def is_emergency(text: str) -> bool:
-    return bool(EMERGENCY.search(text))
+    normalized = text.translate(str.maketrans({"\u2018": "'", "\u2019": "'", "\u02bc": "'"}))
+    return bool(EMERGENCY.search(normalized))
 
 
 EMERGENCY_MESSAGE = ("If you or anyone is hurt or in immediate danger, call 911 now. "

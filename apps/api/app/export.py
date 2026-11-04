@@ -62,12 +62,20 @@ HEADERS = ["#", "Item", "Brand", "Model", "Condition", "Evidence", "Scan confide
            "Earliest photo", "Est. low (USD)", "Est. high (USD)", "Price source", "Price checked"]
 
 
+def _csv_value(value):
+    # Spreadsheet apps can interpret user/model text as formulas, even after whitespace.
+    if isinstance(value, str) and (value.lstrip().startswith(("=", "+", "-", "@")) or
+                                   value.startswith(("\t", "\r", "\n"))):
+        return "'" + value
+    return value
+
+
 def build_csv(session: Session) -> bytes:
     out = io.StringIO()
     w = csv.writer(out)
     w.writerow(HEADERS)
     for n, item in enumerate(confirmed_items(session), start=1):
-        w.writerow(_row(n, item))
+        w.writerow([_csv_value(value) for value in _row(n, item)])
     return out.getvalue().encode("utf-8-sig")  # BOM so Excel opens it as UTF-8
 
 
@@ -101,7 +109,10 @@ def build_xlsx(session: Session) -> bytes:
     for n, item in enumerate(items, start=1):
         r = head + n
         for col, value in enumerate(_row(n, item), start=2):
-            ws.cell(row=r, column=col, value=value).alignment = Alignment(vertical="center", wrap_text=col in (3, 13))
+            cell = ws.cell(row=r, column=col, value=value)
+            if isinstance(value, str):
+                cell.data_type = "s"  # descriptions are text; only our totals below are formulas
+            cell.alignment = Alignment(vertical="center", wrap_text=col in (3, 13))
         ws.cell(row=r, column=11).number_format = money
         ws.cell(row=r, column=12).number_format = money
         est = item.estimated_replacement_usd

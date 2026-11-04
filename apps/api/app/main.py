@@ -128,6 +128,8 @@ def edit_item(sid: str, iid: str, patch: ItemPatch) -> InventoryItem:
     for key in ("brand", "model"):
         if key in changes and changes[key] is not None:
             changes[key] = changes[key].strip() or None
+    if any(key in changes and changes[key] != getattr(item, key) for key in ("category", "brand", "model")):
+        changes["estimated_replacement_usd"] = None
     session.items[iid] = item.model_copy(update=changes)
     return session.items[iid]
 
@@ -192,7 +194,8 @@ async def value(sid: str, iid: str) -> InventoryItem:
         raise HTTPException(502, f"Price lookup failed: {type(err).__name__}")
     # The item may have been edited or merged while the lookup ran.
     current = session.items.get(iid)
-    if not current:
+    if (not current or current.photos != item.photos or
+            any(getattr(current, key) != getattr(item, key) for key in ("category", "brand", "model"))):
         raise HTTPException(409, "Item changed while it was being valued")
     session.items[iid] = current.model_copy(update={"estimated_replacement_usd": estimate})
     return session.items[iid]

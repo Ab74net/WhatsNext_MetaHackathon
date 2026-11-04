@@ -8,10 +8,11 @@ Every merge is recorded so the user can split it again.
 
 import asyncio
 import logging
+from itertools import combinations
 
 from . import config
 from .images import crop_jpeg
-from .schemas import InventoryItem, MergeGroup
+from .schemas import InventoryItem, MergeGroup, PhotoEvidence
 from .sessions import Session
 
 log = logging.getLogger(__name__)
@@ -43,18 +44,26 @@ def category_key(category: str, known: set[str]) -> str:
     return c
 
 
+def _crop_evidence(item: InventoryItem) -> PhotoEvidence | None:
+    return next((photo for photo in item.photos if photo.mask is not None), None)
+
+
 def candidate_groups(items: list[InventoryItem]) -> dict[str, list[InventoryItem]]:
     """Same-category items that appear in at least two different photos and have a mask
     (a crop is needed to compare them). Groups are sorted by photo date."""
     known = {" ".join(i.category.lower().split()) for i in items}
     groups: dict[str, list[InventoryItem]] = {}
     for it in items:
-        if it.photos and it.photos[0].mask is not None and len(it.photos) == 1:
+        if _crop_evidence(it) is not None:
             groups.setdefault(category_key(it.category, known), []).append(it)
     out = {}
     for key, members in groups.items():
-        if len({m.photos[0].photo_id for m in members}) >= 2:
-            out[key] = sorted(members, key=lambda m: m.photos[0].taken_at or "")[:MAX_CROPS_PER_CALL]
+        batch = sorted(members, key=lambda m: _crop_evidence(m).taken_at or "")[:MAX_CROPS_PER_CALL]
+        # Existing merged belongings also need comparison when more photos are scanned.
+        # There must be at least one pair that could be the same physical object.
+        if any({p.photo_id for p in a.photos}.isdisjoint(p.photo_id for p in b.photos)
+               for a, b in combinations(batch, 2)):
+            out[key] = batch
     return out
 
 
@@ -76,9 +85,9 @@ def split_same_photo(group: list[InventoryItem]) -> list[list[InventoryItem]]:
     """A group may hold at most one detection per photo; extras start new groups."""
     buckets: list[list[InventoryItem]] = []
     for it in group:
-        pid = it.photos[0].photo_id
+        pids = {photo.photo_id for photo in it.photos}
         for b in buckets:
-            if all(m.photos[0].photo_id != pid for m in b):
+            if all(pids.isdisjoint(photo.photo_id for photo in m.photos) for m in b):
                 b.append(it)
                 break
         else:
@@ -133,7 +142,8 @@ def split(session: Session, item_id: str) -> list[InventoryItem]:
 async def _decide(client, session: Session, key: str, members: list[InventoryItem]):
     crops = []
     for m in members:
-        ev = m.photos[0]
+        ev = _crop_evidence(m)
+        assert ev is not None and ev.mask is not None
         crops.append((crop_jpeg(session.photos[ev.photo_id].photo.jpeg, ev.mask.bounds), ev.taken_at))
     async with _limit:
         return await client.group_same_items(key, crops)
@@ -149,7 +159,7 @@ async def auto_merge(client, session: Session) -> list[MergeGroup]:
         if isinstance(decision, Exception):
             log.warning("merge check failed for a category: %s", type(decision).__name__)
             continue
-        if any(m.id not in session.items for m in members):
+        if any(session.items.get(m.id) is not m for m in members):
             continue  # the user edited these items while the check ran
         for g in enforce_partition([d.images for d in decision.groups], len(members)):
             reason = next((d.reason for d in decision.groups if set(g) <= set(d.images)), "")

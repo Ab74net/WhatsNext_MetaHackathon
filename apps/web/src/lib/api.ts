@@ -73,8 +73,8 @@ export const api = {
   },
   scenarios: () => call<ScenarioSummary[]>("/scenarios"),
   scenario: (id: ScenarioId) => call<Scenario>(`/scenario?id=${encodeURIComponent(id)}`),
-  agent: (messages: ChatTurn[], caseFile: CaseFile) =>
-    call<AgentResponse>("/agent", { method: "POST", ...json({ messages, case: caseFile }) }),
+  agent: (messages: ChatTurn[], caseFile: CaseFile, signal?: AbortSignal) =>
+    call<AgentResponse>("/agent", { method: "POST", ...json({ messages, case: caseFile }), signal }),
 };
 
 // Run async tasks with at most `limit` in flight.

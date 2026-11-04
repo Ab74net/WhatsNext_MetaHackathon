@@ -22,7 +22,7 @@ const CONDITIONS: Condition[] = ["good", "worn", "damaged", "unknown"];
 export function ReviewStep({ session, onAddMore, onExport }: {
   session: ClaimSession; onAddMore: () => void; onExport: () => void; // continues to the memory web, then export
 }) {
-  const { items, photos, photoUrl, patchItem, removeItem, merge, splitItem, mergeItems } = session;
+  const { items, photos, photoUrl, patchItem, removeItem, removing, merge, splitItem, mergeItems } = session;
   const [filter, setFilter] = useState<Filter>("all");
   const [viewing, setViewing] = useState<InventoryItem | null>(null);
   const [selecting, setSelecting] = useState(false);
@@ -149,6 +149,7 @@ export function ReviewStep({ session, onAddMore, onExport }: {
                   <ItemCard key={item.id} item={item} meta={meta} src={meta ? photoUrl(meta.photo_id) : ""}
                     color={colorFor(colorIndex[item.id] ?? 0)}
                     selecting={selecting} selected={selected.has(item.id)}
+                    removing={removing.has(item.id)}
                     onSelect={() => setSelected((prev) => {
                       const next = new Set(prev);
                       if (next.has(item.id)) next.delete(item.id);
@@ -187,13 +188,14 @@ export function ReviewStep({ session, onAddMore, onExport }: {
   );
 }
 
-function ItemCard({ item, meta, src, color, selecting, selected, onSelect, onView, onPatch, onRemove, onSplit }: {
+function ItemCard({ item, meta, src, color, selecting, selected, removing, onSelect, onView, onPatch, onRemove, onSplit }: {
   item: InventoryItem;
   meta: PhotoMeta | undefined;
   src: string;
   color: string;
   selecting: boolean;
   selected: boolean;
+  removing: boolean;
   onSelect: () => void;
   onView: () => void;
   onPatch: (patch: ItemPatch) => void;
@@ -300,7 +302,7 @@ function ItemCard({ item, meta, src, color, selecting, selected, onSelect, onVie
                   <Split className="size-3.5" />
                 </Button>
               )}
-              <Button size="sm" variant="ghost" onClick={onRemove} className="ml-auto hover:text-danger" aria-label="Remove">
+              <Button size="sm" variant="ghost" loading={removing} onClick={onRemove} className="ml-auto hover:text-danger" aria-label="Remove">
                 <Trash2 className="size-3.5" />
               </Button>
               </div>

@@ -265,7 +265,7 @@ function AskPanel({ suggestion: s, session, metaById, header, onDismiss, onAdded
         }}>
           <Check className="size-4" strokeWidth={3} aria-hidden /> Yes, I owned this
         </Button>
-        <Button variant="ghost" onClick={() => { session.removeItem(item.id); setState({ status: "idle" }); }}>Not mine, remove it</Button>
+        <Button variant="ghost" loading={session.removing.has(item.id)} onClick={async () => { if (await session.removeItem(item.id)) setState({ status: "idle" }); }}>Not mine, remove it</Button>
       </div>
     );
   }

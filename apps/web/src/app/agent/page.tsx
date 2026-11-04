@@ -47,10 +47,18 @@ export default function AgentPage() {
   const { agentDraft, setAgentDraft } = useAidAutopilot();
   const reduced = usePrefersReducedMotion();
   const [input, setInput] = useState(() => agentDraft?.text ?? "");
+  const loadedDraft = useRef(agentDraft);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const preset = agent.scenario?.presets.find((p) => p.id === agent.caseFile.preset);
   const mood: WrenMood = agent.pending ? "thinking" : agent.typingId ? "typing" : "idle";
+
+  // Next can retain this page between visits. A new handoff replaces the composer
+  // once; ordinary renders and returning to the same draft preserve user edits.
+  useEffect(() => {
+    if (agentDraft && agentDraft !== loadedDraft.current) setInput(agentDraft.text);
+    loadedDraft.current = agentDraft;
+  }, [agentDraft]);
 
   // Scroll only the message list (scrollIntoView would also scroll the page). A new reply
   // is shown from its top so its first card is read first.

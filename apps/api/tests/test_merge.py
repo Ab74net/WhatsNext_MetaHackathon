@@ -57,3 +57,40 @@ def test_merge_then_split_restores_originals():
     assert list(s.items) == [group.kept_id] and len(s.items[group.kept_id].photos) == 2
     restored = split(s, group.kept_id)
     assert {i.id for i in restored} == {"a", "b"} and set(s.items) == {"a", "b"}
+
+
+def test_merged_belonging_is_compared_with_additional_photo_and_undo_keeps_all_originals(jpeg_with_exif):
+    import asyncio
+    from app.images import process_upload
+    from app.merge import auto_merge
+    from app.schemas import SameItemDecision, SameItemGroup
+    from app.sessions import StoredPhoto
+
+    class Client:
+        async def group_same_items(self, category, crops):
+            assert category == "sofa" and len(crops) == 2
+            return SameItemDecision(groups=[SameItemGroup(images=[0, 1], reason="same sofa")])
+
+    s = Session(id="incremental")
+    a, b, c = item("a", "sofa", "p1"), item("b", "sofa", "p2"), item("c", "sofa", "p3")
+    s.items = {i.id: i for i in [a, b, c]}
+    s.photos = {pid: StoredPhoto(pid, process_upload(jpeg_with_exif)) for pid in ["p1", "p2", "p3"]}
+    apply_merge(s, [a, b], "sofa", "first scan")
+    result = asyncio.run(auto_merge(Client(), s))
+    assert len(result) == 1 and len(s.items) == 1
+    merged = s.items[result[0].kept_id]
+    assert {p.photo_id for p in merged.photos} == {"p1", "p2", "p3"}
+    assert {i.id for i in split(s, merged.id)} == {"a", "b", "c"}
+
+
+def test_incremental_merge_cannot_join_items_sharing_any_evidence_photo():
+    merged = combine([item("a", "sofa", "p1"), item("b", "sofa", "p2")])
+    other = item("c", "sofa", "p2")
+    assert candidate_groups([merged, other]) == {}
+    assert len(split_same_photo([merged, other])) == 2
+
+
+def test_candidate_can_use_a_mask_from_later_evidence():
+    existing = item("a", "sofa", "p1", mask=None)
+    existing.photos.append(PhotoEvidence(photo_id="p2", taken_at=None, mask=MASK))
+    assert candidate_groups([existing, item("b", "sofa", "p3")])["sofa"] == [existing, item("b", "sofa", "p3")]
