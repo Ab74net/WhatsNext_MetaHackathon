@@ -26,7 +26,7 @@ function StoryPhoto({ index, hero = false }: { index: number; hero?: boolean }) 
       sizes={hero ? "(max-width: 767px) calc(100vw - 40px), (max-width: 1279px) 48vw, 610px" : "(max-width: 767px) calc(100vw - 40px), 36vw"}
       width={photo.width} height={photo.height} alt={photo.alt}
       loading={hero ? "eager" : "lazy"} fetchPriority={hero ? "high" : "auto"} decoding="async" />
-    <figcaption>{hero ? <><MapPin className="size-3" aria-hidden />New River Valley, Virginia · 2024</> : "2024 New River Valley flooding"}</figcaption>
+    <figcaption>{hero && <MapPin className="size-3 shrink-0" aria-hidden />}<span>{photo.caption}{photo.credit && ` · ${photo.credit}`}</span></figcaption>
   </figure>;
 }
 
@@ -39,7 +39,7 @@ export default function OurStoryPage() {
         <p className="story-intro">{brand.projectName} started with a simple question: how can we make disaster recovery easier for the people who need help the most?</p>
         <a href="#where-it-began" className="story-read-link">Where the idea began <ArrowDown className="size-4" aria-hidden /></a>
       </div>
-      <div className="story-hero-image"><span className="story-photo-marker" aria-hidden>01 / A place we call home</span><StoryPhoto index={0} hero /></div>
+      <div className="story-hero-image"><span className="story-photo-marker" aria-hidden>01 / The impact of flooding</span><StoryPhoto index={0} hero /></div>
     </header>
 
     <section id="where-it-began" className="story-origin story-section" aria-labelledby="story-origin-title" data-story-reveal>
@@ -47,13 +47,13 @@ export default function OurStoryPage() {
       <div className="story-origin-grid">
         <div className="story-prose">
           <h2 id="story-origin-title" className="story-heading" data-tour="story-origin">It started <em>close to home.</em></h2>
-          <p>As a Virginia Tech student, I experienced the 2024 flooding in Virginia’s New River Valley firsthand. Seeing the damage made it clear how quickly a disaster can disrupt homes, communities and everyday life.</p>
-          <p>What stayed with me was the question of what happens afterward.</p>
+          <p>As a Virginia Tech student, I volunteered with people affected by the 2024 flooding in Virginia’s New River Valley. Seeing the damage made it clear how quickly a disaster can disrupt homes, communities and everyday life.</p>
+          <p>What stayed with me was how difficult it could be for the people I helped to remember all the belongings they had lost.</p>
           <p>When someone loses their home or possessions, they’re also expected to navigate insurance claims, remember what they owned, find assistance and make difficult decisions. All while dealing with an incredibly stressful situation.</p>
           <p>I started wondering whether technology could make even a small part of that process easier.</p>
           <p className="story-byline">A personal starting point.<br /><span>A problem that reaches far beyond it.</span></p>
         </div>
-        <div className="story-gallery" aria-label="Photographs of the New River Valley flooding and its aftermath">
+        <div className="story-gallery" aria-label="Photographs of flooding and its aftermath">
           <StoryPhoto index={1} />
           <StoryPhoto index={2} />
         </div>

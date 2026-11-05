@@ -21,6 +21,7 @@ scripts/**/*.avif
 node_modules/
 .next/
 __pycache__/
+.pytest_cache/
 *.pyc
 .venv/
 

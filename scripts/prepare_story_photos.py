@@ -1,4 +1,4 @@
-"""Prepare the selected NRV story photographs without cropping or source metadata.
+"""Prepare the selected story photographs with researched captions and no embedded metadata.
 
 Run from the repo root: apps/api/.venv/Scripts/python scripts/prepare_story_photos.py
 The original files remain unchanged in scripts/nrv_photos (git-ignored).
@@ -11,16 +11,19 @@ from PIL import Image, ImageOps
 ROOT = Path(__file__).resolve().parents[1]
 TARGET = ROOT / "apps/web/public/story"
 PHOTOS = [
-    ("3.jpg", "neighborhood", "An aerial view of floodwater surrounding houses, streets and trees."),
-    ("2.jpg", "high-water", "Floodwater reaching a parked camper and the lower part of a supermarket sign."),
-    ("4.jpg", "aftermath", "A blue house beside a muddy street, with damaged furniture, debris and a parked car outside."),
+    ("3.jpg", "neighborhood", "An aerial view of floodwater surrounding houses, streets and trees.",
+     "Ostrava, Czech Republic · September 17, 2024", "David W Cerny / Reuters"),
+    ("2.jpg", "high-water", "Floodwater reaching a parked camper and the lower part of a supermarket sign.",
+     "Morganton, North Carolina · September 28, 2024", "Kathy Kmonicek / AP"),
+    ("4.jpg", "aftermath", "A blue house beside a muddy street, with damaged furniture, debris and a parked car outside.",
+     "Flood aftermath · location and photographer unverified", ""),
 ]
 
 
 def prepare():
     TARGET.mkdir(parents=True, exist_ok=True)
     manifest = []
-    for source, name, alt in PHOTOS:
+    for source, name, alt, caption, credit in PHOTOS:
         with Image.open(ROOT / "scripts/nrv_photos" / source) as original:
             image = ImageOps.exif_transpose(original).convert("RGB")
         largest = min(image.width, 1920)
@@ -30,7 +33,7 @@ def prepare():
             resized = image.resize(size, Image.Resampling.LANCZOS)
             clean = Image.frombytes("RGB", size, resized.tobytes())
             clean.save(TARGET / f"{name}-{width}.webp", quality=86, method=6)
-        manifest.append(dict(sourceFile=source, name=name, alt=alt, width=image.width,
+        manifest.append(dict(sourceFile=source, name=name, alt=alt, caption=caption, credit=credit, width=image.width,
                              height=image.height, widths=widths))
     (TARGET / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     (ROOT / "apps/web/src/lib/storyPhotos.ts").write_text(

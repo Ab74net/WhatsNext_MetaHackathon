@@ -12,7 +12,9 @@ Secondary-only matches are identified.
 **Reuse status:** the unused `house5.jpg` has a verified **CC BY-SA 2.0** source.
 No permission or open licence has been established for the other 21 photographs.
 Agency/publisher attribution alone does not grant reuse rights.
-Photos have been retained as requested; product captions were not changed by this research.
+Photos have been retained as requested. During the November 4 submission cleanup, the
+Story page captions were corrected to use the researched locations and credits below;
+the unresolved photograph is labeled with its location and photographer unverified.
 
 ## Important Story caption corrections
 
@@ -27,8 +29,8 @@ The folder name `nrv_photos` is not reliable location evidence:
 - `4.jpg` appears to show the same blue house as July 2023 reporting from **Second
   Street, Barre, Vermont**. This is a location lead, not an exact-photo attribution.
 
-These photos should not be described as verified photographs of the 2024 New River
-Valley flooding.
+The Story page presents these as photographs of flooding and its aftermath, separately
+from the developer's personal account of volunteering in the New River Valley.
 
 ## Original homepage hero photographs
 

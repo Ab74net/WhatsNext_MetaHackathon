@@ -4,6 +4,8 @@ export const STORY_PHOTOS = [
     "sourceFile": "3.jpg",
     "name": "neighborhood",
     "alt": "An aerial view of floodwater surrounding houses, streets and trees.",
+    "caption": "Ostrava, Czech Republic \u00b7 September 17, 2024",
+    "credit": "David W Cerny / Reuters",
     "width": 3812,
     "height": 2859,
     "widths": [
@@ -17,6 +19,8 @@ export const STORY_PHOTOS = [
     "sourceFile": "2.jpg",
     "name": "high-water",
     "alt": "Floodwater reaching a parked camper and the lower part of a supermarket sign.",
+    "caption": "Morganton, North Carolina \u00b7 September 28, 2024",
+    "credit": "Kathy Kmonicek / AP",
     "width": 1200,
     "height": 630,
     "widths": [
@@ -29,6 +33,8 @@ export const STORY_PHOTOS = [
     "sourceFile": "4.jpg",
     "name": "aftermath",
     "alt": "A blue house beside a muddy street, with damaged furniture, debris and a parked car outside.",
+    "caption": "Flood aftermath \u00b7 location and photographer unverified",
+    "credit": "",
     "width": 678,
     "height": 452,
     "widths": [

@@ -6,7 +6,7 @@ What Next helps people find their next step after a disaster: locate recovery re
 
 Wren, the visual assistant, turns questions into maps, action cards, and sourced guidance. The claims helper uses Meta Muse Spark and SAM 3.1 to identify and outline belongings, then lets the user review them before exporting an inventory.
 
-Built by Ashraf A. , a Virginia Tech student, for the **Meta × Cerebral Valley AI Hackathon, indie developer track**. The idea grew from experiencing the 2024 flooding in Virginia's New River Valley; the app's **Our Story** page explains that personal starting point.
+Built by Ashraf A., a Virginia Tech student, for the **Meta × Cerebral Valley AI Hackathon, indie developer track**. The idea grew from volunteering with people affected by the 2024 flooding in Virginia's New River Valley and seeing how difficult it could be to remember the belongings they lost. The app's **Our Story** page explains that personal starting point.
 
 [Judge walkthrough](#judge-walkthrough) · [Run locally](#run-locally) · [Meta model integration](#meta-model-integration) · [Privacy and safeguards](#privacy-and-safeguards)
 
@@ -157,7 +157,7 @@ flowchart LR
 | [`packages/shared`](packages/shared) | Shared TypeScript types and the project/agent names in `brand.json`. |
 | [`content`](content) | Scenario resources, programs, fire perimeters, safety flows, and document guides with sources. |
 | [`scripts`](scripts) | Optional model diagnostics, photo-asset preparation, and Windows development helpers. |
-| [`docs`](docs) | Aid implementation notes, frontend design/audit notes, and image credits. |
+| [`docs`](docs) | Image credits, source research, and the submission video script. |
 
 ## Privacy and safeguards
 
@@ -196,4 +196,4 @@ The optional `scripts/day1_model_test.mjs` diagnostic makes real model requests 
 
 Keep real keys in the ignored `.env` file and private test photos outside tracked source. Keep project and agent names centralized in [`brand.json`](packages/shared/brand.json). Changes should preserve user confirmation, evidence requirements, source attribution, and the existing privacy and safety boundaries.
 
-Further implementation notes: [Aid Autopilot](docs/AID_AUTOPILOT.md), [frontend redesign](docs/FRONTEND_REDESIGN.md), and [frontend audit](docs/FRONTEND_AUDIT.md). Image sources and their recorded attribution/permission status are documented in [Image credits](docs/IMAGE_CREDITS.md); some supplied photographs are still marked unverified there.
+Image sources and their recorded attribution/permission status are documented in [Image credits](docs/IMAGE_CREDITS.md). Matching a source does not establish permission to reuse a photograph; unresolved sources and permissions are listed there.
