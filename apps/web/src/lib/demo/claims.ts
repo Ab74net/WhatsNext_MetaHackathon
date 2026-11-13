@@ -46,7 +46,11 @@ function merge(id: string, ids: string[], reason: string) {
   const seen = new Set<string>();
   const photos = originals.flatMap(i => i.photos).filter(p => { if (seen.has(p.photo_id)) return false; seen.add(p.photo_id); return true; });
   const combined: InventoryItem = { ...copy(first), photos: copy(photos), user_confirmed: originals.every(i => i.user_confirmed), estimated_replacement_usd: null };
-  state.originals[first.id] = copy(originals);
+  // Keep leaf detections when already-merged entries are merged again, so a later
+  // split can restore every original instead of leaving an unsplittable nested group.
+  const leaves = originals.flatMap(item => state.originals[item.id] ?? [item]);
+  ids.forEach(id => delete state.originals[id]);
+  state.originals[first.id] = copy(leaves);
   ids.forEach(id => delete state.items[id]);
   state.items[first.id] = combined;
   state.merges = state.merges.filter(m => !ids.includes(m.kept_id));

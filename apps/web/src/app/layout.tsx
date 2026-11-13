@@ -24,10 +24,12 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
+  // React's local development debugging needs eval; exported pages never allow it.
+  const pageCsp = process.env.NODE_ENV === "development" ? CSP.replace("script-src 'self' 'unsafe-inline'", "script-src 'self' 'unsafe-inline' 'unsafe-eval'") : CSP;
   return (
     <html lang="en" data-theme="light" suppressHydrationWarning className="h-full">
       <head>
-        <meta httpEquiv="Content-Security-Policy" content={CSP} />
+        <meta httpEquiv="Content-Security-Policy" content={pageCsp} />
         <meta name="referrer" content="no-referrer" />
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOTSTRAP }} />
       </head>

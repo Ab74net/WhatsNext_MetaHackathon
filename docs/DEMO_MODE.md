@@ -10,6 +10,12 @@ The public frontend builds to `apps/web/out` with no environment variables or ru
 
 The persistent concept banner explains the simulation. Reset demo clears only this app's browser keys and reloads to clear in-memory state. No analytics, account, server storage, or paid service is used.
 
+Build preparation emits `_headers` for Netlify/Cloudflare and `.nojekyll` for GitHub Pages. Meta CSP protects every host; `vercel.json` selects static/Other output. No deployment workflow is activated. Root `npm run test:demo` runs the local Chrome journey, including network, permission, keyboard, and blocked-storage checks. `npm run audit:repo` scans reachable history read-only. Reports and screenshots stay in ignored `scripts/out`.
+
+Local `next dev` adds `unsafe-eval` for React debugging, as required by the installed Next.js guide. Production export never allows it, and the build check rejects development CSP in exported HTML. Both modes use only the demo adapters and retain `connect-src 'self'`.
+
+Aid's `ProgramMatcher` remains deterministic and local. `interpretAidSentence` selects example details; unknown input asks for a sample. `buildAidDraft` supplies the editable template. Source dates are retained, every record is unverified, and declaration checking is an official link. Toolkit resolves to static content; no live voice implementation exists. See [DEMO_REVIEW.md](DEMO_REVIEW.md) for fixture/brand references, audit findings, rights gaps, and manual checks.
+
 ## Fixtures and adding examples
 
 - `lib/demo/prompts.ts`: ten handwritten prompt responses, the emergency-first keyword matcher, fictional resources, frozen sample bulletins, and sample plan. Existing sourced flood/wildfire safety flows are reused without live lookups. To add a prompt, add its chip, matcher rule, response cards, and intent test. Keep emergency matching first.

@@ -1,199 +1,84 @@
-﻿# What Next
+# What Next
 
-**Lost your home? Start here.**
+**A disaster recovery concept, built from a problem I saw while volunteering.**
 
-What Next helps people find their next step after a disaster: locate recovery resources, organize paperwork, and rebuild a belongings inventory from photos they already have.
+During the 2024 New River Valley floods, I helped residents who struggled to remember the belongings they had lost. What Next explores how everyday photos could help rebuild that inventory and make the next step toward recovery clearer.
 
-Wren, the visual assistant, turns questions into maps, action cards, and sourced guidance. The claims helper uses Meta Muse Spark and SAM 3.1 to identify and outline belongings, then lets the user review them before exporting an inventory.
+Built solo by Ashraf A., a Virginia Tech student, for the Meta Global AI Developer Hackathon, indie track, with Cerebral Valley. The assistant is **Wren**. Project and assistant names are centralized in [brand.json](packages/shared/brand.json).
 
-Built by Ashraf A., a Virginia Tech student, for the **Meta × Cerebral Valley AI Hackathon, indie developer track**. The idea grew from volunteering with people affected by the 2024 flooding in Virginia's New River Valley and seeing how difficult it could be to remember the belongings they lost. The app's **Our Story** page explains that personal starting point.
+## Public portfolio demo
 
-[Judge walkthrough](#judge-walkthrough) · [Run locally](#run-locally) · [Meta model integration](#meta-model-integration) · [Privacy and safeguards](#privacy-and-safeguards)
+This version is **fully static and simulated**. It accepts no photos, runs no models or live chat, needs no API keys or backend, and adds no analytics. Text stays in the visitor’s browser. The persistent concept banner and About/Privacy pages explain the limits.
 
-## What you can try
-
-| Feature | What it does | App route |
+| Feature | Try it | What is simulated |
 | --- | --- | --- |
-| **Ask Wren** | Uses tools to show alerts, nearby resources, a Today / This week / Deadlines plan, and pre-authored safety guidance beside an interactive map. | `/agent` |
-| **My Claim** | Scans selected photos, outlines belongings, compares duplicates across photos, supports corrections and confirmation, and exports PDF, XLSX, or CSV. | `/claims` |
-| **Memory Web** | Connects rooms and confirmed belongings to related things the user may have forgotten. Selecting an item or room opens related suggestions and their evidence workflow. | `/claims#memory` |
-| **Aid Autopilot** | Asks five optional questions, reviews the situation, filters sample assistance programs, and prepares document checklists and printable or JSON summaries. | `/aid` |
-| **Recovery Toolkit** | Orders document replacement steps by prerequisites, with a Virginia guide, and helps prepare an insurer call. | `/toolkit` |
-| **Our Story** | Explains the personal experience and recovery problem behind the project. | `/our-story` |
+| Scripted assistant | `/agent/` | Ten prompts, local keyword matching, sample alerts, plans, safety walkthroughs, and fictional resource pins on a local schematic. |
+| Sample inventory | `/claims/` | Three supplied photo sets, precomputed outlines, staged scan animation, local edits/confirmation, duplicate merge/split, and sample estimates. |
+| Memory Web | `/claims/#memory` | Static related-item suggestions with a supplied sample-evidence option. Nothing enters an export without confirmation. |
+| Sample exports | Final claim step | Browser-generated PDF with images, XLSX, and CSV. Every document is marked **SAMPLE, concept demo**. |
+| Aid Autopilot | `/aid/` | One-sentence sample matcher, editable example situation, dated program records, evidence checklists, template drafts, and local tracking. No eligibility decision or application submission. |
+| Recovery Toolkit | `/toolkit/` | Static insurer questions and Virginia document ordering, with notes kept on the device. |
+| Our Story | `/our-story/` | The volunteering experience and original idea. |
+| About / Privacy | `/about-demo/`, `/privacy/` | What the original prototype did, what this version simulates, and browser storage/reset behavior. |
 
-The interface includes phone layouts, light and dark themes, keyboard controls, reduced-motion support, and an 11-stop **Take a tour** walkthrough available from the header or footer. No account is required.
+The site retains mobile layouts, keyboard navigation, the guided tour, reduced-motion support, and an explicit dark-mode toggle. Light is the default. Sample claim progress and Toolkit notes can use local storage; chat uses this tab’s session storage; Aid details stay in memory. **Reset demo** clears app-owned browser state.
 
-## Judge walkthrough
-
-Start at **http://localhost:3000** after following the setup below. Use **Take a tour** for an overview, or try this path:
-
-1. **Ask Wren:** choose a demo scenario and send: `I need shelter tonight and a plan for what to do first`. Inspect the resource cards, map, source links, and alert timestamps. Asking for safety guidance opens a sourced step-by-step flow.
-2. **Rebuild an inventory:** open **My Claim**, select a few staged room or belongings photos, and scan them. Review the detections and photo outlines, correct details, inspect cross-photo merges, and confirm what you owned.
-3. **Explore Memory Web:** select a confirmed item or room to see related suggestions. A suggestion becomes an inventory item only after a supporting photo is processed and the user confirms it. The graph supports pan, wheel zoom, touch pinch, Reset, and Fit.
-4. **Export:** download a PDF, spreadsheet, or CSV containing confirmed items. Where available, inspect the replacement-cost estimate and its source. Use **Finish and delete photos** when done.
-5. **Explore aid:** open **Aid Autopilot**, answer or skip the optional questions, and review the results. Open **Help me prepare** on a program. **Ask Wren** prepares a draft for review; the user must press **Send** to send it.
-
-Private demo photos are intentionally excluded from the repository. Use staged photos you are comfortable processing. In mock mode, the scan returns the same clearly labeled sample sofa, lamp, and rug for every photo; this exercises the interface, not recognition quality.
-
-### Live services and demo data
-
-| Part | Current behavior |
-| --- | --- |
-| Models | Real Muse Spark and SAM requests when a model key is configured; labeled mock responses without one, or with `MOCK=1`. |
-| Weather alerts | National Weather Service alerts fetched on demand for the selected scenario's coordinates. Historical replay alerts are labeled separately. Network failures are shown in the UI. |
-| Wren's map and resources | Curated, sourced scenario content for the Spokane Complex Fires and a **hypothetical** New River Valley flood. The map follows the selected demo scenario, not the user's verified location. |
-| Aid Autopilot | A static demo catalog filtered in the browser by disaster type and needs. It does not verify an address, an active declaration, program availability, or eligibility. |
-| Applications and claims | The app prepares information and exports. It does not submit applications, file insurance claims, or determine awards or coverage. |
+**For real emergencies, call 911.** For actual assistance use [DisasterAssistance.gov](https://www.disasterassistance.gov/) and [FEMA](https://www.fema.gov/). This project has no current emergency or resource information. Independent concept project; not affiliated with or endorsed by Meta, FEMA, or any insurer. Not insurance or legal advice.
 
 ## Run locally
 
-### Prerequisites
+Use Node **22.18+** (Node 24 tested) and npm. Python and environment variables are unnecessary for the public site.
 
-- **Node.js 20.9 or newer** and npm.
-- **Python 3.11 or newer** with `venv` and pip. The development environment uses Python **3.15** on Windows.
-- Internet access for dependency installation, map tiles, live alerts, and live model calls. The build also downloads the configured Google fonts.
-- A Meta Model API key for real model inference. You can explore the app without a key using mock mode.
-
-### Windows / PowerShell
-
-Run these commands from the repository root:
-
-```powershell
+```sh
 npm run setup
-Copy-Item .env.example .env
 npm run dev
 ```
 
-Leave the keys blank for a mock demo, or set them in `.env` before starting the app. If `.env` already exists, edit it instead of copying over it.
+Open `http://localhost:3000`. This starts only the frontend. To test the actual static artifact:
 
-Open **http://localhost:3000**. The Next.js frontend runs on port **3000**, and the FastAPI backend runs on **8000**. Next.js forwards `/api/*` requests to the backend. The API reference is at **http://localhost:8000/docs**, and `/api/health` reports mock mode and the configured model IDs.
-
-`npm run stop` stops the Windows development servers. Restarting the backend clears claim sessions because they are held in memory.
-
-<details>
-<summary>Manual setup on macOS or Linux</summary>
-
-The root setup and combined development scripts use Windows paths. Install and launch the two apps separately:
-
-```bash
-npm install
-npm --prefix apps/web install
-python3 -m venv apps/api/.venv
-apps/api/.venv/bin/python -m pip install -r apps/api/requirements.txt
-cp .env.example .env
+```sh
+npm run build
+npm run preview
 ```
 
-Start the backend in one terminal:
+Open `http://127.0.0.1:3000`. Publish only **`apps/web/out`**. No deployment has been performed. See [DEPLOY.md](docs/DEPLOY.md) for host options, CSP, URL/video settings, and the pre-publish checklist.
 
-```bash
-cd apps/api
-.venv/bin/python -m uvicorn app.main:app --port 8000
+## Checks
+
+```sh
+npm run test:web
+npm --prefix apps/web run lint
+npm run build
+npm run test:demo
+npm run audit:repo
 ```
 
-Start the frontend from the repository root in another terminal:
+The browser check requires local Chrome/Chromium and exercises the complete workflow, downloads, reset, desktop/mobile layouts, and the network firewall. Its screenshots and reports go to ignored `scripts/out/demo-browser`. The build automatically rejects secret variable names, model/API hosts, file inputs, media permission APIs, and missing CSP in exported files.
 
-```bash
-npm --prefix apps/web run dev
-```
+The history audit is read-only. It prints categories and locations, never key values, and does not rewrite commits. An ignored local `.env` can remain for original-backend work; the public frontend does not read it. `.env.example` contains no real keys.
 
-This is the manual equivalent of the Windows setup; Windows is the development environment tested for this prototype.
+## Stack and original prototype
 
-</details>
+The public demo uses **Next.js, React, TypeScript, Tailwind CSS, motion, and d3-force/SVG**. It has no runtime server or database, no external map tiles or fonts, and no model client in its bundle. CSP enforces `connect-src 'self'`. Same-origin requests retrieve static files only; official references and the optional video open only when clicked.
 
-### Model configuration
-
-Keys are read by the backend from the root `.env` file. They are not exposed through frontend environment variables.
-
-| Variable | Purpose |
-| --- | --- |
-| `MODEL_API_KEY` | Default Meta key for claim image understanding and the other model calls. One key can serve the whole app. |
-| `SAM_API_KEY` | Optional separate key for SAM segmentation, including any Files API fallback. Defaults to the Spark key. |
-| `WREN_API_KEY` | Optional separate key for Wren. If `MODEL_API_KEY` is blank, this also powers Spark image understanding and other Spark calls. |
-| `MODEL_BASE_URL` | Meta API endpoint; defaults to `https://api.meta.ai/v1`. |
-| `MOCK` | Set to `1` to force mock model responses even when keys are configured. |
-| `SESSION_TTL_MINUTES` | Inactive claim-session expiry interval; defaults to `60`. |
-
-Without a Spark key from `MODEL_API_KEY` or `WREN_API_KEY`, the backend uses mock mode. A SAM key alone does not enable live scanning. Live model calls use the configured Meta account and may incur API charges. Restart the backend after changing its environment.
-
-## Meta model integration
-
-| Model configured in this project | Role |
-| --- | --- |
-| **Muse Spark 1.3** (`muse-spark-1.3`) | Identifies belongings and classifies photos; compares item crops across photos; generates Memory Web suggestions; uses web search for replacement-cost estimates; powers Wren's tool calls and Toolkit follow-up answers. |
-| **SAM 3.1** (`sam-3.1`) | Segments the categories identified by Spark, producing item masks and bounding boxes for overlays and crops. Also checks supporting photos when adding a suggested belonging. |
-
-The photo pipeline runs **Spark identification → SAM segmentation → cross-photo comparison → user review → confirmed export**. Structured results used for inventory and tools are constrained or validated through schemas; SAM streams are decoded with the Meta SAM parser. Segmentation failures leave identified items available for review with a warning.
-
-Memory Web also shows rule-based evidence grades using photo dates, the number of supporting photos, and a recorded brand. These grades help the user strengthen documentation; they are not a certification of ownership.
-
-Wren calls tools such as `get_alerts`, `find_resources`, `build_plan`, `show_safety_flow`, `start_claim`, and `open_toolkit`. The backend returns typed UI instructions, which the frontend renders as cards and map content. Addresses, programs, and safety steps come from tool data rather than free-form model prose.
-
-Replacement-cost estimates are accepted only when a specific listing URL appears in the model's search metadata and the range passes validation. They remain estimates for the user to check, not appraisals or proof of ownership.
-
-Model selection and key routing live in [config.py](apps/api/app/config.py), with the API integration in [model_client.py](apps/api/app/model_client.py) and [agent.py](apps/api/app/agent.py). The code uses standard model IDs and rejects `-contributor` variants.
-
-## How it works
-
-```mermaid
-flowchart LR
-    Browser[Next.js and React interface] --> API[FastAPI backend]
-    Browser --> Aid[Browser-side Aid catalog and checklists]
-    API --> Spark[Muse Spark: vision, tools, search]
-    API --> SAM[SAM 3.1: image segmentation]
-    API --> Content[Curated resources and safety guidance]
-    API --> NWS[Live NWS alerts]
-    API <--> Sessions[Temporary claim sessions in memory]
-    API --> Export[Confirmed PDF, XLSX, CSV exports]
-```
-
-- **Frontend:** Next.js, React, TypeScript, Tailwind CSS, MapLibre GL, and d3-force with SVG for Memory Web.
-- **Backend:** FastAPI, Pydantic, Pillow with HEIC support, the OpenAI-compatible Meta client, the Meta SAM parser, openpyxl, and fpdf2.
-- **Content:** sourced JSON and GeoJSON files. The prototype does not run a background ingestion scheduler or use a persistent user database.
+The original hackathon implementation used **Python/FastAPI**, **Meta Muse Spark 1.3** for photo identification, duplicate comparison, estimates and Wren tool responses, and **SAM 3.1** for object segmentation. Its flow was identification → segmentation → cross-photo comparison → human review → confirmed export. The real backend and original API adapter remain in the repo for future development, excluded from the public import path. The original live frontend is also preserved in Git history.
 
 | Directory | Contents |
 | --- | --- |
-| [`apps/web`](apps/web) | Interface, guided tour, map, claims flow, Aid Autopilot, and Toolkit. |
-| [`apps/api`](apps/api) | Model calls, image processing, session handling, merging, valuation, and export. |
-| [`packages/shared`](packages/shared) | Shared TypeScript types and the project/agent names in `brand.json`. |
-| [`content`](content) | Scenario resources, programs, fire perimeters, safety flows, and document guides with sources. |
-| [`scripts`](scripts) | Optional model diagnostics, photo-asset preparation, and Windows development helpers. |
-| [`docs`](docs) | Image credits, source research, and the submission video script. |
+| `apps/web/src/lib/demo` | Public fixtures, scripted prompts, local inventory adapter, exports, and deployment constants. |
+| `apps/web/src/lib/adapters` | Small client contracts and the retained real HTTP adapter. |
+| `apps/web/public/demo` | Optimized, metadata-free supplied sample images. |
+| `apps/api` | Retained real pipeline, models, image handling, merging, and server exports. Never deploy for this demo. |
+| `packages/shared` | Shared schemas and brand names. |
+| `content` | Dated source material for safety and document guides; no live ingestion. |
+| `docs` | [Demo internals](docs/DEMO_MODE.md), [deployment](docs/DEPLOY.md), [review findings](docs/DEMO_REVIEW.md), [image credits](docs/IMAGE_CREDITS.md), and the original video script. |
 
-## Privacy and safeguards
+For original backend development on Windows, `npm run setup:original` installs its dependencies, and `npm run dev:api` explicitly starts FastAPI. Tests run with `npm run test:api` and force mock mode. On macOS/Linux, create `apps/api/.venv`, install `apps/api/requirements.txt`, and run `.venv/bin/python -m pytest -q` from `apps/api`. Starting the backend does not turn on live behavior in the public frontend.
 
-**Photo processing is opt-in.** The app processes the photos the user selects. Images are re-encoded without embedded EXIF/GPS metadata before model calls and export; extracted dates and GPS are held as temporary session metadata. Live mode sends image content and the prompts needed for processing to Meta's API. SAM tries inline images first; if the Files API fallback is needed, the app requests deletion of the remote upload after use.
+The optional `scripts/day1_model_test.mjs` is an original **paid model diagnostic**. It is not used by builds or automated tests. Do not run it for this public demo.
 
-**Claim sessions are temporary.** Processed photos and inventory results are held in backend memory. **Finish and delete photos** ends the session explicitly. The browser also attempts cleanup when leaving the page. Inactive sessions expire after the configured interval and are removed during later session activity; restarting the backend clears all sessions.
+## Before publishing
 
-**Browser storage varies by feature.** Wren's conversation uses this tab's `sessionStorage`. Toolkit drafts/checklists and theme preferences use device-local storage when available. Aid answers, notes, saved links, and progress stay in browser memory and clear on reload or **Clear my aid details**. An Aid handoff contains the selected program and confirmed situation, excluding preparation notes, checklists, and photos.
+Read [IMAGE_CREDITS.md](docs/IMAGE_CREDITS.md). Existing disaster photography has unresolved publication rights; a source match or attribution is not permission. The six sample originals were supplied for the demo, but individual authorship/licence records are not in the repository. Confirm publication rights before hosting.
 
-**The user decides what enters the inventory.** Exports include only confirmed items. Memory Web suggestions require a supporting photo and confirmation. Duplicate merges can be reviewed and undone. Photos classified as documents, IDs, or screenshots are skipped for item extraction; that classification occurs after upload and is not a pre-upload privacy filter.
-
-**Safety content has boundaries.** Safety flows are pre-authored from cited official guidance. Emergency language is checked before Wren makes a model call and directs the user to emergency services. The app provides general guidance, not local emergency orders, insurance decisions, or legal advice.
-
-## Current scope and limitations
-
-This is a working hackathon prototype. Resource records and program guidance are snapshots with source links and review dates; source links do not establish current availability or eligibility. Photo recognition, segmentation, merging, and valuations can be wrong and require human review. The document replacement guide currently covers Virginia. There is no account system, production access control, or automatic application submission.
-
-The prototype has not been evaluated for real disaster response or insurer acceptance. Its intended demonstration is the user-controlled workflow from a question or selected photo to a clearer next step.
-
-## Development and checks
-
-From the repository root on Windows:
-
-```powershell
-npm run test:web
-npm run test:api
-npm --prefix apps/web run lint
-npm --prefix apps/web run build
-```
-
-The API test configuration forces mock model responses, so the suite does not make paid inference calls. Tests cover image metadata handling, model-key routing, item schemas, SAM parsing, merge rules, export confirmation, agent routing, document ordering, Aid filtering and handoff redaction, graph layout/gestures, theme behavior, and shipped slideshow assets.
-
-For API tests on macOS/Linux, run `cd apps/api` and `.venv/bin/python -m pytest -q`.
-
-The optional `scripts/day1_model_test.mjs` diagnostic makes real model requests on photos in `scripts/test_photos/`; it requires the scripts package dependencies and `MODEL_API_KEY`. It is separate from the automated test suite.
-
-Keep real keys in the ignored `.env` file and private test photos outside tracked source. Keep project and agent names centralized in [`brand.json`](packages/shared/brand.json). Changes should preserve user confirmation, evidence requirements, source attribution, and the existing privacy and safety boundaries.
-
-Image sources and their recorded attribution/permission status are documented in [Image credits](docs/IMAGE_CREDITS.md). Matching a source does not establish permission to reuse a photograph; unresolved sources and permissions are listed there.
+No public URL is assigned yet. Fill `SITE_URL` and, optionally, your unlisted video link in `apps/web/src/lib/demo/config.ts` before the final publish build. Program records are dated snapshots with unverified details; always use official sites for current rules. The project has not been evaluated for actual disaster response or insurer acceptance.

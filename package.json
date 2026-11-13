@@ -11,7 +11,10 @@
     "stop": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/stop-dev.ps1",
     "test:web": "npm --prefix apps/web test",
     "test:api": "cd apps/api && .venv\\Scripts\\python -m pytest -q",
-    "setup": "npm install && npm --prefix apps/web install && npm --prefix scripts install && cd apps/api && py -m venv .venv && .venv\\Scripts\\python -m pip install --only-binary=:all: -r requirements.txt"
+    "setup": "npm ci && npm --prefix apps/web ci",
+    "setup:original": "npm install && npm --prefix apps/web install && npm --prefix scripts install && cd apps/api && py -m venv .venv && .venv\\Scripts\\python -m pip install --only-binary=:all: -r requirements.txt",
+    "test:demo": "npm --prefix apps/web run test:demo",
+    "audit:repo": "npm --prefix apps/web run audit:repo"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"

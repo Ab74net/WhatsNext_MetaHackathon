@@ -79,7 +79,7 @@ export default function AgentPage() {
   }
 
   return (
-    <div className="mx-auto grid w-full min-w-0 max-w-[1440px] flex-1 gap-4 p-4 [&>*]:min-w-0 lg:h-[calc(100dvh_-_5rem)] lg:min-h-[680px] lg:flex-none lg:grid-cols-[minmax(380px,0.8fr)_1.2fr] lg:grid-rows-[minmax(0,1fr)] lg:gap-5 lg:p-6">
+    <div className="mx-auto grid w-full min-w-0 max-w-[1440px] flex-1 gap-4 p-4 [&>*]:min-w-0 lg:h-[calc(100dvh_-_8.5rem)] lg:min-h-[680px] lg:flex-none lg:grid-cols-[minmax(380px,0.8fr)_1.2fr] lg:grid-rows-[minmax(0,1fr)] lg:gap-5 lg:p-6">
       <div className="order-2 flex h-[75vh] min-h-0 flex-col lg:order-1 lg:h-full">
         <Card className="flex min-h-0 flex-1 flex-col overflow-hidden">
           <div className="flex items-center gap-3 border-b border-line px-4 py-3">

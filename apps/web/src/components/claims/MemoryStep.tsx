@@ -142,7 +142,7 @@ function SidePanel({ selected, session, web, metaById, added, onClose, onDismiss
   );
 
   if (selected.kind === "hub") {
-    return <div>{header("Your home")}<p className="text-sm text-muted">{Object.values(session.items).filter((item) => item.user_confirmed).length} confirmed belongings across {web.rooms.length} rooms.</p><p className="mt-3 text-sm text-muted">Select a room to explore its belongings, or choose a dashed suggestion to add photo evidence. Suggestions never enter your claim automatically.</p></div>;
+    return <div>{header("Example home")}<p className="text-sm text-muted">{Object.values(session.items).filter((item) => item.user_confirmed).length} confirmed belongings across {web.rooms.length} rooms.</p><p className="mt-3 text-sm text-muted">Select a room to explore its belongings, or choose a dashed suggestion to add photo evidence. Suggestions never enter your claim automatically.</p></div>;
   }
 
   if (selected.kind === "room") {
@@ -175,7 +175,7 @@ function SidePanel({ selected, session, web, metaById, added, onClose, onDismiss
           <ItemCrop src={session.photoUrl(meta.photo_id)} meta={meta} mask={item.photos[0]?.mask ?? null} color="var(--accent)" />
         </div>
       )}
-      {g ? <GradeView grade={g} /> : <Notice tone="good" icon={<Check className="size-4" />}>Just added from your photo. Its grade updates on refresh.</Notice>}
+      {g ? <GradeView grade={g} /> : <Notice tone="good" icon={<Check className="size-4" />}>Sample item added locally. The illustrative grade updates on refresh.</Notice>}
       {!item.user_confirmed && (
         <Button className="mt-3 w-full" variant="success" onClick={() => session.patchItem(item.id, { user_confirmed: true })}>
           <Check className="size-4" strokeWidth={3} aria-hidden /> I owned this

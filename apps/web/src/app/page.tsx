@@ -62,7 +62,7 @@ export default function Home() {
 
         <MeetWren />
 
-        <section className="flex flex-wrap items-center gap-6 rounded-3xl border border-line bg-blue-soft p-6 sm:p-9" aria-labelledby="aid-intro">
+        <section className="grid items-center gap-6 rounded-3xl border border-line bg-blue-soft p-6 sm:grid-cols-[1fr_auto] sm:p-9" aria-labelledby="aid-intro">
           <div className="min-w-0 flex-1"><h2 id="aid-intro" className="text-3xl">Find a starting point for support.</h2><p className="mt-3 max-w-xl text-muted">Aid Autopilot demonstrates example program matching, document checklists, and local preparation drafts. It does not verify current programs or determine eligibility.</p></div>
           <ButtonLink href="/aid" variant="primary">Explore Aid Autopilot<ArrowRight className="size-4" aria-hidden /></ButtonLink>
         </section>

@@ -3,11 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prebuild": "node scripts/prepare-demo-build.mjs",
     "dev": "next dev",
     "build": "next build",
     "postbuild": "node scripts/check-demo-build.mjs",
     "check:demo": "node scripts/check-demo-build.mjs",
-    "start": "next start",
+    "test:demo": "node scripts/test-demo-browser.mjs",
+    "audit:repo": "node scripts/audit-demo-repo.mjs",
+    "start": "node scripts/serve-demo.mjs",
     "lint": "eslint",
     "test": "node --test \"src/**/*.test.ts\""
   },

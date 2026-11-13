@@ -135,7 +135,7 @@ export function MemoryGraph({ web, items, dismissed, added, selected, onSelect, 
 
   return <Card className="memory-graph min-w-0 overflow-hidden">
     <div className="memory-toolbar flex flex-wrap items-center justify-between gap-2 border-b border-line px-4 py-3">
-      <span className="flex items-center gap-2 text-sm font-semibold"><House className="size-4 text-blue" aria-hidden />Your belongings</span>
+      <span className="flex items-center gap-2 text-sm font-semibold"><House className="size-4 text-blue" aria-hidden />Sample belongings</span>
       <div className="flex flex-wrap items-center gap-1" role="group" aria-label="Graph view controls">
         <Button variant="ghost" size="sm" aria-label="Zoom out" disabled={view.k <= MIN_ZOOM} onClick={() => updateView(zoomGraph(current.current, { x: size.width / 2, y: size.height / 2 }, 1 / 1.25))}><Minus className="size-4" aria-hidden /></Button>
         <output aria-label="Graph zoom" className="w-11 text-center text-xs tabular-nums text-muted">{Math.round(view.k * 100)}%</output>
@@ -186,7 +186,7 @@ export function MemoryGraph({ web, items, dismissed, added, selected, onSelect, 
             {home ? <circle className="memory-node-shape" r={68} fill={fill} stroke={on ? "var(--blue)" : "transparent"} strokeWidth={3} />
               : <rect className="memory-node-shape" x={-node.width / 2} y={-23} width={node.width} height={46} rx={23} fill={fill}
                 stroke={on ? "var(--blue)" : item ? "transparent" : "var(--line-strong)"} strokeWidth={on ? 2.5 : 1.3} strokeDasharray={suggestion ? "5 4" : undefined} />}
-            {home ? <><House x={-18} y={-31} width={36} height={36} stroke={text} strokeWidth={1.8} /><text textAnchor="middle" y={29} fill={text} fontSize={16} fontWeight={700}>Your home</text></>
+            {home ? <><House x={-18} y={-31} width={36} height={36} stroke={text} strokeWidth={1.8} /><text textAnchor="middle" y={29} fill={text} fontSize={16} fontWeight={700}>Example home</text></>
               : <><text x={item || suggestion ? -10 : 0} y={5} textAnchor="middle" fill={text} fontSize={14} fontWeight={node.kind === "room" ? 700 : 600} className="capitalize">{label}</text>
                 {item && <Check x={node.width / 2 - 32} y={-8} width={16} height={16} stroke={text} strokeWidth={2.8} />}
                 {suggestion && <text x={node.width / 2 - 23} y={5} textAnchor="middle" fill="var(--muted)" fontSize={14} fontWeight={600}>?</text>}</>}

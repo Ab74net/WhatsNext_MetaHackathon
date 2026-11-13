@@ -4,7 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const root = fileURLToPath(new URL("../out/", import.meta.url));
+const root = path.resolve(fileURLToPath(new URL("../out/", import.meta.url)));
 const port = Number(process.argv[2] || 3000);
 const mime = { ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".mjs": "text/javascript", ".json": "application/json", ".txt": "text/plain", ".css": "text/css", ".svg": "image/svg+xml", ".webp": "image/webp", ".png": "image/png", ".woff2": "font/woff2", ".xml": "application/xml" };
 http.createServer((req, res) => {

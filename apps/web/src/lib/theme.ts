@@ -2,6 +2,7 @@ export type Theme = "light" | "dark";
 export const THEME_KEY = "what-next-theme";
 export const THEME_EVENT = "app-theme-change";
 export function resolveTheme(saved: string | null, _systemDark: boolean): Theme {
+  void _systemDark;
   return saved === "dark" ? "dark" : "light";
 }
 

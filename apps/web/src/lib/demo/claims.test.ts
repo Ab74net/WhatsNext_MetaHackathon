@@ -31,6 +31,12 @@ test("real file contents are rejected and confirmation/merge/split remain local"
   assert.ok(parts.every(i => i.user_confirmed));
   await demoScanClient.deleteItem(id, parts[0].id);
   assert.ok(!restoreDemoClaim()!.items[parts[0].id]);
+  const sofa = merged.items.find(i => i.category === "sofa")!;
+  const pillow = merged.items.find(i => i.category === "pillow")!;
+  await demoScanClient.mergeItems(id, [sofa.id, pillow.id]);
+  await demoScanClient.mergeItems(id, [sofa.id, parts[1].id]);
+  const leaves = await demoScanClient.splitItem(id, sofa.id);
+  assert.deepEqual(new Set(leaves.map(i => i.id)), new Set([sofa.id, pillow.id, parts[1].id]));
   await demoScanClient.endSession(id);
   assert.equal(restoreDemoClaim(), null);
 });

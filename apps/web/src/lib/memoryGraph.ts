@@ -65,7 +65,7 @@ export function buildMemoryGraph(web: MemoryWeb, items: Record<string, Inventory
   const add = (id: string, entityId: string, kind: NodeKind, label: string, roomId?: string) => {
     if (!nodes.has(id)) nodes.set(id, { id, entityId, kind, label, roomId, width: nodeWidth(label, kind), height: kind === "hub" ? 136 : 46, x: 0, y: 0 });
   };
-  add(HOME_ID, HOME_ID, "hub", "Your home");
+  add(HOME_ID, HOME_ID, "hub", "Example home");
   for (const room of web.rooms) {
     const rid = `room:${room.id}`;
     add(rid, room.id, "room", room.name);

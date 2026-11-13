@@ -27,6 +27,8 @@ function load(): { messages: Message[]; caseFile: CaseFile } {
     const raw = sessionStorage.getItem(STORE_KEY);
     if (raw) {
       const saved = JSON.parse(raw);
+      if (!Array.isArray(saved?.messages) || !saved.messages.every((m: Message) => m && ["user", "assistant"].includes(m.role) && typeof m.text === "string")
+        || !["nrv", "spokane"].includes(saved.caseFile?.scenario) || !["during", "recovery"].includes(saved.caseFile?.preset)) throw new Error("Invalid local demo state");
       return { messages: saved.messages, caseFile: { ...DEFAULT_CASE, ...saved.caseFile } };
     }
   } catch {}

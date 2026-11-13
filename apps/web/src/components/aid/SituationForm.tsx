@@ -21,6 +21,7 @@ export function SituationForm({ initial, onCancel, onComplete }: { initial: AidS
         <button type="button" onClick={onCancel} aria-label="Close questionnaire" className="flex size-11 items-center justify-center rounded-full hover:bg-surface-2"><X className="size-5" aria-hidden /></button>
       </div>
       <ProgressBar value={(step + 1) / 6} />
+      <p className="mt-4 text-xs text-muted">Use example details. Never enter your Social Security number here. No applications are submitted.</p>
       <h2 ref={heading} tabIndex={-1} className="mb-3 mt-8 text-3xl outline-none sm:text-4xl">{QUESTIONS[step]}</h2>
       <p className="mb-7 text-sm text-muted">{step === 5 ? "Confirm the details you want to use. These answers narrow demo resources; they do not determine eligibility." : "Every question is optional. Share only what feels useful; you can go back or skip."}</p>
       <form onSubmit={(e) => { e.preventDefault(); if (step === 5) onComplete(draft); else go(step + 1); }}>

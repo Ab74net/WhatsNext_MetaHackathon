@@ -214,7 +214,7 @@ function ItemCard({ item, meta, src, color, selecting, selected, removing, onSel
   }
 
   return (
-    <motion.div layout initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.98 }}>
+    <motion.div data-item-id={item.id} layout initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.98 }}>
       <div className={`inventory-row transition ${selected ? "bg-accent-soft" : ""}`}
         onClick={selecting ? onSelect : undefined} role={selecting ? "checkbox" : undefined}
         tabIndex={selecting ? 0 : undefined} aria-checked={selecting ? selected : undefined}

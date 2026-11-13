@@ -31,10 +31,10 @@ export function MapPanel({ resources, selectedId, onSelect }: {
           <rect x="425" y="355" width="65" height="60" rx="20" fill="var(--good-soft)" />
         </svg>
         {resources.map((r, index) => <button key={r.id} type="button" onClick={() => onSelect(r.id)} aria-label={`Show ${r.name}, example data`} aria-pressed={selectedId === r.id}
-          className="absolute flex size-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-surface text-white shadow-pop focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue"
-          style={{ left: `${[28, 64, 46, 75][index % 4]}%`, top: `${[38, 35, 68, 72][index % 4]}%`, background: KIND_STYLE[r.kind].color }}><MapPin className="size-5" aria-hidden /></button>)}
+          className="absolute flex size-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-surface shadow-pop focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue"
+          style={{ left: `${[28, 64, 46, 75][index % 4]}%`, top: `${[38, 35, 68, 72][index % 4]}%`, background: KIND_STYLE[r.kind].color, color: "var(--primary-ink)" }}><MapPin className="size-5" aria-hidden /></button>)}
       </div>
-      <p className="absolute left-3 top-3 max-w-[70%] rounded-xl border border-line bg-surface px-3 py-2 text-xs font-semibold">Example map ? Fictional places<br /><span className="font-normal text-muted">Schematic only. No live locations.</span></p>
+      <p className="absolute left-3 top-3 max-w-[70%] rounded-xl border border-line bg-surface px-3 py-2 text-xs font-semibold">Example map · Fictional places<br /><span className="font-normal text-muted">Schematic only. No live locations.</span></p>
       <div className="absolute right-3 top-3 flex flex-col gap-1 rounded-xl border border-line bg-surface p-1">
         <button type="button" aria-label="Zoom in on example map" disabled={zoom >= 1.6} onClick={() => setZoom(z => Math.min(1.6, z + .2))} className="flex size-10 items-center justify-center disabled:opacity-40"><ZoomIn className="size-4" /></button>
         <button type="button" aria-label="Zoom out on example map" disabled={zoom <= 1} onClick={() => setZoom(z => Math.max(1, z - .2))} className="flex size-10 items-center justify-center disabled:opacity-40"><ZoomOut className="size-4" /></button>

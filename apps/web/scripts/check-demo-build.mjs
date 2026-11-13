@@ -3,7 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("../out/", import.meta.url));
-const banned = /MODEL_API_KEY|WREN_API_KEY|SAM_API_KEY|ELEVENLABS_API_KEY|MODEL_BASE_URL|api\.meta\.ai|api\.openai\.com|api\.elevenlabs\.io|api\.weather\.gov|server\.arcgisonline\.com|navigator\s*\.\s*(?:geolocation|mediaDevices)|getUserMedia|MediaRecorder|type\s*=\s*["']file["']|\.sendBeacon\s*\(|\/api\/(?:agent|sessions|health|toolkit)/i;
+const banned = /MODEL_API_KEY|WREN_API_KEY|SAM_API_KEY|ELEVENLABS_API_KEY|MODEL_BASE_URL|api\.meta\.ai|api\.openai\.com|api\.elevenlabs\.io|api\.weather\.gov|server\.arcgisonline\.com|navigator\s*\.\s*(?:geolocation|mediaDevices)|getUserMedia|MediaRecorder|type\s*[:=]\s*["']file["']|\.sendBeacon\s*\(|\/api\/(?:agent|sessions|health|toolkit)/i;
 const violations = [];
 let count = 0;
 function walk(dir) {
@@ -15,6 +15,7 @@ function walk(dir) {
       const text = fs.readFileSync(file, "utf8");
       const match = text.match(banned);
       if (match) violations.push(`${path.relative(root, file)}: ${match[0]}`);
+      if (entry.name.endsWith(".html") && text.includes("unsafe-eval")) violations.push(`${path.relative(root, file)}: development CSP in public export`);
       if (entry.name.endsWith(".html") && !text.includes("connect-src &#x27;self&#x27;") && !text.includes("connect-src 'self'")) violations.push(`${path.relative(root, file)}: missing CSP`);
     }
   }
