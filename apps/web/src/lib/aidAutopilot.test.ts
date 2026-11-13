@@ -1,9 +1,14 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { readFileSync } from "node:fs";
-import { buildAidRequest, EMPTY_PREPARATION, EMPTY_SITUATION, matchAidPrograms, parseAidCatalog, preparationSummary } from "./aidAutopilot.ts";
+import { AID_SAMPLE_SENTENCES, interpretAidSentence, buildAidRequest, EMPTY_PREPARATION, EMPTY_SITUATION, matchAidPrograms, parseAidCatalog, preparationSummary } from "./aidAutopilot.ts";
 
 const catalog = parseAidCatalog(JSON.parse(readFileSync(new URL("../../public/aid-programs.json", import.meta.url), "utf8")));
+test("sample sentences use local deterministic matching and unknown text asks for a sample", () => {
+  assert.deepEqual(AID_SAMPLE_SENTENCES.map(s => interpretAidSentence(s)?.disaster), ["flood", "wildfire", "earthquake"]);
+  assert.equal(interpretAidSentence("Tell me a joke"), null);
+  assert.equal(interpretAidSentence(AID_SAMPLE_SENTENCES[0])?.housing, "rent");
+});
 
 test("all answers are optional and do not exclude the initial catalog", () => {
   assert.equal(matchAidPrograms(catalog, EMPTY_SITUATION).length, catalog.length);

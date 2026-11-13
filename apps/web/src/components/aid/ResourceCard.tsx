@@ -24,9 +24,10 @@ export function ResourceCard({ program: p, open, onToggle, preparing, onPrepare,
     <p className="mt-2 text-xs text-muted">Prepare: {p.documents[0]}. <button onClick={onToggle} className="min-h-11 font-semibold text-blue underline">{open ? "Hide details" : "See requirements & documents"}</button></p>
     <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4 text-xs text-muted">
       <a href={p.source.url} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-1 text-blue hover:underline">{p.source.name}<ExternalLink className="size-3 shrink-0" aria-hidden /></a>
-      <span>Source reviewed {checked}<span className="block">Local availability not verified</span></span>
+      <span>Last verified: {p.verified ? checked : "Not verified"}<span className="block">Source reviewed {checked}</span><span className="block">Local availability not verified</span></span>
     </div>
     {open && <div id={`aid-details-${p.id}`} className="mt-5 border-t border-line pt-6">
+      {!p.verified && <p className="mb-5 rounded-xl bg-warn-soft p-3 text-sm">Check this on the official page. Requirements, documents, and local availability have not been verified for this public demo.</p>}
       <div className="grid gap-6 sm:grid-cols-2">
         <div><h3 className="text-lg">Who may qualify</h3><ul className="mt-3 list-disc space-y-2 pl-4 text-sm text-muted">{p.eligibility.map((s) => <li key={s}>{s}</li>)}</ul></div>
         <div><h3 className="text-lg">Documents to prepare</h3><ul className="mt-3 list-disc space-y-2 pl-4 text-sm text-muted">{p.documents.map((s) => <li key={s}>{s}</li>)}</ul></div>

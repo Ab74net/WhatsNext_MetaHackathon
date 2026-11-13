@@ -200,7 +200,7 @@ function Questions({ hazard, setHazard, hasInventory, setHasInventory, asked, se
             ))}
           </ol>
           <p className="mt-1 text-xs text-subtle print:hidden">
-            {data.tailored ? "Adjusted for your situation using only the type of disaster and whether you have a list." : "A standard list of questions."}
+            {data.tailored ? "Adjusted for your situation using only the type of disaster and whether you have a list." : "A static sample list of questions. No AI is used."}
           </p>
           <form className="mt-3 flex gap-2 print:hidden" onSubmit={(e) => {
             e.preventDefault();
@@ -269,15 +269,12 @@ function FollowUp({ prep, notes }: { prep: PrepDetails; notes: CallNotes }) {
         <div className="flex flex-col gap-3">
           <Field label="Subject" value={draft.subject} onChange={(v) => setDraft({ ...draft, subject: v })} />
           <Area label="Email" value={draft.body} onChange={(v) => setDraft({ ...draft, body: v })} rows={16} />
-          <p className="text-sm text-muted">Anything in [brackets] is missing. Fill it in before you send.</p>
+          <p className="text-sm text-muted">This is a local template, not a sent message. Anything in [brackets] is a placeholder.</p>
           <div className="flex flex-wrap gap-3 print:hidden">
             <Button onClick={copy} aria-live="polite">
               {copied ? <><Check className="size-4" aria-hidden /> Copied</> : <><Copy className="size-4" aria-hidden /> Copy email</>}
             </Button>
-            <a href={`mailto:?subject=${encodeURIComponent(draft.subject)}&body=${encodeURIComponent(draft.body)}`}
-              className="inline-flex h-10 items-center gap-2 rounded-full border border-ink bg-surface px-4 text-sm font-semibold text-ink hover:bg-surface-2">
-              <Mail className="size-4" aria-hidden /> Open in my email app
-            </a>
+
           </div>
         </div>
       )}

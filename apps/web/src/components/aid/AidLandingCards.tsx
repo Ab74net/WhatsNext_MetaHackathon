@@ -58,7 +58,7 @@ export function AidLandingCards({ situation, hasDetails, previousCase, caseError
       <div className="aid-overview-heading"><IconBadge icon={MessageCircle} /><h2 id="aid-assistant-title">Need help applying?</h2></div>
       <p className="aid-overview-description">{brand.agentName} can help explain requirements, gather documents, and prepare application answers.</p>
       <div className="aid-overview-action"><Button variant="primary" onClick={onAsk}>Ask {brand.agentName}<ArrowRight className="size-4" aria-hidden /></Button></div>
-      <p className="aid-overview-note">A request is prepared for your review. Nothing is sent until you press Send; notes and checklists are excluded.</p>
+      <p className="aid-overview-note">A request is prepared for your review. Press Send to see a scripted response locally; notes and checklists are excluded.</p>
       <AidDocumentsArt />
     </section>
   </Card>;

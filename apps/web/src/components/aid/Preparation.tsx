@@ -3,7 +3,7 @@
 import { Download, Printer, Bookmark, MessageCircle } from "lucide-react";
 import brand from "@shared/brand.json";
 import { Button, Notice } from "@/components/ui";
-import { describeSituation, preparationSummary, type AidPreparation, type AidProgram, type AidSituation } from "@/lib/aidAutopilot";
+import { buildAidDraft, describeSituation, preparationSummary, type AidPreparation, type AidProgram, type AidSituation } from "@/lib/aidAutopilot";
 
 export function Preparation({ program, situation, prep, onChange, onAsk }: { program: AidProgram; situation: AidSituation; prep: AidPreparation; onChange: (p: AidPreparation) => void; onAsk: () => void }) {
   function download() {
@@ -27,6 +27,10 @@ export function Preparation({ program, situation, prep, onChange, onAsk }: { pro
       </select>
     </label>
     <p className="-mt-3 mb-5 text-xs text-muted">{prep.status === "Submitted" ? "You marked this as submitted outside this app. We have not submitted or verified an application." : "Completing this checklist never submits an application or changes your status automatically."}</p>
+    <label className="mb-5 block text-sm font-semibold">Sample answer draft <span className="font-normal text-muted">(local template)</span>
+      <textarea rows={5} maxLength={3000} value={prep.draft ?? buildAidDraft(program, situation)} onChange={e => onChange({ ...prep, draft: e.target.value })} className="mt-2 block w-full rounded-xl border bg-surface p-3 text-sm font-normal" />
+      <span className="mt-2 block text-xs font-normal text-muted">Example wording only. No model runs; no application is submitted. Never enter your Social Security number here.</span>
+    </label>
     <label className="block text-sm font-semibold">Your notes <span className="font-normal text-muted">(optional)</span>
       <textarea rows={4} maxLength={3000} value={prep.notes} onChange={(e) => onChange({ ...prep, notes: e.target.value })} placeholder="Questions to ask, or what you want to do next. Avoid ID, account, or policy numbers." className="mt-2 block w-full resize-y rounded-xl border bg-surface p-3 text-sm font-normal print:hidden" />
       <span className="mt-2 hidden whitespace-pre-wrap font-normal print:block">{prep.notes || "No notes added."}</span>

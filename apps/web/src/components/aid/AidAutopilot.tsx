@@ -7,7 +7,7 @@ import { ArrowLeft, ArrowRight, Bookmark, Check, CircleAlert, House, LifeBuoy, M
 import brand from "@shared/brand.json";
 import { api } from "@/lib/api";
 import { readSavedAgentCase } from "@/lib/useAgent";
-import { buildAidRequest, CATEGORY_LABELS, demoAidAdapter, EMPTY_PREPARATION, EMPTY_SITUATION, NEED_LABELS, type AidCategory, type AidPreparation, type AidProgram, type AidSituation } from "@/lib/aidAutopilot";
+import { AID_SAMPLE_SENTENCES, interpretAidSentence, buildAidRequest, CATEGORY_LABELS, demoAidAdapter, EMPTY_PREPARATION, EMPTY_SITUATION, NEED_LABELS, type AidCategory, type AidPreparation, type AidProgram, type AidSituation } from "@/lib/aidAutopilot";
 import { Button, Card, EmptyState, Notice, Skeleton } from "@/components/ui";
 import { useAidAutopilot } from "./AidProvider";
 import { SituationForm } from "./SituationForm";
@@ -20,6 +20,8 @@ export function AidAutopilot() {
   const aid = useAidAutopilot();
   const { situation, setSituation, preparations, setPreparations, hasSearched, setHasSearched, setAgentDraft } = aid;
   const [view, setView] = useState<"home" | "questions" | "results">(hasSearched ? "results" : "home");
+  const [sentence, setSentence] = useState("");
+  const [sentenceError, setSentenceError] = useState(false);
   const [search, setSearch] = useState<SearchState>({ status: hasSearched ? "loading" : "idle" });
   const [attempt, setAttempt] = useState(0);
   const [category, setCategory] = useState<"all" | AidCategory>("all");
@@ -62,6 +64,12 @@ export function AidAutopilot() {
     setQuery(""); setSavedOnly(false); setSelected(null); setAttempt((n) => n + 1); navigate("results");
   }
   function updatePrep(id: string, next: AidPreparation) { setPreparations((p) => ({ ...p, [id]: next })); }
+  function fromSentence(text: string) {
+    setSentence(text);
+    const interpreted = interpretAidSentence(text);
+    setSentenceError(!interpreted);
+    if (interpreted) discover(interpreted);
+  }
   function ask(program: AidProgram | null) {
     setAgentDraft({ programName: program?.name ?? "Disaster assistance", text: buildAidRequest(program, situation) });
     router.push("/agent");
@@ -90,8 +98,8 @@ export function AidAutopilot() {
         {view === "home" ? <header className="aid-hero">
           <div className="relative z-10" data-tour="aid-overview">
             <span className="aid-feature-label"><LifeBuoy className="size-4 text-accent" aria-hidden />Aid Autopilot</span>
-            <h1 ref={titleRef} tabIndex={-1} className="aid-heading">Discover assistance you may be eligible for.</h1>
-            <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted sm:text-lg">Let us find the right programs and resources based on your situation.</p>
+            <h1 ref={titleRef} tabIndex={-1} className="aid-heading">Explore a sample assistance checklist.</h1>
+            <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted sm:text-lg">See how a few example details can organize programs to explore. Nothing here determines eligibility.</p>
             <Button variant="primary" size="lg" className="mt-7" onClick={() => navigate("questions")}>Find my resources<ArrowRight className="size-5" aria-hidden /></Button>
             <p className="mt-3 text-xs text-muted">Demo discovery. A few optional questions. No account or uploads needed.</p>
           </div>
@@ -103,10 +111,21 @@ export function AidAutopilot() {
           </div>
         </header> : <header className="mb-7" data-tour="aid-overview">
           <Button variant="ghost" size="sm" onClick={() => navigate("home")} className="mb-5"><ArrowLeft className="size-4" aria-hidden />Aid Autopilot</Button>
-          <h1 ref={titleRef} tabIndex={-1} className="page-title">Resources worth exploring</h1>
+          <h1 ref={titleRef} tabIndex={-1} className="page-title">Sample assistance dashboard</h1>
           <p className="mt-3 text-muted">A starting point for your next step. The provider makes the eligibility decision.</p>
         </header>}
 
+        {view === "home" && <section className="mb-7 rounded-3xl border border-line bg-surface p-5 sm:p-7" aria-labelledby="aid-sentence-title">
+          <h2 id="aid-sentence-title" className="text-2xl">Try a sample situation</h2>
+          <p className="mt-2 text-sm text-muted">A local keyword matcher narrows example programs. Text stays in this browser.</p>
+          <form className="my-4 flex flex-wrap gap-3" onSubmit={e => { e.preventDefault(); fromSentence(sentence); }}>
+            <label className="min-w-0 flex-1"><span className="sr-only">One-sentence sample situation</span><input value={sentence} onChange={e => setSentence(e.target.value)} maxLength={500} placeholder="For example, a flood damaged my rental" className="min-h-12 w-full rounded-xl border border-line-strong bg-surface px-4 text-sm" /></label>
+            <Button type="submit" variant="primary" disabled={!sentence.trim()}>Build sample checklist</Button>
+          </form>
+          <div className="flex flex-wrap gap-2">{AID_SAMPLE_SENTENCES.map(text => <button key={text} type="button" data-aid-sample onClick={() => fromSentence(text)} className="min-h-11 rounded-full border border-line px-4 py-2 text-left text-xs hover:border-ink">{text}</button>)}</div>
+          {sentenceError && <p className="mt-3 text-sm text-warn" role="status">Pick a sample sentence to explore this concept. No matching sample was found.</p>}
+        </section>}
+        <p className="mb-6 text-xs text-muted">Aid Autopilot helps you prepare. You submit everything yourself. <strong>Never enter your Social Security number here.</strong></p>
         {view === "home" ? <AidLandingCards situation={situation} hasDetails={hasDetails} previousCase={previousCase} caseError={caseError}
           onDetails={() => navigate("questions")}
           onPrevious={() => { if (previousCase) setSuggestedSituation({ ...situation, disaster: previousCase.disaster, location: previousCase.location }); navigate("questions"); }}
@@ -115,7 +134,7 @@ export function AidAutopilot() {
           <House className="mt-1 hidden size-8 shrink-0 sm:block" aria-hidden />
           <div className="min-w-0 flex-1">
             <h2 id="aid-situation-title" className="text-2xl">Your situation</h2>
-            <p className="mt-2 text-sm text-muted">{hasDetails ? "Based on details you shared and confirmed. You can update them at any time." : "Tell us a little about what happened. Your photos and claim evidence are not used."}</p>
+            <p className="mt-2 text-sm text-muted">{hasDetails ? "Editable example details. They filter sample records, without checking eligibility or location." : "Tell us a little about what happened. Your photos and claim evidence are not used."}</p>
             <div className="mt-4 flex flex-wrap gap-2">
               <SituationChip icon={House} text={situation.disaster ? situation.disaster[0].toUpperCase() + situation.disaster.slice(1) : "Disaster not set"} />
               <SituationChip icon={UserRound} text={situation.housing === "rent" ? "Renter" : situation.housing === "own" ? "Homeowner" : situation.housing === "other" ? "Other housing" : "Housing not set"} />
@@ -132,6 +151,7 @@ export function AidAutopilot() {
         </section>
 
         <section className="mt-7" aria-label="Assistance resources">
+          <p className="mb-3 text-sm text-muted">Program information in this demo may be out of date. Always check the official site. <a href="https://www.fema.gov/disaster/declarations" target="_blank" rel="noreferrer" className="font-semibold text-blue underline">Check officially declared disasters</a>.</p>
           <Notice tone="blue" icon={<ShieldCheck className="size-4" />}><strong>Demo discovery.</strong> Sample records link to real provider guidance. Your location, current program availability, and eligibility have not been verified.</Notice>
           <div className="my-6 flex flex-wrap items-center gap-2" aria-label="Filter resources">
             {(["all", ...AID_CATEGORIES.map((c) => c.id)] as const).map((key) => <button key={key} onClick={() => setCategory(key)} aria-pressed={category === key} className={`min-h-11 rounded-full border px-4 text-sm font-semibold ${category === key ? "border-primary bg-primary text-primary-ink" : "border-line bg-surface text-ink hover:border-ink"}`}>{key === "all" ? "All resources" : CATEGORY_LABELS[key]}</button>)}
@@ -148,7 +168,7 @@ export function AidAutopilot() {
         </section>
 
         <Card className="aid-assistant mt-8 flex flex-wrap items-center gap-5 bg-blue-soft p-6 sm:p-7" data-tour="aid-assistant">
-          <MessageCircle className="size-8 shrink-0 text-blue" aria-hidden /><div className="min-w-0 flex-1"><h2 className="text-xl">Need help applying?</h2><p className="mt-2 max-w-xl text-sm text-muted">{brand.agentName} can help explain requirements, gather documents, and prepare application answers.</p><p className="mt-2 text-xs text-muted">A request is prepared for your review. Nothing is sent until you press Send; notes and checklists are excluded.</p></div>
+          <MessageCircle className="size-8 shrink-0 text-blue" aria-hidden /><div className="min-w-0 flex-1"><h2 className="text-xl">Need help applying?</h2><p className="mt-2 max-w-xl text-sm text-muted">{brand.agentName} can help explain requirements, gather documents, and prepare application answers.</p><p className="mt-2 text-xs text-muted">A request is prepared for your review. Press Send to see a scripted response locally; notes and checklists are excluded.</p></div>
           <Button onClick={() => ask(programs.find((p) => p.id === selected) ?? null)} variant="primary">Ask {brand.agentName}<ArrowRight className="size-4" aria-hidden /></Button>
         </Card>
         </>}

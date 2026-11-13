@@ -10,6 +10,7 @@ export interface AidSituation {
   applied: "" | "no" | "yes" | "unsure";
 }
 export interface AidProgram {
+  verified?: boolean;
   id: string;
   name: string;
   description: string;
@@ -24,6 +25,7 @@ export interface AidProgram {
   applicationLabel: string;
 }
 export interface AidPreparation {
+  draft?: string;
   collected: string[];
   notes: string;
   status: "Not started" | "Preparing" | "Submitted";
@@ -61,9 +63,10 @@ export function matchAidPrograms(programs: AidProgram[], situation: AidSituation
   return programs.filter((p) => (!situation.disaster || !p.hazards.length || p.hazards.includes(situation.disaster))
     && (!situation.needs.length || p.needs.some((n) => situation.needs.includes(n))));
 }
-export interface AidDiscoveryAdapter {
+export interface ProgramMatcher {
   discover(situation: AidSituation, signal?: AbortSignal): Promise<{ programs: AidProgram[]; mode: "demo" }>;
 }
+export type AidDiscoveryAdapter = ProgramMatcher;
 export const demoAidAdapter: AidDiscoveryAdapter = {
   async discover(situation, signal) {
     // No situation, notes, claim evidence, or location is sent with this request.
@@ -86,8 +89,32 @@ export function preparationSummary(program: AidProgram, situation: AidSituation,
     feature: "Aid Autopilot", mode: "demo", program: program.name, situation,
     status: prep.status, statusMeaning: "Self-reported tracking only; this app has not submitted or verified any application.",
     documents: program.documents.map((name) => ({ name, collected: prep.collected.includes(name) })),
-    notes: prep.notes, savedLink: prep.saved ? program.applicationUrl : null,
+    notes: prep.notes, sampleDraft: prep.draft ?? buildAidDraft(program, situation), savedLink: prep.saved ? program.applicationUrl : null,
     applicationUrl: program.applicationUrl, source: program.source,
     limitations: program.limitations, localAvailability: "Not verified", eligibility: "Not determined",
   };
+}
+
+export const AID_SAMPLE_SENTENCES = [
+  "A flood damaged my rental and I lost my furniture",
+  "After a wildfire, I need temporary housing",
+  "After an earthquake, I need food and medicine",
+] as const;
+
+// Runs entirely locally. It narrows sample records, never infers eligibility or geocodes text.
+export function interpretAidSentence(text: string): AidSituation | null {
+  const t = text.toLowerCase();
+  const disaster: AidDisaster = /wildfire|\bfire\b/.test(t) ? "wildfire" : /earthquake|aftershock/.test(t) ? "earthquake" : /flood/.test(t) ? "flood" : /hurricane/.test(t) ? "hurricane" : /tornado/.test(t) ? "tornado" : "";
+  const needs: AidNeed[] = [];
+  if (/housing|shelter|stay|displaced/.test(t)) needs.push("housing");
+  if (/furniture|belongings|possessions/.test(t)) needs.push("belongings");
+  if (/food|grocer/.test(t)) needs.push("food");
+  if (/medicine|medication|health/.test(t)) needs.push("health");
+  if (/financial|money|bills/.test(t)) needs.push("financial");
+  if (/document|passport|\bid\b/.test(t)) needs.push("documents");
+  if (!disaster && !needs.length) return null;
+  return { ...EMPTY_SITUATION, disaster, location: "Example location (not verified)", housing: /rent/.test(t) ? "rent" : /own|homeowner/.test(t) ? "own" : "", needs };
+}
+export function buildAidDraft(program: AidProgram, situation: AidSituation) {
+  return `SAMPLE, concept demo\nPreparation notes for ${program.name}\nExample situation: ${describeSituation(situation).join("; ")}.\nI would check the official provider's current requirements and ask which documents apply. This template is not an application, an eligibility decision, or evidence of a real loss.`;
 }

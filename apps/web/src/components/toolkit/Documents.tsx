@@ -282,9 +282,9 @@ function AskBox({ state, docIds, byId }: { state: string; docIds: string[]; byId
 
   return (
     <form onSubmit={ask} className="rounded-2xl border border-line bg-surface p-5">
-      <h3 className="text-lg">Ask about these documents</h3>
+      <h3 className="text-lg">Try a sample document question</h3>
       <p className="mt-1 text-sm text-muted">
-        Answers use only the official information above. Don’t include names or numbers; they are removed before your question is sent.
+        This concept returns a fixed sample response. Text stays in this browser; no model or server receives it. Use the official agency links for current requirements.
       </p>
       <div className="mt-3 flex gap-2">
         <input value={q} onChange={(e) => setQ(e.target.value)} maxLength={300} aria-label="Your question"
@@ -292,7 +292,7 @@ function AskBox({ state, docIds, byId }: { state: string; docIds: string[]; byId
           className="h-12 min-w-0 flex-1 rounded-xl border border-line bg-surface px-3 text-[15px] placeholder:text-subtle" />
         <Button type="submit" size="lg" variant="primary" loading={busy} disabled={!clean.trim()}>Ask</Button>
       </div>
-      {clean !== q && q && <p className="mt-2 text-xs text-muted">Will be sent as: “{clean}”</p>}
+      {clean !== q && q && <p className="mt-2 text-xs text-muted">Local preview: “{clean}”</p>}
       {error && <p className="mt-3 text-sm text-warn">Couldn’t get an answer. Please call the agency.</p>}
       {answer && (
         <div className="mt-4 border-t border-line pt-4" aria-live="polite">
