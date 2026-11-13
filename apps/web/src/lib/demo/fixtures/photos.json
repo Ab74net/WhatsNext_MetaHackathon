@@ -1,0 +1,545 @@
+[
+  {
+    "id": "living-room",
+    "room": "Living room",
+    "src": "/demo/photos/living-room.webp",
+    "thumbnail": "/demo/photos/living-room-thumb.webp",
+    "alt": "Supplied living room sample showing sofa, pillow, coffee table",
+    "width": 447,
+    "height": 447,
+    "provenance": "Supplied hackathon test asset; cached detections, no fresh inference",
+    "items": [
+      {
+        "category": "sofa",
+        "brand": null,
+        "model": null,
+        "condition": "good",
+        "confidence": 0.95,
+        "evidence": "seen_in_photo",
+        "id": "living-room-sofa",
+        "photos": [
+          {
+            "photo_id": "living-room",
+            "taken_at": null,
+            "mask": {
+              "bounds": {
+                "left": 0,
+                "top": 32,
+                "right": 273,
+                "bottom": 257
+              },
+              "svg_path": null,
+              "confidence": null
+            }
+          }
+        ],
+        "estimated_replacement_usd": null,
+        "user_confirmed": false
+      },
+      {
+        "category": "pillow",
+        "brand": null,
+        "model": null,
+        "condition": "good",
+        "confidence": 0.9,
+        "evidence": "seen_in_photo",
+        "id": "living-room-pillow",
+        "photos": [
+          {
+            "photo_id": "living-room",
+            "taken_at": null,
+            "mask": {
+              "bounds": {
+                "left": 0,
+                "top": 95,
+                "right": 87,
+                "bottom": 158
+              },
+              "svg_path": null,
+              "confidence": null
+            }
+          }
+        ],
+        "estimated_replacement_usd": null,
+        "user_confirmed": false
+      },
+      {
+        "category": "coffee table",
+        "brand": null,
+        "model": null,
+        "condition": "good",
+        "confidence": 0.95,
+        "evidence": "seen_in_photo",
+        "id": "living-room-coffee-table",
+        "photos": [
+          {
+            "photo_id": "living-room",
+            "taken_at": null,
+            "mask": {
+              "bounds": {
+                "left": 12,
+                "top": 166,
+                "right": 436,
+                "bottom": 409
+              },
+              "svg_path": null,
+              "confidence": null
+            }
+          }
+        ],
+        "estimated_replacement_usd": null,
+        "user_confirmed": false
+      }
+    ]
+  },
+  {
+    "id": "living-mirror",
+    "room": "Living room",
+    "src": "/demo/photos/living-mirror.webp",
+    "thumbnail": "/demo/photos/living-mirror-thumb.webp",
+    "alt": "Supplied living room sample showing mirror, ottoman, vase",
+    "width": 800,
+    "height": 1000,
+    "provenance": "Supplied hackathon test asset; cached detections, no fresh inference",
+    "items": [
+      {
+        "category": "mirror",
+        "brand": null,
+        "model": null,
+        "condition": "good",
+        "confidence": 0.99,
+        "evidence": "seen_in_photo",
+        "id": "living-mirror-mirror",
+        "photos": [
+          {
+            "photo_id": "living-mirror",
+            "taken_at": null,
+            "mask": {
+              "bounds": {
+                "left": 345,
+                "top": 102,
+                "right": 600,
+                "bottom": 915
+              },
+              "svg_path": null,
+              "confidence": null
+            }
+          }
+        ],
+        "estimated_replacement_usd": null,
+        "user_confirmed": false
+      },
+      {
+        "category": "ottoman",
+        "brand": null,
+        "model": null,
+        "condition": "good",
+        "confidence": 0.85,
+        "evidence": "seen_in_photo",
+        "id": "living-mirror-ottoman",
+        "photos": [
+          {
+            "photo_id": "living-mirror",
+            "taken_at": null,
+            "mask": {
+              "bounds": {
+                "left": 0,
+                "top": 788,
+                "right": 243,
+                "bottom": 1000
+              },
+              "svg_path": null,
+              "confidence": null
+            }
+          }
+        ],
+        "estimated_replacement_usd": null,
+        "user_confirmed": false
+      },
+      {
+        "category": "vase",
+        "brand": null,
+        "model": null,
+        "condition": "good",
+        "confidence": 0.95,
+        "evidence": "seen_in_photo",
+        "id": "living-mirror-vase",
+        "photos": [
+          {
+            "photo_id": "living-mirror",
+            "taken_at": null,
+            "mask": {
+              "bounds": {
+                "left": 750,
+                "top": 690,
+                "right": 800,
+                "bottom": 957
+              },
+              "svg_path": null,
+              "confidence": null
+            }
+          }
+        ],
+        "estimated_replacement_usd": null,
+        "user_confirmed": false
+      }
+    ]
+  },
+  {
+    "id": "kitchen",
+    "room": "Kitchen",
+    "src": "/demo/photos/kitchen.webp",
+    "thumbnail": "/demo/photos/kitchen-thumb.webp",
+    "alt": "Supplied kitchen sample showing pendant light, vase, cutting board",
+    "width": 1024,
+    "height": 683,
+    "provenance": "Supplied hackathon test asset; cached detections, no fresh inference",
+    "items": [
+      {
+        "category": "pendant light",
+        "brand": null,
+        "model": null,
+        "condition": "good",
+        "confidence": 0.95,
+        "evidence": "seen_in_photo",
+        "id": "kitchen-pendant-light",
+        "photos": [
+          {
+            "photo_id": "kitchen",
+            "taken_at": null,
+            "mask": {
+              "bounds": {
+                "left": 573,
+                "top": 0,
+                "right": 678,
+                "bottom": 220
+              },
+              "svg_path": null,
+              "confidence": null
+            }
+          }
+        ],
+        "estimated_replacement_usd": null,
+        "user_confirmed": false
+      },
+      {
+        "category": "vase",
+        "brand": null,
+        "model": null,
+        "condition": "good",
+        "confidence": 0.95,
+        "evidence": "seen_in_photo",
+        "id": "kitchen-vase",
+        "photos": [
+          {
+            "photo_id": "kitchen",
+            "taken_at": null,
+            "mask": {
+              "bounds": {
+                "left": 862,
+                "top": 392,
+                "right": 882,
+                "bottom": 425
+              },
+              "svg_path": null,
+              "confidence": null
+            }
+          }
+        ],
+        "estimated_replacement_usd": null,
+        "user_confirmed": false
+      },
+      {
+        "category": "cutting board",
+        "brand": null,
+        "model": null,
+        "condition": "good",
+        "confidence": 0.9,
+        "evidence": "seen_in_photo",
+        "id": "kitchen-cutting-board",
+        "photos": [
+          {
+            "photo_id": "kitchen",
+            "taken_at": null,
+            "mask": {
+              "bounds": {
+                "left": 638,
+                "top": 511,
+                "right": 810,
+                "bottom": 541
+              },
+              "svg_path": null,
+              "confidence": null
+            }
+          }
+        ],
+        "estimated_replacement_usd": null,
+        "user_confirmed": false
+      }
+    ]
+  },
+  {
+    "id": "dishwasher",
+    "room": "Kitchen",
+    "src": "/demo/photos/dishwasher.webp",
+    "thumbnail": "/demo/photos/dishwasher-thumb.webp",
+    "alt": "Supplied kitchen sample showing dishwasher",
+    "width": 515,
+    "height": 388,
+    "provenance": "Supplied hackathon test asset; cached detections, no fresh inference",
+    "items": [
+      {
+        "category": "dishwasher",
+        "brand": null,
+        "model": null,
+        "condition": "good",
+        "confidence": 0.98,
+        "evidence": "seen_in_photo",
+        "id": "dishwasher-dishwasher",
+        "photos": [
+          {
+            "photo_id": "dishwasher",
+            "taken_at": null,
+            "mask": {
+              "bounds": {
+                "left": 92,
+                "top": 19,
+                "right": 446,
+                "bottom": 377
+              },
+              "svg_path": null,
+              "confidence": null
+            }
+          }
+        ],
+        "estimated_replacement_usd": null,
+        "user_confirmed": false
+      }
+    ]
+  },
+  {
+    "id": "bedroom",
+    "room": "Bedroom",
+    "src": "/demo/photos/bedroom.webp",
+    "thumbnail": "/demo/photos/bedroom-thumb.webp",
+    "alt": "Supplied bedroom sample showing tower fan, bed, pillow",
+    "width": 678,
+    "height": 452,
+    "provenance": "Supplied hackathon test asset; cached detections, no fresh inference",
+    "items": [
+      {
+        "category": "tower fan",
+        "brand": null,
+        "model": null,
+        "condition": "good",
+        "confidence": 0.95,
+        "evidence": "seen_in_photo",
+        "id": "bedroom-tower-fan",
+        "photos": [
+          {
+            "photo_id": "bedroom",
+            "taken_at": null,
+            "mask": {
+              "bounds": {
+                "left": 274,
+                "top": 36,
+                "right": 396,
+                "bottom": 431
+              },
+              "svg_path": null,
+              "confidence": null
+            }
+          }
+        ],
+        "estimated_replacement_usd": null,
+        "user_confirmed": false
+      },
+      {
+        "category": "bed",
+        "brand": null,
+        "model": null,
+        "condition": "good",
+        "confidence": 0.9,
+        "evidence": "seen_in_photo",
+        "id": "bedroom-bed",
+        "photos": [
+          {
+            "photo_id": "bedroom",
+            "taken_at": null,
+            "mask": {
+              "bounds": {
+                "left": 429,
+                "top": 0,
+                "right": 678,
+                "bottom": 451
+              },
+              "svg_path": null,
+              "confidence": null
+            }
+          }
+        ],
+        "estimated_replacement_usd": null,
+        "user_confirmed": false
+      },
+      {
+        "category": "pillow",
+        "brand": null,
+        "model": null,
+        "condition": "good",
+        "confidence": 0.95,
+        "evidence": "seen_in_photo",
+        "id": "bedroom-pillow",
+        "photos": [
+          {
+            "photo_id": "bedroom",
+            "taken_at": null,
+            "mask": {
+              "bounds": {
+                "left": 524,
+                "top": 28,
+                "right": 678,
+                "bottom": 158
+              },
+              "svg_path": null,
+              "confidence": null
+            }
+          }
+        ],
+        "estimated_replacement_usd": null,
+        "user_confirmed": false
+      }
+    ]
+  },
+  {
+    "id": "pillows",
+    "room": "Bedroom",
+    "src": "/demo/photos/pillows.webp",
+    "thumbnail": "/demo/photos/pillows-thumb.webp",
+    "alt": "Supplied bedroom sample showing pillow, vase, book",
+    "width": 1024,
+    "height": 773,
+    "provenance": "Supplied hackathon test asset; cached detections, no fresh inference",
+    "items": [
+      {
+        "category": "pillow",
+        "brand": null,
+        "model": null,
+        "condition": "good",
+        "confidence": 0.98,
+        "evidence": "seen_in_photo",
+        "id": "pillows-pillow",
+        "photos": [
+          {
+            "photo_id": "pillows",
+            "taken_at": null,
+            "mask": {
+              "bounds": {
+                "left": 69,
+                "top": 93,
+                "right": 999,
+                "bottom": 496
+              },
+              "svg_path": null,
+              "confidence": null
+            }
+          }
+        ],
+        "estimated_replacement_usd": null,
+        "user_confirmed": false
+      },
+      {
+        "category": "vase",
+        "brand": null,
+        "model": null,
+        "condition": "good",
+        "confidence": 0.9,
+        "evidence": "seen_in_photo",
+        "id": "pillows-vase",
+        "photos": [
+          {
+            "photo_id": "pillows",
+            "taken_at": null,
+            "mask": {
+              "bounds": {
+                "left": 924,
+                "top": 172,
+                "right": 1024,
+                "bottom": 399
+              },
+              "svg_path": null,
+              "confidence": null
+            }
+          }
+        ],
+        "estimated_replacement_usd": null,
+        "user_confirmed": false
+      },
+      {
+        "category": "book",
+        "brand": null,
+        "model": null,
+        "condition": "good",
+        "confidence": 0.85,
+        "evidence": "seen_in_photo",
+        "id": "pillows-book",
+        "photos": [
+          {
+            "photo_id": "pillows",
+            "taken_at": null,
+            "mask": {
+              "bounds": {
+                "left": 900,
+                "top": 370,
+                "right": 1024,
+                "bottom": 422
+              },
+              "svg_path": null,
+              "confidence": null
+            }
+          }
+        ],
+        "estimated_replacement_usd": null,
+        "user_confirmed": false
+      }
+    ]
+  },
+  {
+    "id": "living-detail",
+    "room": "Living room",
+    "src": "/demo/photos/living-detail.webp",
+    "thumbnail": "/demo/photos/living-detail.webp",
+    "alt": "Detail crop of the same supplied coffee-table image, for a simulated duplicate match",
+    "width": 447,
+    "height": 307,
+    "provenance": "Derived crop of living-room; not an independent photograph",
+    "items": [
+      {
+        "category": "coffee table",
+        "brand": null,
+        "model": null,
+        "condition": "good",
+        "confidence": 0.95,
+        "evidence": "seen_in_photo",
+        "id": "living-detail-coffee-table",
+        "photos": [
+          {
+            "photo_id": "living-detail",
+            "taken_at": null,
+            "mask": {
+              "bounds": {
+                "left": 12,
+                "top": 26,
+                "right": 436,
+                "bottom": 269
+              },
+              "svg_path": null,
+              "confidence": null
+            }
+          }
+        ],
+        "estimated_replacement_usd": null,
+        "user_confirmed": false
+      }
+    ]
+  }
+]

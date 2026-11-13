@@ -271,7 +271,7 @@ function ItemCard({ item, meta, src, color, selecting, selected, removing, onSel
               className="h-8 rounded-full border border-line bg-surface px-2 text-xs font-semibold text-ink">
               {CONDITIONS.map((c) => <option key={c} value={c}>{c === "unknown" ? "Condition?" : c[0].toUpperCase() + c.slice(1)}</option>)}
             </select>
-            <span className="text-xs text-subtle tabular-nums" title="How sure the scan is">{Math.round(item.confidence * 100)}%</span>
+            <span className="text-xs text-subtle tabular-nums" title="Cached sample confidence; no scan was run">{Math.round(item.confidence * 100)}%</span>
           </div>
           {earliest && <p className="text-xs text-subtle">Earliest photo {new Date(earliest).toLocaleDateString()}</p>}
         </div>
@@ -280,9 +280,9 @@ function ItemCard({ item, meta, src, color, selecting, selected, removing, onSel
           {item.estimated_replacement_usd ? (
             <p>
               ${item.estimated_replacement_usd.low.toLocaleString()} – ${item.estimated_replacement_usd.high.toLocaleString()}
-              <span className="block text-xs font-normal text-muted">Replacement estimate</span>
+              <span className="block text-xs font-normal text-muted">Sample estimate</span>
             </p>
-          ) : <span className="text-xs font-normal text-muted">Estimate at export</span>}
+          ) : <span className="text-xs font-normal text-muted">Sample estimate at export</span>}
             </div>
 
           {!selecting && (

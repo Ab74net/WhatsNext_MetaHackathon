@@ -50,15 +50,15 @@ export default function ClaimsPage() {
     <div className="mx-auto flex w-full max-w-[1320px] flex-col gap-6 px-5 py-9 sm:px-9 lg:py-12">
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="page-title">{step === "remember" ? "Memory Web" : "Claim inventory"}</h1>
-          <p className="mt-3 text-lg text-ink sm:text-xl">{step === "remember" ? "Rebuild a complete list of what you owned." : "Turn your photos into a claim-ready list of what you owned."}</p>
+          <h1 className="page-title">{step === "remember" ? "Memory Web" : "Sample claim inventory"}</h1>
+          <p className="mt-3 text-lg text-ink sm:text-xl">{step === "remember" ? "Explore relationships between example belongings." : "Explore the photo-to-inventory workflow with sample data."}</p>
           <p className="mt-1 max-w-2xl text-sm text-muted">
             Sample photos and precomputed detections demonstrate the workflow. No uploads, AI calls, or real claims.
           </p>
         </div>
         {session.sessionId && (
           <Button variant="ghost" size="sm" loading={session.ending} onClick={async () => { if (await session.endSession()) setStep("select"); }}>
-            <Trash2 className="size-4" aria-hidden /> Finish and delete photos
+            <Trash2 className="size-4" aria-hidden /> Clear sample inventory
           </Button>
         )}
       </header>

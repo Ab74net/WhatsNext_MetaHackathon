@@ -5,6 +5,7 @@
 
 import { motion } from "motion/react";
 import { ArrowRight, Check, CopyCheck, Layers } from "lucide-react";
+import brand from "@shared/brand.json";
 import type { InventoryItem } from "@shared/types";
 import type { ClaimSession, ScanPhoto } from "@/lib/useClaimSession";
 import { PhotoWithMasks } from "@/components/PhotoWithMasks";
@@ -35,15 +36,15 @@ export function ScanStep({ session, onReview }: { session: ClaimSession; onRevie
             <img src={allDone && merge.status !== "running" ? "/wren/scene-checklist.webp" : "/wren/scene-scan.webp"}
               alt="" width={480} height={325} className="w-24 object-contain" />
             <p className="max-w-40 font-display text-lg font-bold leading-snug">
-              {!allDone ? "Wren is searching your photos…" : merge.status === "running" ? "Matching items across photos…" : "All done."}
+              {!allDone ? `${brand.agentName} is simulating a scan…` : merge.status === "running" ? "Showing a sample duplicate match…" : "All done."}
             </p>
           </div>
-          <Stat label="Photos scanned" value={`${finished}/${photos.length}`} />
-          <Stat label="Items found" value={
+          <Stat label="Sample views" value={`${finished}/${photos.length}`} />
+          <Stat label="Sample items" value={
             <motion.span key={itemCount} initial={{ opacity: 0.4, y: -4 }} animate={{ opacity: 1, y: 0 }} className="text-accent">
               {itemCount}
             </motion.span>} />
-          <Stat label="Skipped" value={skipped} hint={failed ? `${failed} failed` : "IDs, screenshots, duplicates"} />
+          <Stat label="Skipped" value={skipped} hint={failed ? `${failed} failed` : "No personal files accepted"} />
           <div className="ml-auto">
             <Button variant={allDone ? "primary" : "secondary"} disabled={!itemCount} onClick={onReview}>
               Review items <ArrowRight className="size-4" aria-hidden />
@@ -61,7 +62,7 @@ export function ScanStep({ session, onReview }: { session: ClaimSession; onRevie
               <><Layers className="size-4 text-good" aria-hidden />
                 <span className="text-muted">
                   {mergedCount
-                    ? <><strong className="text-ink">{mergedCount} item{mergedCount === 1 ? "" : "s"}</strong> appeared in more than one photo and were combined. You can split them in Review.</>
+                    ? <><strong className="text-ink">{mergedCount} item{mergedCount === 1 ? "" : "s"}</strong> was combined in the scripted duplicate example. The detail crop is not independent evidence. You can split it in Review.</>
                     : "No item appeared in more than one photo."}
                 </span></>
             )}
@@ -133,8 +134,8 @@ function ScanCard({ photo: p, src, found, onConfirmAll }: {
 function StatusBadge({ photo: p, count }: { photo: ScanPhoto; count: number }) {
   switch (p.status) {
     case "queued": return <Badge>Waiting</Badge>;
-    case "uploading": return <Badge tone="accent">Uploading</Badge>;
-    case "scanning": return <Badge tone="accent" icon={<Pulse className="size-1.5" />}>Scanning</Badge>;
+    case "uploading": return <Badge tone="accent">Loading sample</Badge>;
+    case "scanning": return <Badge tone="accent" icon={<Pulse className="size-1.5" />}>Simulated scan</Badge>;
     case "duplicate": return <Badge>Duplicate</Badge>;
     case "error": return <Badge tone="danger">Failed</Badge>;
     case "done": return p.result?.skipped ? <Badge>Skipped</Badge> : <Badge tone="good">{count} item{count === 1 ? "" : "s"}</Badge>;
@@ -168,15 +169,15 @@ function ScanChecklist({ photos, allDone, merge }: { photos: ScanPhoto[]; allDon
   const uploaded = photos.length > 0 && photos.every((p) => p.status !== "queued" && p.status !== "uploading");
   const matched = merge === "done" || merge === "error";
   const steps = [
-    { label: "Uploading photos", done: uploaded },
-    { label: "Finding items", done: allDone },
-    { label: "Matching across photos", done: matched },
-    { label: "Ready for review", done: allDone && matched },
+    { label: "Detecting items (sample)", done: uploaded },
+    { label: "Grouping by room", done: allDone },
+    { label: "Estimating details (sample)", done: matched },
+    { label: "Preparing for review", done: allDone && matched },
   ];
   const current = steps.findIndex((s) => !s.done);
   return (
     <Card className="p-7 sm:p-9">
-      <h2 className="text-2xl sm:text-3xl">{current === -1 ? "Your photos are ready." : "Analyzing your photos…"}</h2>
+      <h2 className="text-2xl sm:text-3xl">{current === -1 ? "Sample results are ready." : "Simulating the scan…"}</h2>
       <ProgressBar value={steps.filter((s) => s.done).length / steps.length} className="my-7" />
       <ol className="mt-4 flex flex-col gap-6" aria-live="polite">
         {steps.map((s, i) => (

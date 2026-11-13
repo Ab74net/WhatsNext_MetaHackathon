@@ -4,7 +4,7 @@
 // claim downloads. Only confirmed items are exported.
 
 import { useMemo, useState } from "react";
-import { ArrowLeft, Check, CircleDollarSign, ExternalLink, FileSpreadsheet, FileText, Info, Sheet } from "lucide-react";
+import { ArrowLeft, Check, CircleDollarSign, FileSpreadsheet, FileText, Info, Sheet } from "lucide-react";
 import type { InventoryItem, PhotoMeta } from "@shared/types";
 import type { ClaimSession } from "@/lib/useClaimSession";
 import { pool, type ExportFormat } from "@/lib/api";
@@ -14,7 +14,7 @@ import { Badge, Button, Card, Notice, Pulse, Stat } from "@/components/ui";
 const money = (n: number) => n.toLocaleString(undefined, { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 
 export function ExportStep({ session, onBack }: { session: ClaimSession; onBack: () => void }) {
-  const { items, photos, valuing, valueItem, photoUrl, exportUrl } = session;
+  const { items, photos, valuing, valueItem, photoUrl, downloadExport } = session;
   const [valuingAll, setValuingAll] = useState(false);
 
   const metaById = useMemo(() => {
@@ -45,7 +45,7 @@ export function ExportStep({ session, onBack }: { session: ClaimSession; onBack:
                 <Check className="size-9" strokeWidth={2.5} />
               </span>
               <div>
-                <h2 className="text-3xl sm:text-5xl">Your claim is ready.</h2>
+                <h2 className="text-3xl sm:text-5xl">Your sample export is ready.</h2>
                 <p className="mt-1 text-muted">
                   {confirmed.length} item{confirmed.length === 1 ? "" : "s"} confirmed with photos
                   {valued.length ? " and estimated values" : ""}.
@@ -55,7 +55,7 @@ export function ExportStep({ session, onBack }: { session: ClaimSession; onBack:
             <div className="flex flex-wrap items-center gap-4">
               <div className="grid w-full gap-5 rounded-2xl border border-line bg-surface-2 px-6 py-5 sm:grid-cols-2 sm:divide-x sm:divide-line [&>div+div]:sm:pl-6">
                 <Stat label="Confirmed items" value={confirmed.length} />
-                <Stat label="Estimated value" value={valued.length ? `${money(low)} – ${money(high)}` : "—"}
+                <Stat label="Sample estimated value" value={valued.length ? `${money(low)} – ${money(high)}` : "—"}
                   hint={valued.length < confirmed.length ? `${valued.length} of ${confirmed.length} items priced` : "All items priced"} />
               </div>
               <div className="flex gap-2">
@@ -83,23 +83,22 @@ export function ExportStep({ session, onBack }: { session: ClaimSession; onBack:
       <div className="grid gap-4 md:grid-cols-[1.4fr_1fr]">
         <Card className="flex flex-col gap-4 p-6">
           <div>
-            <h3 className="text-xl">Download your claim</h3>
-            <p className="mt-1 text-sm text-muted">A file with your items, photos and price estimates. Photo location data is never included.</p>
+            <h3 className="text-xl">Download the sample inventory</h3>
+            <p className="mt-1 text-sm text-muted">A local file marked SAMPLE, concept demo. PDF includes sample photos. Only confirmed example items are included.</p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Download href={exportUrl("pdf")} fmt="pdf" icon={<FileText className="size-4" />} title="PDF report" primary />
-            <Download href={exportUrl("xlsx")} fmt="xlsx" icon={<FileSpreadsheet className="size-4" />} title="Excel spreadsheet" />
-            <Download href={exportUrl("csv")} fmt="csv" icon={<Sheet className="size-4" />} title="CSV" />
+            <Download onDownload={() => downloadExport("pdf")} fmt="pdf" icon={<FileText className="size-4" />} title="PDF report" primary />
+            <Download onDownload={() => downloadExport("xlsx")} fmt="xlsx" icon={<FileSpreadsheet className="size-4" />} title="Excel spreadsheet" />
+            <Download onDownload={() => downloadExport("csv")} fmt="csv" icon={<Sheet className="size-4" />} title="CSV" />
           </div>
           <Notice icon={<Info className="size-4" />}>
-            Prices are estimates from public retail listings for a comparable new item, not appraisals. Check them before you
-            submit. This is not insurance or legal advice.
+            Sample estimates are hand-written illustrative ranges with no retail sources. These files are not a real claim or proof of ownership. This is not insurance or legal advice.
           </Notice>
         </Card>
         <Card className="p-6">
           <h3 className="text-xl">What’s included</h3>
           <ul className="mt-3 flex flex-col gap-2 text-[15px]">
-            {["Item list with estimated values", "Evidence photos (with dates)", "Condition of each item", "Price sources and when they were checked"].map((t) => (
+            {["Confirmed sample items and sample estimates", "Supplied sample photos (PDF only)", "Editable example condition", "Sample labels; no invented price sources"].map((t) => (
               <li key={t} className="flex items-center gap-2"><Check className="size-4 shrink-0 text-ink" strokeWidth={2.5} aria-hidden /> {t}</li>
             ))}
           </ul>
@@ -147,15 +146,11 @@ function PriceRow({ item, meta, src, state, onValue }: {
         {est ? (
           <>
             <span className="font-semibold tabular-nums">{money(est.low)} – {money(est.high)}</span>
-            <a href={est.source_url} target="_blank" rel="noopener noreferrer"
-              className="inline-flex max-w-full items-center gap-1 truncate text-xs text-accent hover:underline" title={est.basis}>
-              <span className="truncate">{est.source_title || new URL(est.source_url).hostname}</span>
-              <ExternalLink className="size-3 shrink-0" aria-hidden />
-            </a>
-            <span className="text-[11px] text-subtle">checked {new Date(est.checked_at).toLocaleDateString()}</span>
+            <span className="text-xs text-muted">Sample estimate</span>
+            <span className="text-[11px] text-subtle">Sample data, no source</span>
           </>
         ) : state?.status === "loading" ? (
-          <Badge tone="accent" icon={<Pulse className="size-1.5" />}>Searching retailers</Badge>
+          <Badge tone="accent" icon={<Pulse className="size-1.5" />}>Loading sample estimate</Badge>
         ) : state?.status === "error" ? (
           <>
             <span className="text-xs text-warn">{state.error}</span>
@@ -169,14 +164,17 @@ function PriceRow({ item, meta, src, state, onValue }: {
   );
 }
 
-function Download({ href, fmt, icon, title, primary = false }: {
-  href: string; fmt: ExportFormat; icon: React.ReactNode; title: string; primary?: boolean;
+function Download({ onDownload, fmt, icon, title, primary = false }: {
+  onDownload: () => Promise<void>; fmt: ExportFormat; icon: React.ReactNode; title: string; primary?: boolean;
 }) {
-  return (
-    <a href={href} download aria-label={`Download ${title} (.${fmt})`}
-      className={`inline-flex h-12 items-center gap-2 rounded-full px-5 text-sm font-semibold transition ${
-        primary ? "bg-primary text-primary-ink hover:bg-primary-hover" : "border border-ink bg-surface text-ink hover:bg-surface-2"}`}>
-      {icon} {title}
-    </a>
-  );
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  return <div><button type="button" disabled={busy} aria-label={`Download sample ${title} (.${fmt})`} onClick={async () => {
+    setBusy(true); setError("");
+    try { await onDownload(); } catch (e) { setError(e instanceof Error ? e.message : "Sample download failed. Try again."); }
+    finally { setBusy(false); }
+  }} className={`inline-flex min-h-12 items-center gap-2 rounded-full px-5 text-sm font-semibold transition disabled:opacity-50 ${
+    primary ? "bg-primary text-primary-ink hover:bg-primary-hover" : "border border-ink bg-surface text-ink hover:bg-surface-2"}`}>
+    {icon}{busy ? "Preparing sample…" : title}
+  </button>{error && <p role="alert" className="mt-2 max-w-xs text-xs text-danger">{error}</p>}</div>;
 }

@@ -8,6 +8,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { Health, InventoryItem, MemoryWeb, MergeGroup, PhotoMeta, PhotoResult } from "@shared/types";
 import { api, pool, type ExportFormat, type ItemPatch } from "./api";
 import { emptyMemoryReview, emptyMemoryViewport } from "./memoryGraph";
+import { restoreDemoClaim } from "./demo/claims";
+import { sampleMeta, samplePhoto } from "./demo/samples";
+import { downloadClaim } from "./demo/exports";
 
 export type ScanStatus = "queued" | "uploading" | "scanning" | "done" | "duplicate" | "error";
 
@@ -52,10 +55,15 @@ export function useClaimSession() {
 
   useEffect(() => {
     api.health().then(setHealth).catch((e) => setHealthError(message(e)));
-    // Delete the session's photos when the tab closes.
-    const onLeave = () => sessionRef.current && api.endSessionBeacon(sessionRef.current);
-    window.addEventListener("pagehide", onLeave);
-    return () => window.removeEventListener("pagehide", onLeave);
+    const saved = restoreDemoClaim();
+    if (saved) {
+      sessionRef.current = saved.id;
+      setSessionId(saved.id);
+      setItems(saved.items);
+      setMerge({ status: "done", merges: saved.merges });
+      setPhotos(saved.photos.map(id => ({ key: `restored-${id}`, filename: `Sample ${id}`, localUrl: samplePhoto(id).src, status: "done",
+        meta: sampleMeta(id), result: { photo_id: id, photo_kind: "room_or_belongings", skipped: false, items: samplePhoto(id).items, timings_ms: {}, warnings: [] } })));
+    }
   }, []);
 
   const update = (key: string, patch: Partial<ScanPhoto>) =>
@@ -256,8 +264,8 @@ export function useClaimSession() {
     if (!isCurrent(sid, version)) throw new Error("This claim session has ended.");
     const result: PhotoResult = { photo_id: photo.photo_id, photo_kind: "room_or_belongings", skipped: false,
       items: [item], timings_ms: {}, warnings: [] };
-    setPhotos((prev) => [...prev, { key: `remembered_${item.id}`, filename: file.name,
-      localUrl: URL.createObjectURL(file), status: "done", meta: photo, result }]);
+    setPhotos((prev) => prev.some(p => p.meta?.photo_id === photo.photo_id) ? prev : [...prev, { key: `remembered_${item.id}`, filename: `Sample ${photo.filename}`,
+      localUrl: samplePhoto(photo.photo_id).src, status: "done", meta: photo, result }]);
     setItems((prev) => ({ ...prev, [item.id]: item }));
     return item;
   }, [isCurrent]);
@@ -282,7 +290,7 @@ export function useClaimSession() {
     setRemoving(new Set());
     setSessionId(null);
     setPhotos((prev) => {
-      prev.forEach((p) => URL.revokeObjectURL(p.localUrl));
+      prev.forEach((p) => { if (p.localUrl.startsWith("blob:")) URL.revokeObjectURL(p.localUrl); });
       return [];
     });
     setItems({});
@@ -303,6 +311,7 @@ export function useClaimSession() {
     health, healthError, actionError, ending, removing, sessionId, photos, items, merge, valuing, memory, memoryReview, setMemoryReview, memoryViewport,
     scan, patchItem, confirmPhoto, removeItem, runMerge, mergeItems, splitItem, valueItem, loadMemoryWeb, addFromPhoto,
     endSession, photoUrl, exportUrl,
+    downloadExport: (format: ExportFormat) => downloadClaim(Object.values(itemsRef.current), format),
   };
 }
 

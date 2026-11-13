@@ -118,6 +118,28 @@ The six unresolved originals are:
 matching secondary publication. Developer-supplied source/permission details can resolve
 these gaps. No photographers or publishers were contacted.
 
+## Public concept sample photos
+
+Selected from the developer-supplied, ignored hackathon test set in response to the
+request to reuse consented demo assets. No new photographs were downloaded. Individual
+authorship/licence records are not present in the repository; confirm permission to
+publish these six images before deployment. The earlier source search did not cover
+this test set.
+
+| Ignored original | Public derivative | Use |
+| --- | --- | --- |
+| `scripts/test_photos/13.jpg` | `demo/photos/living-room*.webp`, `living-detail.webp` | Living room and a labeled detail crop |
+| `scripts/test_photos/18.jpg` | `demo/photos/living-mirror*.webp` | Living-room mirror |
+| `scripts/test_photos/3.jpg` | `demo/photos/kitchen*.webp` | Kitchen |
+| `scripts/test_photos/1.jpg` | `demo/photos/dishwasher*.webp` | Dishwasher |
+| `scripts/test_photos/11.jpg` | `demo/photos/bedroom*.webp` | Bedroom and fan |
+| `scripts/test_photos/16.png` | `demo/photos/pillows*.webp` | Pillows |
+
+All six originals were visually inspected: no visible faces or readable personal
+information was found. None contained EXIF. Every shipped derivative was re-encoded to
+WebP with EXIF and XMP omitted and checked for embedded metadata. The detail crop is not
+an independent second photograph. Rebuild: `scripts/prepare_demo_photos.py`.
+
 ## Wren mascot illustrations
 
 These are illustrations, not photographs, and were outside this reverse-photo search.

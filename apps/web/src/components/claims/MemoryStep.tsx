@@ -59,8 +59,8 @@ export function MemoryStep({ session, onExport, onBack }: { session: ClaimSessio
     return (
       <Card className="flex flex-col items-center gap-3 px-6 py-16 text-center">
         <WrenAvatar mood="searching" size={96} />
-        <p className="font-semibold">{brand.agentName} is looking for things you might have forgotten…</p>
-        <p className="max-w-md text-sm text-muted">Using the items you confirmed to suggest related belongings people often own.</p>
+        <p className="font-semibold">{brand.agentName} is loading sample relationships…</p>
+        <p className="max-w-md text-sm text-muted">A static related-items map links the sample belongings you confirmed.</p>
       </Card>
     );
   }
@@ -88,8 +88,7 @@ export function MemoryStep({ session, onExport, onBack }: { session: ClaimSessio
         <div className="min-w-60 flex-1">
           <p className="font-semibold">Did you forget anything?</p>
           <p className="mt-0.5 text-sm text-muted">
-            {brand.agentName} suggests things people often own alongside what you confirmed. Nothing is added unless you add a photo
-            that shows it and confirm it.
+            {brand.agentName} shows static sample relationships. Attach a supplied sample photo and confirm the example before it enters the sample export.
           </p>
         </div>
         <div className="flex gap-2">
@@ -129,8 +128,8 @@ function SidePanel({ selected, session, web, metaById, added, onClose, onDismiss
   if (!selected) {
     return (
       <div className="flex flex-col gap-3 text-sm">
-        <p className="font-semibold">How to use the memory web</p>
-        <p className="text-muted">Tap a dashed <strong className="text-accent">?</strong> to answer “did you own this?”. Tap an item to see how well it’s proven and how to make the evidence stronger.</p>
+        <p className="font-semibold">How to explore the sample web</p>
+        <p className="text-muted">Tap a dashed <strong className="text-accent">?</strong> to answer “did you own this?”. Tap an item to inspect its illustrative evidence grade.</p>
         <p className="text-muted"><strong className="text-ink">{suggestionsLeft}</strong> suggestion{suggestionsLeft === 1 ? "" : "s"} left to review.</p>
       </div>
     );
@@ -238,7 +237,7 @@ function AskPanel({ suggestion: s, session, metaById, header, onDismiss, onAdded
     return (
       <div className="flex flex-col items-center gap-3 py-6 text-center">
         <WrenAvatar mood="searching" size={88} />
-        <p className="text-sm font-semibold">Looking for the {s.name} in your photo…</p>
+        <p className="text-sm font-semibold">Loading the sample {s.name} example…</p>
       </div>
     );
   }
@@ -253,7 +252,7 @@ function AskPanel({ suggestion: s, session, metaById, header, onDismiss, onAdded
             <ItemCrop src={session.photoUrl(meta.photo_id)} meta={meta} mask={item.photos[0]?.mask ?? null} color="var(--good)" />
           </div>
         )}
-        <p className="text-sm text-muted">Is this your {s.name}? Confirm it to add it to your claim.</p>
+        <p className="text-sm text-muted">This is a prewritten {s.name} example. Confirm it to add it to the sample inventory.</p>
         {state.confirmError && <Notice tone="warn">{state.confirmError}</Notice>}
         <Button variant="success" loading={confirming} onClick={async () => {
           setConfirming(true);
@@ -262,7 +261,7 @@ function AskPanel({ suggestion: s, session, metaById, header, onDismiss, onAdded
           if (saved?.user_confirmed) onAdded(saved);
           else setState({ status: "found", item, confirmError: "Confirmation couldn’t be saved. Please try again; the suggestion has not been marked as confirmed." });
         }}>
-          <Check className="size-4" strokeWidth={3} aria-hidden /> Yes, I owned this
+          <Check className="size-4" strokeWidth={3} aria-hidden /> Confirm sample item
         </Button>
         <Button variant="ghost" loading={session.removing.has(item.id)} onClick={async () => { if (await session.removeItem(item.id)) setState({ status: "idle" }); }}>Not mine, remove it</Button>
       </div>
@@ -273,7 +272,7 @@ function AskPanel({ suggestion: s, session, metaById, header, onDismiss, onAdded
       {header(ownQuestion(s.name))}
       <p className="text-sm text-muted">{s.reason}</p>
       <div className="rounded-lg bg-surface-2 p-3 text-xs">
-        <p className="font-semibold">Where to find proof</p>
+        <p className="font-semibold">Sample evidence</p>
         <p className="mt-0.5 text-muted">{s.proof_hint}</p>
       </div>
       {state.status === "error" && <Notice tone="warn">{state.error}</Notice>}
@@ -283,7 +282,7 @@ function AskPanel({ suggestion: s, session, metaById, header, onDismiss, onAdded
         </Button>
         <Button variant="secondary" className="flex-1" onClick={onDismiss}>No</Button>
       </div>
-      <p className="mt-1 text-sm font-semibold">Add photo evidence</p>
+      <p className="mt-1 text-sm font-semibold">Attach a sample photo</p>
       <button type="button" onClick={() => onFile(new File([], "sample-evidence"))}
         className="flex flex-col items-center gap-1.5 rounded-2xl border border-dashed border-line-strong px-4 py-6 text-center text-sm text-muted hover:bg-surface-2">
         <ImagePlus className="size-5 text-ink" aria-hidden />
