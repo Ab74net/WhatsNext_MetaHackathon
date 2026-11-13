@@ -238,7 +238,8 @@ export interface ToolkitLink {
   reason: string;
 }
 
-export type UIInstruction = AlertsCard | ResourceList | PlanCard | ClaimStart | ToolkitLink | EmergencyCard | SafetyFlowCard;
+export interface AidLink { type: "aid_link"; reason: string }
+export type UIInstruction = AlertsCard | ResourceList | PlanCard | ClaimStart | ToolkitLink | EmergencyCard | SafetyFlowCard | AidLink;
 
 export interface ChatTurn {
   role: "user" | "assistant";

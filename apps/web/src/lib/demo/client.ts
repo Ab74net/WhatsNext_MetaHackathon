@@ -3,6 +3,7 @@ import guide from "../../../../../content/documents/virginia.json";
 import type { DocumentGuide } from "@shared/types";
 import type { AppClient } from "../adapters/contracts";
 import { sampleScenario } from "./scenarios";
+import { prepareReply } from "./prompts";
 
 const unavailable = async (): Promise<never> => { throw new Error("Only the supplied sample photos are supported in this concept demo."); };
 
@@ -11,7 +12,7 @@ export const demoApi: AppClient = {
   health: async () => ({ ok: true, mock: true, spark_model: "Simulated", sam_model: "Simulated", project_name: brand.projectName, agent_name: brand.agentName }),
   scenarios: async () => [sampleScenario("nrv"), sampleScenario("spokane")],
   scenario: async (id) => sampleScenario(id),
-  agent: async (_, caseFile) => ({ message: "This concept demo uses scripted sample prompts.", ui: [], case: caseFile, tools_used: [] }),
+  agent: async (messages, caseFile, signal) => prepareReply(messages.filter(m => m.role === "user").at(-1)?.text ?? "", caseFile, signal),
   documentStates: async () => [{ state: "VA", state_name: "Virginia", available: true }, { state: "WA", state_name: "Washington", available: false }],
   documentGuide: async () => structuredClone({ ...guide, documents: guide.documents.map((entry) => Object.assign({
     prerequisites_note: "", disaster_waiver_note: "", fees_note: "", timing_note: "", id_card_note: "", phone: "",

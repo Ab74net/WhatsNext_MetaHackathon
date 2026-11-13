@@ -59,7 +59,7 @@ const BUCKETS = [
 export function PlanView({ card }: { card: PlanCard }) {
   return (
     <Card className="overflow-hidden">
-      <CardHeader icon={<ListChecks className="size-[18px]" />} title="Your plan"
+      <CardHeader icon={<ListChecks className="size-[18px]" />} title="Sample recovery plan"
         right={<span className="text-xs text-subtle">{card.phase_label || (card.phase === "response" ? "During the disaster" : "Recovery")}</span>} />
       <div className="divide-y divide-line">
         {BUCKETS.map(({ key, label, icon: Icon }) => card[key].length > 0 && (
@@ -69,7 +69,7 @@ export function PlanView({ card }: { card: PlanCard }) {
           </div>
         ))}
         {card.deadlines.length === 0 && (
-          <p className="px-4 py-3 text-[13px] text-muted">No official deadlines have been announced yet. We only show deadlines from a published source.</p>
+          <p className="px-4 py-3 text-[13px] text-muted">No current deadlines are supplied by this demo. Check the official provider.</p>
         )}
       </div>
     </Card>
@@ -119,7 +119,7 @@ function PlanRow({ item }: { item: PlanItem }) {
 export function ResourcesView({ card, selectedId, onSelect }: { card: ResourceList; selectedId: string | null; onSelect: (id: string) => void }) {
   return (
     <Card className="overflow-hidden">
-      <CardHeader icon={<MapPin className="size-[18px]" />} title="Places near you" right={<span className="text-xs text-subtle">On the map</span>} />
+      <CardHeader icon={<MapPin className="size-[18px]" />} title="Example places" right={<span className="text-xs text-subtle">Example data</span>} />
       <ul className="divide-y divide-line">
         {card.items.map((r) => (
           <li key={r.id}>
@@ -145,7 +145,7 @@ export function ClaimStartView({ card }: { card: ClaimStart }) {
     <Card className="flex items-center gap-3 p-4">
       <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent"><Package className="size-5" aria-hidden /></span>
       <div className="flex-1">
-        <p className="text-sm font-semibold">Rebuild your home inventory for your claim</p>
+        <p className="text-sm font-semibold">Explore a sample belongings inventory</p>
         <p className="text-xs text-muted">{card.reason || "Your camera roll already shows much of what you owned."}</p>
       </div>
       <Link href="/claims" className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-accent px-3.5 text-sm font-semibold text-accent-ink">
@@ -194,5 +194,6 @@ export function UICard({ card, selectedId, onSelect }: {
     case "toolkit_link": return <ToolkitLinkView card={card} />;
     case "emergency": return <EmergencyView />;
     case "safety_flow": return <SafetyFlowView card={card} />;
+    case "aid_link": return <Card className="flex flex-wrap items-center gap-4 p-4"><p className="flex-1 text-sm">{card.reason}</p><Link href="/aid" className="inline-flex min-h-11 items-center gap-2 rounded-full bg-primary px-4 text-sm font-semibold text-primary-ink">Explore Aid Autopilot<ArrowRight className="size-4" aria-hidden /></Link></Card>;
   }
 }

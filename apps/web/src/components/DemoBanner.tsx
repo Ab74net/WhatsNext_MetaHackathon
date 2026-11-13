@@ -8,7 +8,7 @@ import { THEME_KEY } from "@/lib/theme";
 export function DemoBanner() {
   function reset() {
     clearDeviceState("");
-    for (const [storage, keys] of [["localStorage", [DEMO_STORAGE_KEY, THEME_KEY, "tour-seen-v1"]], ["sessionStorage", ["assistant-conversation-v1"]]] as const) {
+    for (const [storage, keys] of [["localStorage", [DEMO_STORAGE_KEY, THEME_KEY, "tour-seen-v1"]], ["sessionStorage", ["assistant-conversation-v1", "concept-demo-chat-v1"]]] as const) {
       try { for (const key of keys) window[storage].removeItem(key); } catch { /* Reload also clears the in-memory fallback. */ }
     }
     // A full reload is required to discard every provider and in-memory fallback.

@@ -17,9 +17,9 @@ export interface Message {
   error?: boolean;
 }
 
-const STORE_KEY = "assistant-conversation-v1";
+const STORE_KEY = "concept-demo-chat-v1";
 const DEFAULT_CASE: CaseFile = {
-  scenario: "spokane", preset: "during", home_damage: "unknown", insured: "unknown", lost_documents: "unknown",
+  scenario: "nrv", preset: "during", home_damage: "unknown", insured: "unknown", lost_documents: "unknown",
 };
 
 function load(): { messages: Message[]; caseFile: CaseFile } {
@@ -99,7 +99,7 @@ export function useAgent() {
       if (id !== requestId.current || active.signal.aborted) return;
       setCaseFile(res.case);
       const messageId = crypto.randomUUID();
-      setTypingId(messageId);
+      setTypingId(res.ui.some(card => card.type === "emergency") ? null : messageId);
       setMessages((prev) => [...prev, { id: messageId, role: "assistant", text: res.message, ui: res.ui }]);
     } catch (e) {
       if (id !== requestId.current || active.signal.aborted) return;
@@ -140,6 +140,7 @@ export function useAgent() {
     let resources: ResourceList | null = null;
     for (const m of messages) {
       for (const card of m.ui ?? []) {
+        if (card.type === "emergency") { alerts = null; resources = null; }
         if (card.type === "alerts") alerts = card;
         if (card.type === "resources") resources = card;
       }

@@ -8,6 +8,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { FileText, HeartPulse, House, MessageCircle, RotateCcw, Send, ShieldAlert } from "lucide-react";
 import brand from "@shared/brand.json";
 import { useAgent } from "@/lib/useAgent";
+import { SAMPLE_PROMPTS } from "@/lib/demo/prompts";
 import { MapPanel } from "@/components/agent/MapPanel";
 import { UICard } from "@/components/agent/Cards";
 import { Button, Card } from "@/components/ui";
@@ -16,10 +17,10 @@ import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
 import { useAidAutopilot } from "@/components/aid/AidProvider";
 
 const STATUS: Record<WrenMood, string> = {
-  idle: "Disaster recovery assistant · official sources only",
-  thinking: "Checking official sources…",
-  typing: "Writing a reply…",
-  searching: "Searching…",
+  idle: "Scripted concept assistant",
+  thinking: "Preparing a sample plan…",
+  typing: "Showing a sample response…",
+  searching: "Preparing sample data…",
 };
 
 // Types the reply out (Wren shows the typing pose meanwhile), then reveals the cards.
@@ -85,10 +86,10 @@ export default function AgentPage() {
             <WrenAvatar mood={mood} size={44} />
             <div className="min-w-0 flex-1">
               <p className="font-display text-2xl font-bold leading-tight">{brand.agentName}</p>
-              <p className="truncate text-xs text-muted" aria-live="polite">{mood === "idle" ? "Your disaster recovery assistant" : STATUS[mood]}</p>
+              <p className="truncate text-xs text-muted" aria-live="polite">{mood === "idle" ? "Scripted sample assistant" : STATUS[mood]}</p>
             </div>
             <span className="inline-flex items-center gap-1.5 rounded-full bg-good-soft px-2.5 py-1 text-xs font-semibold text-good">
-              <span className="size-1.5 rounded-full bg-good" aria-hidden /> Online
+              <span className="size-1.5 rounded-full bg-good" aria-hidden /> Concept demo
             </span>
             {agent.messages.length > 0 && (
               <Button variant="ghost" size="sm" onClick={() => { agent.reset(); setSelectedId(null); }} aria-label="New conversation">
@@ -99,7 +100,7 @@ export default function AgentPage() {
 
           {agentDraft && <div className="border-b border-line bg-blue-soft px-4 py-3 text-sm">
             <p className="font-semibold">From Aid Autopilot · {agentDraft.programName}</p>
-            <p className="mt-1 text-xs text-muted">Nothing has been sent. Review the prepared message before pressing Send. The map and local recommendations still use the selected demo scenario; your aid location has not been verified.</p>
+            <p className="mt-1 text-xs text-muted">This draft stays in your browser. Press Send to see a scripted sample response. The map contains fictional example places.</p>
             <button type="button" className="mt-1 min-h-11 text-xs font-semibold text-blue underline" onClick={() => { setInput(""); setAgentDraft(null); }}>Discard prepared request</button>
           </div>}
 
@@ -143,17 +144,16 @@ export default function AgentPage() {
                 <img src="/wren/scene-checklist.webp" alt="" width={144} height={144} className="size-36 object-contain" />
                 <h1 className="text-2xl">Hi, I’m {brand.agentName}. What’s happening?</h1>
                 <p className="text-sm text-muted">
-                  {agent.scenario?.summary} I’ll answer with alerts, places on the map and a step-by-step plan, all
-                  from official sources.
+                  {agent.scenario?.summary} Choose a prompt to see sample alerts, fictional places, and a scripted plan. Nothing is checked live.
                 </p>
                 {agent.scenario?.hypothetical && (
                   <p className="rounded-lg bg-surface-2 px-3 py-2 text-xs text-muted">
-                    A hypothetical scenario for this demo. The places, programs and safety steps are real and sourced.
+                    All map places are fictional. Safety walkthroughs use dated official guidance and are not current emergency instructions.
                   </p>
                 )}
                 {preset?.replay && (
                   <p className="rounded-lg bg-warn-soft px-3 py-2 text-xs text-warn">
-                    You’re viewing a replay of {preset.label.split(" · ")[0]}. Live alerts are still checked for today.
+                    You’re viewing a replay of {preset.label.split(" · ")[0]}. No live alerts are checked.
                   </p>
                 )}
               </div>
@@ -166,6 +166,7 @@ export default function AgentPage() {
                     <p className="max-w-[85%] self-end rounded-2xl rounded-br-md bg-blue-soft px-4 py-2.5 text-[15px] text-ink">{m.text}</p>
                   ) : (
                     <>
+                      <span className="text-[11px] font-semibold text-muted">Sample response</span>
                       <div className="flex items-start gap-2.5">
                         <WrenAvatar mood={m.id === agent.typingId ? "typing" : "idle"} size={30} />
                         <p className={`pt-1 text-[15px] ${m.error ? "text-danger" : ""}`}>
@@ -187,28 +188,25 @@ export default function AgentPage() {
             {agent.pending && (
               <div className="flex items-center gap-3 text-sm text-muted">
                 <WrenAvatar mood="thinking" size={48} />
-                <span>Checking official alerts, places and programs…</span>
+                <span>Preparing a sample plan…</span>
               </div>
             )}
           </div>
 
-          {agent.messages.length < 2 && !agent.pending && (
-            <div className="flex flex-wrap gap-1.5 px-4 pb-2">
-              {(agent.scenario?.suggestions[agent.caseFile.preset] ?? []).map((s) => {
-                const Icon = chipIcon(s);
-                return (
-                  <button key={s} onClick={() => submit(s)}
-                    className="inline-flex min-h-10 items-center gap-2 rounded-full border border-line bg-surface px-3.5 py-2 text-left text-[13px] text-ink transition-colors hover:border-ink">
-                    <Icon className="size-4 shrink-0 text-muted" aria-hidden /> {s}
-                  </button>
-                );
+          <details className="max-h-52 shrink-0 overflow-y-auto border-t border-line px-4 py-2" open={agent.messages.length === 0}>
+            <summary className="min-h-9 cursor-pointer py-2 text-xs font-semibold text-muted">Try a sample prompt (10)</summary>
+            <div className="flex flex-wrap gap-2 pb-2">
+              {SAMPLE_PROMPTS.map(prompt => {
+                const Icon = chipIcon(prompt.text);
+                return <button key={prompt.id} type="button" disabled={agent.pending} onClick={() => submit(prompt.text)} data-sample-prompt={prompt.id}
+                  className="inline-flex min-h-11 items-center gap-2 rounded-full border border-line px-3 py-2 text-left text-xs hover:border-ink disabled:opacity-50"><Icon className="size-4 shrink-0 text-muted" aria-hidden />{prompt.text}</button>;
               })}
             </div>
-          )}
+          </details>
 
           <form data-tour="agent-input" onSubmit={(e) => { e.preventDefault(); submit(input); }} className="border-t border-line p-3">
             <div className="flex items-center gap-2 rounded-full border border-line bg-surface py-1.5 pl-5 pr-1.5 focus-within:border-ink">
-              <input value={input} onChange={(e) => setInput(e.target.value)} placeholder={`Message ${brand.agentName}`}
+              <input value={input} onChange={(e) => setInput(e.target.value)} placeholder="Try a sample prompt, or type locally"
                 aria-label={`Message ${brand.agentName}`} maxLength={1000}
                 className="min-w-0 flex-1 bg-transparent text-[15px] outline-none placeholder:text-subtle" />
               <button type="submit" disabled={!input.trim() || agent.pending} aria-label="Send"
@@ -216,7 +214,7 @@ export default function AgentPage() {
                 <Send className="size-5" aria-hidden />
               </button>
             </div>
-            <p className="mt-1.5 px-2 text-[11px] text-subtle">General guidance only, not insurance or legal advice or local emergency instructions.</p>
+            <p className="mt-1.5 px-2 text-[11px] text-subtle">Scripted responses only. Text stays in your browser. Not insurance or legal advice or local emergency instructions.</p>
           </form>
         </Card>
       </div>
