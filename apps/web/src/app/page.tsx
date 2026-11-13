@@ -2,43 +2,39 @@ import { ArrowRight, Check } from "lucide-react";
 import brand from "@shared/brand.json";
 import { ButtonLink } from "@/components/ui";
 import { HomeHero } from "@/components/home/HomeHero";
+import { EmergencyNotice } from "@/components/EmergencyNotice";
 
 const STEPS = [
-  { title: "Pick photos you already have",
-    body: "Birthdays, holidays, move-in day. Your belongings are in the background of photos on your phone." },
-  { title: "We find your things",
-    body: "Each item is outlined, matched across photos, and given an estimated price from a real retail listing." },
-  { title: "You confirm, then export",
-    body: "Nothing goes on the list until you confirm it. Download a PDF and a spreadsheet with a photo beside each item." },
+  { title: "Choose supplied sample photos", body: "Try a living room, kitchen, or bedroom set. Your own photos are never accepted." },
+  { title: "Explore a simulated scan", body: "Precomputed outlines and detections appear in stages. Every price is a sample estimate with no retail source." },
+  { title: "Confirm, then export a sample", body: "Edit the example items and confirm what enters the export. Every PDF and spreadsheet is clearly marked SAMPLE." },
 ];
-
 const PROMISES = [
-  { title: "Your photos stay yours",
-    body: "Only the photos you pick are used. Location data is removed, and everything is deleted when you finish." },
-  { title: "Honest estimates",
-    body: "Every price is an estimate with its source. Nothing is added to your claim without your confirmation." },
-  { title: "Official sources first",
-    body: "Alerts and aid programs come from official sources, each with the time it was last checked." },
+  { title: "No real uploads", body: "The demo accepts no photos and runs no AI. Free text stays in your browser." },
+  { title: "Honest sample data", body: "Detections, estimates, plans, and fictional map places are examples, not findings about you." },
+  { title: "Browser-only progress", body: "No accounts, analytics, or server storage. Reset demo clears the app’s saved browser state." },
 ];
 
 export default function Home() {
   return (
     <>
+      <div className="mx-auto w-full max-w-[1440px] px-5 py-4 sm:px-8"><EmergencyNotice /></div>
       <section className="relative overflow-hidden">
         <HomeHero>
           <div className="home-copy">
+            <p className="page-eyebrow mb-3">Concept demo · Sample data only</p>
             <h1>{brand.tagline}</h1>
             <p className="home-subtitle">
-              We’ll help you with what’s next.
+              Explore a clearer next step.
             </p>
-            <p className="mt-5 max-w-lg text-base text-muted sm:text-lg">Find help, document what you lost, and take the next step.</p>
+            <p className="mt-5 max-w-lg text-base text-muted sm:text-lg">A simulated disaster recovery workflow, from example photos to a reviewed sample inventory.</p>
             <div className="mt-7 flex flex-wrap gap-3">
               <ButtonLink href="/agent" variant="primary" size="lg">
-                Talk to {brand.agentName} <ArrowRight className="size-[18px]" aria-hidden />
+                Try scripted {brand.agentName} <ArrowRight className="size-[18px]" aria-hidden />
               </ButtonLink>
-              <ButtonLink href="/claims" variant="secondary" size="lg">Build my claim</ButtonLink>
+              <ButtonLink href="/claims" variant="secondary" size="lg">Try a sample claim</ButtonLink>
             </div>
-            <p className="mt-4 text-xs text-subtle">Free and private. No account needed.</p>
+            <p className="mt-4 text-xs text-subtle">No account, uploads, or live AI. Everything here is an example.</p>
           </div>
         </HomeHero>
       </section>
@@ -48,7 +44,7 @@ export default function Home() {
           <div>
             <h2 id="how" className="text-3xl">Rebuild your inventory</h2>
             <p className="mt-3 text-muted">
-              Insurers ask for a list of everything you lost. Most people have the evidence already, scattered across years of photos.
+              The original idea helps people rebuild an inventory from everyday photos. This public concept demonstrates that process with supplied samples.
             </p>
           </div>
           <ol className="flex flex-col">
@@ -67,12 +63,12 @@ export default function Home() {
         <MeetWren />
 
         <section className="flex flex-wrap items-center gap-6 rounded-3xl border border-line bg-blue-soft p-6 sm:p-9" aria-labelledby="aid-intro">
-          <div className="min-w-0 flex-1"><h2 id="aid-intro" className="text-3xl">Find a starting point for support.</h2><p className="mt-3 max-w-xl text-muted">Aid Autopilot helps you explore assistance resources and prepare for the next conversation. Check requirements, gather documents, and keep your next steps together.</p></div>
+          <div className="min-w-0 flex-1"><h2 id="aid-intro" className="text-3xl">Find a starting point for support.</h2><p className="mt-3 max-w-xl text-muted">Aid Autopilot demonstrates example program matching, document checklists, and local preparation drafts. It does not verify current programs or determine eligibility.</p></div>
           <ButtonLink href="/aid" variant="primary">Explore Aid Autopilot<ArrowRight className="size-4" aria-hidden /></ButtonLink>
         </section>
 
         <section id="privacy" className="scroll-mt-28" aria-labelledby="promises">
-          <h2 id="promises" className="text-3xl">What we promise</h2>
+          <h2 id="promises" className="text-3xl">What this demo does</h2>
           <ul className="mt-6 grid gap-8 sm:grid-cols-3 sm:gap-10">
             {PROMISES.map((p) => (
               <li key={p.title} className="border-t border-line pt-5">
@@ -85,6 +81,7 @@ export default function Home() {
           </ul>
         </section>
 
+        <ButtonLink href="/privacy">Read the demo privacy details</ButtonLink>
         <p className="border-t border-line pt-6 text-sm text-subtle">
           General guidance only. Not insurance or legal advice, and not local emergency instructions.
           If you are in danger, call 911.
@@ -104,11 +101,10 @@ function MeetWren() {
       <div>
         <h2 id="wren" className="text-3xl">Meet {brand.agentName}</h2>
         <p className="mt-3 max-w-xl text-muted">
-          Tell {brand.agentName} what happened. You get a short plan for today and this week, places on a map,
-          and the programs that may apply to you. Every answer links to its official source.
+          Choose a sample prompt for {brand.agentName}. Hand-written responses show example plans and a schematic map of fictional places. Dated safety guidance links to official sources. No conditions are checked live.
         </p>
         <ButtonLink href="/agent" className="mt-5" variant="primary">
-          Start with a question <ArrowRight className="size-4" aria-hidden />
+          Try the sample prompts <ArrowRight className="size-4" aria-hidden />
         </ButtonLink>
       </div>
     </section>

@@ -7,7 +7,7 @@ import { STORY_PHOTOS } from "@/lib/storyPhotos";
 import "./story.css";
 
 export const metadata: Metadata = {
-  title: `Our Story · ${brand.projectName}`,
+  title: "Our Story",
   description: `A Virginia Tech student's experience of the 2024 New River Valley floods, and the idea behind ${brand.projectName}.`,
 };
 
@@ -87,7 +87,7 @@ export default function OurStoryPage() {
           `Discover recovery resources and clearer next steps with ${brand.agentName}.`,
         ].map((text) => <li key={text}><Check className="size-4" aria-hidden />{text}</li>)}</ul>
       </div>
-      <p className="story-verification"><ListChecks className="size-5 shrink-0 text-blue" aria-hidden />AI detections and valuations are suggestions for you to verify. They are not independent proof of ownership. Nothing enters your exported inventory without your confirmation.</p>
+      <p className="story-verification"><ListChecks className="size-5 shrink-0 text-blue" aria-hidden />This public concept uses simulated detections and sample estimates. They are not independent proof of ownership. The sample export includes only items you confirm.</p>
     </section>
 
     <section className="story-belief story-section" aria-labelledby="story-belief-title" data-story-reveal>
@@ -95,9 +95,9 @@ export default function OurStoryPage() {
       <div className="story-belief-grid">
         <h2 id="story-belief-title" className="story-heading">Technology should show up <em>when it matters most.</em></h2>
         <div className="story-prose">
-          <p>I’m building {brand.projectName} for the Meta × Cerebral Valley AI Hackathon. But the inspiration comes from a problem much bigger than a competition.</p>
+          <p>I built {brand.projectName} for the Meta × Cerebral Valley AI Hackathon. But the inspiration comes from a problem much bigger than a competition.</p>
           <p>I believe meaningful uses of AI can be simple: helping someone remember what they lost, organize a complicated claim, or find a next step toward recovery.</p>
-          <p>This is a developing project. There’s more to learn and more to build. Making a difficult moment a little easier is a good reason to start.</p>
+          <p>This portfolio version preserves the workflow with sample data and scripted responses. There’s more to learn and more to build. Making a difficult moment a little easier is a good reason to start.</p>
         </div>
       </div>
     </section>
@@ -118,9 +118,9 @@ function InventoryIllustration() {
       <svg viewBox="0 0 280 170" fill="none"><path d="M0 135H280M22 0V135L0 170M258 0V135L280 170" stroke="var(--line-strong)" /><rect x="27" y="20" width="55" height="58" rx="3" fill="var(--blue-soft)" stroke="var(--blue)" /><path d="M54.5 20V78M27 49H82" stroke="var(--blue)" /><path d="M89 89C89 78 96 73 105 73H192C201 73 208 78 208 89V122H89Z" fill="var(--accent-soft)" stroke="var(--accent)" strokeWidth="2" /><rect x="80" y="94" width="138" height="33" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" strokeWidth="2" /><path d="M90 127V138M207 127V138M244 65V134M231 134H256" stroke="var(--ink)" strokeWidth="2" /><path d="M231 39H256L262 65H225Z" fill="var(--blue-soft)" stroke="var(--blue)" /><ellipse cx="147" cy="146" rx="91" ry="13" fill="var(--surface-3)" /><rect x="73" y="68" width="150" height="63" rx="10" stroke="var(--accent)" strokeDasharray="4 4" /><rect x="221" y="34" width="45" height="105" rx="7" stroke="var(--blue)" strokeDasharray="4 4" /></svg>
     </div><span><Images className="size-4" aria-hidden />Everyday photo</span></div>
     <ArrowRight className="story-process-arrow" aria-hidden />
-    <div className="story-process-step"><div className="story-detections" aria-hidden><span><span className="story-swatch" />Sofa <small>Review</small></span><span><span className="story-swatch story-swatch-blue" />Floor lamp <small>Review</small></span><p>You check what the AI found.</p></div><span><Search className="size-4" aria-hidden />Identified belongings</span></div>
+    <div className="story-process-step"><div className="story-detections" aria-hidden><span><span className="story-swatch" />Sofa <small>Review</small></span><span><span className="story-swatch story-swatch-blue" />Floor lamp <small>Review</small></span><p>You review sample detections.</p></div><span><Search className="size-4" aria-hidden />Identified belongings</span></div>
     <ArrowRight className="story-process-arrow" aria-hidden />
     <div className="story-process-step"><div className="story-inventory" aria-hidden><div>Belonging<span>Evidence</span></div><div>Sofa<Check className="size-4 text-good" /></div><div>Floor lamp<Check className="size-4 text-good" /></div><p>Reviewed by you</p></div><span><ListChecks className="size-4" aria-hidden />Organized inventory</span></div>
-    <figcaption id="story-process-caption">An illustration of the process. Every item and estimate needs your review.</figcaption>
+    <figcaption id="story-process-caption">An illustration of the original concept. The public demo uses sample items and estimates.</figcaption>
   </figure>;
 }

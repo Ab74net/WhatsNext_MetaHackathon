@@ -12,17 +12,17 @@ export const TOUR_STEPS: TourStep[] = [
   {
     path: "/agent", anchor: "agent-input",
     title: `Ask ${A} a question`,
-    body: `Type what is happening, or tap one of the suggestions. ${A} answers with short cards, not long paragraphs.`,
+    body: `Tap a sample prompt, or type locally for keyword matching. ${A} answers with short cards, not long paragraphs.`,
   },
   {
     path: "/agent", anchor: "agent-messages",
     title: "Read your plan",
-    body: "Answers include a plan card: what to do today, this week, and any deadlines. Each line links to its official source.",
+    body: "Answers include a plan card: what to do today, this week, and any deadlines. All content is scripted; official links are reference material.",
   },
   {
     path: "/agent", anchor: "agent-map",
     title: "Use the map",
-    body: "Shelters, clinics and alerts appear here. Tap a place to see its address and when it was last checked.",
+    body: "Fictional example places appear on a local schematic. No real shelters, live alerts, or tile services are loaded.",
   },
   {
     path: "/agent", anchor: "call-911",
@@ -31,13 +31,13 @@ export const TOUR_STEPS: TourStep[] = [
   },
   {
     path: "/claims", anchor: "claims-step-select",
-    title: "Add your photos",
-    body: "Choose photos you already have, like birthdays or move-in day. Only the photos you pick are used, and they are deleted when you finish.",
+    title: "Choose a sample set",
+    body: "Choose supplied living room, kitchen, or bedroom images. The demo accepts no personal photos and runs no models.",
   },
   {
     path: "/claims", anchor: "claims-step-review",
     title: "Check each item",
-    body: "Each photo is scanned for belongings. You review every item and confirm it yourself. Prices are estimates, shown with their source.",
+    body: "A simulated scan reveals precomputed detections. Edit and confirm example items. Sample price ranges have no retail sources.",
   },
   {
     path: "/claims", anchor: "claims-step-remember",
@@ -47,7 +47,7 @@ export const TOUR_STEPS: TourStep[] = [
   {
     path: "/claims", anchor: "claims-step-export",
     title: "Export your claim",
-    body: "Download a spreadsheet and a PDF with a photo beside each item. This is a helper, not insurance or legal advice.",
+    body: "Generate CSV, XLSX, and a PDF in your browser. Every file says SAMPLE, concept demo; it is not a real claim.",
   },
   {
     path: "/aid", anchor: "aid-overview",
@@ -57,7 +57,7 @@ export const TOUR_STEPS: TourStep[] = [
   {
     path: "/aid", anchor: "aid-assistant",
     title: `Ask ${A} before you apply`,
-    body: `Prepare a question for ${A} and review it before sending. Your preparation notes and checklists stay out of the message. No applications are submitted here.`,
+    body: `Prepare a local draft for ${A} and see a scripted sample response. Your preparation notes and checklists stay out of the message. No applications are submitted here.`,
   },
   {
     path: "/our-story", anchor: "story-origin",

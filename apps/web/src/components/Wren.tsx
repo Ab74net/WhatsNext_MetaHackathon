@@ -3,13 +3,14 @@
 //   idle: default · thinking: working on a question · typing: writing the reply
 //   searching: looking for belongings in photos
 
+import brand from "@shared/brand.json";
 export type WrenMood = "idle" | "thinking" | "typing" | "searching";
 const MOODS: WrenMood[] = ["idle", "thinking", "typing", "searching"];
 const LABEL: Record<WrenMood, string> = {
-  idle: "Wren",
-  thinking: "Wren is thinking",
-  typing: "Wren is writing a reply",
-  searching: "Wren is searching your photos",
+  idle: brand.agentName,
+  thinking: `${brand.agentName} is preparing a sample`,
+  typing: `${brand.agentName} is showing a sample reply`,
+  searching: `${brand.agentName} is loading sample photos`,
 };
 
 export function WrenAvatar({ mood = "idle", size = 40, ring = false, className = "" }: {

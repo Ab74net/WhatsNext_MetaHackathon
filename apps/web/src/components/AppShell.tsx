@@ -17,7 +17,7 @@ const NAV = [
   { href: "/claims#memory", label: "Memory Web", icon: Network },
   { href: "/aid", label: "Aid Autopilot", icon: LifeBuoy },
   { href: "/our-story", label: "Our Story", icon: BookOpen },
-  { href: "/#privacy", label: "Privacy", icon: ShieldCheck },
+  { href: "/privacy", label: "Privacy", icon: ShieldCheck },
 ];
 const MOBILE_NAV = [{ href: "/", label: "Home", icon: House }, ...NAV.slice(0, 2), { href: "/aid", label: "Aid", icon: LifeBuoy }];
 const MORE_NAV = [NAV[2], { href: "/toolkit", label: "Recovery toolkit", icon: FolderCheck }, NAV[4], NAV[5]];
@@ -80,14 +80,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       <footer className="border-t border-line px-4 pb-24 pt-5 text-center text-xs text-subtle xl:pb-5">
         <div className="mb-3 flex flex-wrap justify-center gap-5 text-[13px] font-medium text-ink">
-          <Link href="/#privacy" className="hover:underline">Privacy</Link>
+          <Link href="/privacy" className="hover:underline">Privacy</Link>
+          <Link href="/about-demo" className="hover:underline">About this demo</Link>
           <Link href="/toolkit" className="hover:underline">Recovery toolkit</Link>
           <Link href="/aid" className="hover:underline">Aid Autopilot</Link>
           <Link href="/our-story" aria-current={active("/our-story") ? "page" : undefined} className="hover:underline">Our Story</Link>
           <TourLink footer />
           <a href="tel:911" className="text-danger hover:underline">In danger? Call 911.</a>
         </div>
-        General guidance only. Not insurance or legal advice. Every source shows when it was last checked.
+        Independent concept demo. Sample data only. Not insurance or legal advice. Check official sources for real help.
       </footer>
 
       <div id="more-pages" popover="auto" className="app-more-pages">

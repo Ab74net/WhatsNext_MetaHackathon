@@ -1,8 +1,8 @@
 export type Theme = "light" | "dark";
 export const THEME_KEY = "what-next-theme";
 export const THEME_EVENT = "app-theme-change";
-export function resolveTheme(saved: string | null, systemDark: boolean): Theme {
-  return saved === "light" || saved === "dark" ? saved : systemDark ? "dark" : "light";
+export function resolveTheme(saved: string | null, _systemDark: boolean): Theme {
+  return saved === "dark" ? "dark" : "light";
 }
 
 // This exact resolver also runs before paint; startup and the live toggle share one policy.
