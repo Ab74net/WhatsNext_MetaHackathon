@@ -9,6 +9,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { MotionConfig } from "motion/react";
 import { AidProvider } from "@/components/aid/AidProvider";
 import { replaceHash, useLocationHash } from "@/lib/useLocationHash";
+import { DemoBanner } from "./DemoBanner";
 
 const NAV = [
   { href: "/agent", label: brand.agentName, icon: MessageCircle },
@@ -36,6 +37,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="app-shell flex min-h-dvh flex-col">
       <a href="#main-content" className="fixed -top-20 left-4 z-50 rounded-full bg-primary px-5 py-3 text-primary-ink focus:top-3">Skip to content</a>
       <header className="sticky top-0 z-30 border-b border-line bg-canvas">
+        <DemoBanner />
         <div className="mx-auto flex h-20 w-full max-w-[1440px] items-center gap-3 px-4 sm:px-8 lg:px-10">
           <Link href="/" className="flex min-w-0 items-center gap-2.5">
             <Mark />

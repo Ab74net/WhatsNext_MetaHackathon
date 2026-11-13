@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "predev": "node scripts/copy-maplibre-worker.mjs",
-    "prebuild": "node scripts/copy-maplibre-worker.mjs",
     "dev": "next dev",
     "build": "next build",
+    "postbuild": "node scripts/check-demo-build.mjs",
+    "check:demo": "node scripts/check-demo-build.mjs",
     "start": "next start",
     "lint": "eslint",
     "test": "node --test \"src/**/*.test.ts\""

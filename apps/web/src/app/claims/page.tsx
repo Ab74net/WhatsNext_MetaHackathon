@@ -53,8 +53,7 @@ export default function ClaimsPage() {
           <h1 className="page-title">{step === "remember" ? "Memory Web" : "Claim inventory"}</h1>
           <p className="mt-3 text-lg text-ink sm:text-xl">{step === "remember" ? "Rebuild a complete list of what you owned." : "Turn your photos into a claim-ready list of what you owned."}</p>
           <p className="mt-1 max-w-2xl text-sm text-muted">
-            Only photos you pick are processed. Location data is removed before anything reaches the AI model,
-            IDs and documents are skipped, and everything is deleted when you finish or close this tab.
+            Sample photos and precomputed detections demonstrate the workflow. No uploads, AI calls, or real claims.
           </p>
         </div>
         {session.sessionId && (
@@ -72,8 +71,7 @@ export default function ClaimsPage() {
       {session.actionError && <div role="alert"><Notice tone="danger" icon={<TriangleAlert className="size-4" />}>{session.actionError}</Notice></div>}
       {session.health?.mock && (
         <Notice tone="warn" icon={<TriangleAlert className="size-4" />}>
-          <strong>Mock mode.</strong> Photo results are simulated, so every photo shows the same fake sofa, lamp and rug.
-          To use live models, set MODEL_API_KEY or WREN_API_KEY in .env, leave MOCK off, and restart the backend.
+          <strong>Concept demo.</strong> Every detection and price is sample data. Only items you confirm enter the sample export.
         </Notice>
       )}
 

@@ -6,15 +6,14 @@
 import { useState } from "react";
 import Link from "next/link";
 import {
-  ArrowRight, CalendarClock, ChevronDown, CircleCheck, ExternalLink, Flame, Info, ListChecks, MapPin, Package,
-  Phone, Radio, Sun, TriangleAlert,
+  ArrowRight, CalendarClock, ChevronDown, CircleCheck, ExternalLink, Info, ListChecks, MapPin, Package,
+  Phone, Sun, TriangleAlert,
 } from "lucide-react";
 import type { AlertsCard, ClaimStart, PlanCard, PlanItem, ResourceList, ToolkitLink, UIInstruction } from "@shared/types";
 import { Badge, Card } from "@/components/ui";
 import { KIND_STYLE } from "./MapPanel";
 import { SafetyFlowView } from "./SafetyFlow";
 
-const time = (iso: string) => new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
 const day = (iso: string) => new Date(iso.length === 10 ? `${iso}T12:00:00` : iso).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
 
 function SourceLink({ name, url, checked, type }: { name: string; url: string; checked?: string; type?: "official" | "news" }) {
@@ -37,55 +36,18 @@ function CardHeader({ icon, title, right }: { icon: React.ReactNode; title: stri
 }
 
 export function AlertsView({ card }: { card: AlertsCard }) {
-  return (
-    <Card className="overflow-hidden">
-      <CardHeader icon={<TriangleAlert className="size-[18px]" />} title="Alerts" />
-      <div className="flex flex-col gap-2.5 p-3">
-        <div className="flex items-start gap-2 rounded-lg bg-surface-2 px-3 py-2 text-[13px]">
-          <Radio className={`mt-0.5 size-4 shrink-0 ${card.live_error ? "text-warn" : "text-good"}`} aria-hidden />
-          <div className="flex-1">
-            {card.live_error ? <span>{card.live_error} Check weather.gov or local news.</span>
-              : card.live.length ? <span className="font-semibold">{card.live.length} active alert{card.live.length === 1 ? "" : "s"} from the National Weather Service</span>
-              : <span>Live now: <strong>no active National Weather Service alerts</strong> for this area.</span>}
-            <span className="block text-[11px] text-subtle">
-              Checked {time(card.live_checked_at)} · <a href={card.live_source_url} target="_blank" rel="noopener noreferrer" className="hover:text-accent">api.weather.gov</a>
-            </span>
-          </div>
-        </div>
-
-        {card.live.map((a) => (
-          <div key={a.id} className="rounded-lg border border-danger/30 bg-danger-soft px-3 py-2.5">
-            <p className="text-sm font-semibold text-danger">{a.title}</p>
-            <p className="mt-0.5 text-[13px]">{a.headline}</p>
-            <SourceLink name={a.source_name} url={a.source_url} />
-          </div>
-        ))}
-
-        {card.recorded.map((a) => (
-          <div key={a.id} className={`rounded-lg px-3 py-2.5 ${a.severity === "extreme" ? "border border-warn/40 bg-warn-soft" : "bg-surface-2"}`}>
-            <div className="flex items-center gap-2">
-              <p className={`flex-1 text-sm font-semibold ${a.severity === "extreme" ? "text-warn" : ""}`}>{a.title}</p>
-              <Badge>Recorded {a.effective ? day(a.effective) : ""}</Badge>
-            </div>
-            <p className="mt-0.5 text-[13px]">{a.headline}</p>
-            <p className="mt-0.5 text-xs text-muted">{a.description}</p>
-            <div className="mt-1"><SourceLink name={a.source_name} url={a.source_url} type={a.source_type} /></div>
-          </div>
-        ))}
-
-        <div className="flex flex-wrap items-center gap-1.5">
-          {card.fire_areas.map((f) => (
-            <span key={f.name} className="inline-flex items-center gap-1 rounded-md bg-surface-2 px-2 py-1 text-xs font-medium">
-              <Flame className="size-3 text-accent" aria-hidden /> {f.name} · {f.acres.toLocaleString()} acres
-            </span>
-          ))}
-        </div>
-        {card.fire_areas_source && (
-          <SourceLink name={card.fire_areas_source.name} url={card.fire_areas_source.url} checked={card.fire_areas_source.retrieved_at} type="official" />
-        )}
-      </div>
-    </Card>
-  );
+  return <Card className="overflow-hidden">
+    <CardHeader icon={<TriangleAlert className="size-[18px]" />} title="Sample alerts, not live" />
+    <div className="flex flex-col gap-3 p-4">
+      <p className="text-xs text-muted">Frozen, fictional examples. Check official channels for real warnings.</p>
+      {card.recorded.map(a => <div key={a.id} className="rounded-xl bg-warn-soft p-3">
+        <p className="text-sm font-semibold">{a.title}</p>
+        <Badge>Sample alert, not live · {a.effective ? day(a.effective) : "Undated"}</Badge>
+        <p className="mt-2 text-sm">{a.description}</p>
+        <SourceLink name={a.source_name} url={a.source_url} />
+      </div>)}
+    </div>
+  </Card>;
 }
 
 const BUCKETS = [

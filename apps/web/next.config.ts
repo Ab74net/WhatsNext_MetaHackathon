@@ -1,19 +1,14 @@
 import path from "node:path";
 import type { NextConfig } from "next";
 
-const API_URL = process.env.API_URL || "http://127.0.0.1:8000";
-
 const nextConfig: NextConfig = {
   // Keep generated coding-agent instructions out of the submitted project.
   agentRules: false,
-  cacheComponents: true,
-  partialPrefetching: true,
+  output: "export",
+  trailingSlash: true,
+  images: { unoptimized: true },
   // The floating dev badge covers the mobile tab bar; error overlays still show.
   devIndicators: false,
-  experimental: {
-    // Model calls (scan queues, merge, price lookups) can take over the 30 s default.
-    proxyTimeout: 300_000,
-  },
   turbopack: {
     // Repo root, so the app can import packages/shared.
     root: path.join(__dirname, "../.."),
@@ -23,10 +18,6 @@ const nextConfig: NextConfig = {
         as: "*.css",
       },
     },
-  },
-  // The browser only talks to Next; /api/* is forwarded to FastAPI (no CORS needed).
-  async rewrites() {
-    return [{ source: "/api/:path*", destination: `${API_URL}/api/:path*` }];
   },
 };
 

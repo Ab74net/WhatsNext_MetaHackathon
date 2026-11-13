@@ -222,7 +222,6 @@ function AskPanel({ suggestion: s, session, metaById, header, onDismiss, onAdded
 }) {
   const [state, setState] = useState<AskState>({ status: "idle" });
   const [confirming, setConfirming] = useState(false);
-  const fileRef = useRef<HTMLInputElement>(null);
 
   async function onFile(file: File | undefined) {
     if (!file) return;
@@ -278,20 +277,18 @@ function AskPanel({ suggestion: s, session, metaById, header, onDismiss, onAdded
         <p className="mt-0.5 text-muted">{s.proof_hint}</p>
       </div>
       {state.status === "error" && <Notice tone="warn">{state.error}</Notice>}
-      <input ref={fileRef} type="file" accept="image/*,.heic,.heif" className="hidden"
-        onChange={(e) => { onFile(e.target.files?.[0]); e.target.value = ""; }} />
       <div className="flex gap-2">
-        <Button variant="primary" className="flex-1" onClick={() => fileRef.current?.click()}>
+        <Button variant="primary" className="flex-1" onClick={() => onFile(new File([], "sample-evidence"))}>
           <Check className="size-4" aria-hidden /> {state.status === "error" ? "Try another photo" : "Yes, add it"}
         </Button>
         <Button variant="secondary" className="flex-1" onClick={onDismiss}>No</Button>
       </div>
       <p className="mt-1 text-sm font-semibold">Add photo evidence</p>
-      <button type="button" onClick={() => fileRef.current?.click()}
+      <button type="button" onClick={() => onFile(new File([], "sample-evidence"))}
         className="flex flex-col items-center gap-1.5 rounded-2xl border border-dashed border-line-strong px-4 py-6 text-center text-sm text-muted hover:bg-surface-2">
         <ImagePlus className="size-5 text-ink" aria-hidden />
-        <span className="font-semibold text-ink">Upload a photo</span>
-        <span className="text-xs">One that shows the {s.name}. JPG, PNG or HEIC.</span>
+        <span className="font-semibold text-ink">Attach sample photo</span>
+        <span className="text-xs">Simulated evidence only. No upload.</span>
       </button>
     </div>
   );

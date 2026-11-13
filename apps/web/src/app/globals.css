@@ -8,6 +8,9 @@
    brighter coral (#E5533D) and blue (#2F7FA6) are decorative only (--deco-*), never text.
    Use as Tailwind classes: bg-canvas, bg-surface, text-ink, text-muted, border-line, bg-accent, ... */
 :root {
+  --font-inter: "Segoe UI", Arial, sans-serif;
+  --font-inter-tight: "Segoe UI", Arial, sans-serif;
+  --font-geist-mono: Consolas, monospace;
   color-scheme: light;
   --canvas: #faf7f2;
   --surface: #ffffff;
