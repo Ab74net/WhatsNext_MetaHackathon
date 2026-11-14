@@ -10,6 +10,7 @@ import { MotionConfig } from "motion/react";
 import { AidProvider } from "@/components/aid/AidProvider";
 import { replaceHash, useLocationHash } from "@/lib/useLocationHash";
 import { DemoBanner } from "./DemoBanner";
+import { isActiveNavigation, normalizePathname } from "@/lib/navigation";
 
 const NAV = [
   { href: "/agent", label: brand.agentName, icon: MessageCircle },
@@ -26,9 +27,9 @@ const MORE_NAV = [NAV[2], { href: "/toolkit", label: "Recovery toolkit", icon: F
 // and the "not insurance or legal advice" note sits at the foot of every page.
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const path = normalizePathname(pathname);
   const hash = useLocationHash();
-  const active = (href: string) => href.includes("#") ? `${pathname}${hash}` === href
-    : href === "/" ? pathname === "/" && !hash : pathname.startsWith(href) && hash !== "#memory";
+  const active = (href: string) => isActiveNavigation(path, hash, href);
 
   return (
     <TourProvider>
@@ -49,7 +50,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <nav className="ml-auto hidden h-full items-center gap-4 xl:flex 2xl:gap-6" aria-label="Main">
             {NAV.map(({ href, label }) => (
               <Link key={href} href={href} aria-current={active(href) ? "page" : undefined}
-                onClick={(event) => { if (href.includes("#") && href.split("#")[0] === pathname) { event.preventDefault(); replaceHash(`#${href.split("#")[1]}`); } }}
+                onClick={(event) => { if (href.includes("#") && href.split("#")[0] === path) { event.preventDefault(); replaceHash(`#${href.split("#")[1]}`); } }}
                 className={`relative flex h-full items-center text-sm font-medium transition-colors ${
                   active(href) ? "text-ink" : "text-muted hover:text-ink"}`}>
                 {label}
@@ -97,7 +98,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             className={`flex min-h-12 items-center gap-3 rounded-xl px-4 text-sm font-medium hover:bg-surface-2 ${active(href) ? "bg-blue-soft text-blue" : "text-ink"}`}
             onClick={(event) => {
               event.currentTarget.closest<HTMLDivElement>("[popover]")?.hidePopover();
-              if (href.includes("#") && href.split("#")[0] === pathname) { event.preventDefault(); replaceHash(`#${href.split("#")[1]}`); }
+              if (href.includes("#") && href.split("#")[0] === path) { event.preventDefault(); replaceHash(`#${href.split("#")[1]}`); }
             }}><Icon className="size-5" aria-hidden />{label}</Link>)}
         </nav>
       </div>

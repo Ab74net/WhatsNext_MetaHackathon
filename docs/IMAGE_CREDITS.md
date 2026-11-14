@@ -140,6 +140,15 @@ information was found. None contained EXIF. Every shipped derivative was re-enco
 WebP with EXIF and XMP omitted and checked for embedded metadata. The detail crop is not
 an independent second photograph. Rebuild: `scripts/prepare_demo_photos.py`.
 
+## Social sharing card
+
+`apps/web/public/social-card.png` is generated locally from original text and vector
+shapes in `apps/web/scripts/make-social-card.mjs`, using the name in `brand.json` and
+the font bundled with the installed Next.js renderer. It uses no photographs, external
+image service, remote font request, or model. Only the flattened PNG ships. It replaces
+the previously planned third-party hero photograph in social metadata; permission
+questions for the remaining page photographs are unchanged.
+
 ## Wren mascot illustrations
 
 These are illustrations, not photographs, and were outside this reverse-photo search.

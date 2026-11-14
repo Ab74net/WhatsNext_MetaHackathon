@@ -82,3 +82,5 @@ The optional `scripts/day1_model_test.mjs` is an original **paid model diagnosti
 Read [IMAGE_CREDITS.md](docs/IMAGE_CREDITS.md). Existing disaster photography has unresolved publication rights; a source match or attribution is not permission. The six sample originals were supplied for the demo, but individual authorship/licence records are not in the repository. Confirm publication rights before hosting.
 
 No public URL is assigned yet. Fill `SITE_URL` and, optionally, your unlisted video link in `apps/web/src/lib/demo/config.ts` before the final publish build. Program records are dated snapshots with unverified details; always use official sites for current rules. The project has not been evaluated for actual disaster response or insurer acceptance.
+
+After choosing the domain, run `npm run build` followed by `npm run check:publish`. This checks each page's canonical/social metadata, the generated original sharing card, and the sitemap against the configured HTTPS origin. It reports a missing domain until one is set and does not deploy or modify DNS.

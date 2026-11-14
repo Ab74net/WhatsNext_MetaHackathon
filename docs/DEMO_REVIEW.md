@@ -2,6 +2,12 @@
 
 Prepared on `demo-mode`; nothing deployed or pushed. The pre-existing untracked editor workspace file was left untouched. No public URL or video URL has been supplied. Add them in `lib/demo/config.ts` before publishing; GitHub is already configured.
 
+## November 14 publication pass
+
+Fixed Memory Web's active navigation and same-page link handling on trailing-slash static URLs. Added unique titles/descriptions, page-specific canonical and social URLs, HTTPS-origin validation, matching Vercel security headers, and `npm run check:publish`. The sharing card now uses original text/vector artwork rendered locally rather than a third-party disaster photograph. No app runtime, external service, or paid call was added.
+
+Validation: **51 frontend tests**, clean lint, production export/firewall, and the complete Chrome journey passed. The browser observed **zero external requests, uncaught exceptions, file inputs, or permission calls**, and downloaded all three sample formats. A configured-domain fixture passed for all eight pages; a stale canonical was correctly rejected. The actual publication check deliberately stops at the empty `SITE_URL`. The history scan again found no secret matches or raw private-photo paths. Remaining page-photo permissions and the actual domain/video settings still need resolution before publication.
+
 ## Fixture inventory
 
 - `lib/demo/prompts.ts`: ten handwritten responses, an unknown-input fallback, four fictional places/addresses, frozen fictional bulletins dated September 27, 2024, and a Today / This week / Deadlines plan. Safety flows reuse existing sourced JSON. No live conditions or resource availability are asserted.

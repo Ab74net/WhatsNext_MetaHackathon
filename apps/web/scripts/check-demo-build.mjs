@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { CSP, DEMO_MODE } from "../src/lib/demo/config.ts";
 
 const root = fileURLToPath(new URL("../out/", import.meta.url));
 const banned = /MODEL_API_KEY|WREN_API_KEY|SAM_API_KEY|ELEVENLABS_API_KEY|MODEL_BASE_URL|api\.meta\.ai|api\.openai\.com|api\.elevenlabs\.io|api\.weather\.gov|server\.arcgisonline\.com|navigator\s*\.\s*(?:geolocation|mediaDevices)|getUserMedia|MediaRecorder|type\s*[:=]\s*["']file["']|\.sendBeacon\s*\(|\/api\/(?:agent|sessions|health|toolkit)/i;
@@ -21,6 +22,10 @@ function walk(dir) {
   }
 }
 if (!fs.existsSync(root)) throw new Error("Build the static site first.");
+if (DEMO_MODE !== true) throw new Error("The public site must use demo mode.");
+const vercel = JSON.parse(fs.readFileSync(new URL("../../../vercel.json", import.meta.url), "utf8"));
+const vercelCsp = vercel.headers?.find(rule => rule.source === "/(.*)")?.headers.find(header => header.key.toLowerCase() === "content-security-policy")?.value;
+if (vercelCsp !== `${CSP}; frame-ancestors 'none'`) throw new Error("Vercel CSP must match the shared demo policy.");
 walk(root);
 if (violations.length) throw new Error("Demo firewall failed:\n" + violations.join("\n"));
 console.log(`Demo firewall passed: ${count} static files; no live clients, upload inputs, or secret names.`);

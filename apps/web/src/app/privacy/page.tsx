@@ -1,6 +1,6 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/site";
 import Link from "next/link";
-export const metadata: Metadata = { title: "Privacy" };
+export const metadata = pageMetadata("/privacy/");
 export default function Privacy() {
   return <article className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-5 py-12">
     <h1 className="page-title">Privacy in this demo</h1>

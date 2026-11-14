@@ -3,6 +3,8 @@ import brand from "@shared/brand.json";
 import { ButtonLink } from "@/components/ui";
 import { HomeHero } from "@/components/home/HomeHero";
 import { EmergencyNotice } from "@/components/EmergencyNotice";
+import { pageMetadata } from "@/lib/site";
+export const metadata = pageMetadata("/");
 
 const STEPS = [
   { title: "Choose supplied sample photos", body: "Try a living room, kitchen, or bedroom set. Your own photos are never accepted." },

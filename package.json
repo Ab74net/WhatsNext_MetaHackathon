@@ -5,6 +5,7 @@
     "dev": "npm run dev:web",
     "dev:original": "concurrently -k -n api,web -c blue,green \"npm:dev:api\" \"npm:dev:web\"",
     "build": "npm --prefix apps/web run build",
+    "check:publish": "npm --prefix apps/web run check:publish",
     "preview": "node apps/web/scripts/serve-demo.mjs",
     "dev:api": "cd apps/api && .venv\\Scripts\\watchfiles --filter python \".venv\\Scripts\\python.exe -m uvicorn app.main:app --port 8000\" app",
     "dev:web": "npm --prefix apps/web run dev",

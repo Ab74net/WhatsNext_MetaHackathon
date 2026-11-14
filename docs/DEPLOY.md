@@ -6,7 +6,7 @@ No deployment has been performed. No account connection, API key, environment va
 
 1. Resolve the publication permissions recorded in [IMAGE_CREDITS.md](IMAGE_CREDITS.md). Attribution does not establish a licence. The six sample originals were supplied for the demo; file-level permission records still need confirmation.
 2. In `apps/web/src/lib/demo/config.ts`, fill `DEMO_VIDEO_URL` with the unlisted YouTube link if desired. It becomes an ordinary click-to-open link, with no player, thumbnail request, or third-party connection by default. `GITHUB_URL` is already set to the repository.
-3. Once a host gives you a URL, set `SITE_URL` to its actual HTTPS origin and rebuild. Until then, sitemap entries and the Open Graph image URL are deliberately omitted so no invented or localhost URL is published. With it set, the existing hero photo supplies the social image, and sitemap/robots use that origin. A `.webp` favicon is not needed: the existing `icon.png` is generated normally.
+3. Once you choose a domain or receive a host URL, set `SITE_URL` to its actual HTTPS origin and rebuild. Use just the origin, such as `https://your-domain.com`, with no subdirectory, credentials, query, or fragment. Until then, canonical URLs, sitemap entries, and social-image URLs are omitted. Each page gets its own canonical and social metadata when configured. A local 1200 × 630 social card is generated from the project's own wordmark/shapes, without third-party photography or remote fonts. The existing `icon.png` supplies the favicon.
 4. Install Node 22.18+ (Node 24 is tested). From the repository root:
 
    ```sh
@@ -14,6 +14,8 @@ No deployment has been performed. No account connection, API key, environment va
    npm run test:web
    npm --prefix apps/web run lint
    npm run build
+   # After setting SITE_URL, before publishing:
+   npm run check:publish
    npm run test:demo
    npm run audit:repo
    npm run preview
@@ -48,7 +50,7 @@ If connecting the repo later, use the same install/build/output paths as above a
 3. Add no environment variables, integrations, analytics, or runtime functions.
 4. Set the assigned URL in `SITE_URL` and rebuild before announcing the site. Verify direct route loads and CSP.
 
-The meta CSP works on Vercel; `_headers` is not a Vercel configuration file. Optional host-level headers can mirror the CSP in `lib/demo/config.ts` using Vercel's headers configuration. [Build settings](https://vercel.com/docs/builds/configure-a-build) explain Other/static output. Confirm that the intended use fits the current free plan.
+`vercel.json` includes CSP, no-referrer, content-type, and camera/microphone/geolocation restriction headers. `_headers` is not a Vercel configuration file. The build verifies that Vercel's CSP stays aligned with `lib/demo/config.ts`. [Vercel's header configuration](https://vercel.com/docs/project-configuration/vercel-json#headers) documents how these apply to static files. Confirm that the intended use fits the current free plan.
 
 ## GitHub Pages: account-root site
 
@@ -66,7 +68,13 @@ Alternatively prepare an Actions workflow that uploads `apps/web/out` with `acti
 
 The source of truth is `CSP` in `apps/web/src/lib/demo/config.ts`. Root layout emits it before application scripts on every route, including 404. `connect-src 'self'` permits only same-origin static files; no external host is allowlisted. Scripts/styles use self plus inline code for the static Next runtime, images use self/data/blob, frames/workers/objects are blocked, and form navigation is disabled. Scripted forms prevent submission and run locally.
 
-Build preparation also emits `public/_headers` for Cloudflare/Netlify, adding `frame-ancestors 'none'`, camera/microphone/geolocation restrictions, and no-referrer. Vercel/GitHub rely on the meta CSP unless headers are configured explicitly. No map tile-provider terms need acceptance because no map provider is used. Hosts may retain ordinary file access logs; the app has no analytics or input transmission.
+Build preparation also emits `public/_headers` for Cloudflare/Netlify, adding `frame-ancestors 'none'`, camera/microphone/geolocation restrictions, and no-referrer. Vercel receives matching headers through `vercel.json`. GitHub Pages uses the meta CSP. No map tile-provider terms need acceptance because no map provider is used. Hosts may retain ordinary file access logs; the app has no analytics or input transmission.
+
+## After buying the domain
+
+Set `SITE_URL`, choose either the apex or `www` hostname as the primary origin in your host, and redirect the alternate hostname using that host's domain settings. Follow the host's instructions for connecting the domain and enabling HTTPS. No DNS changes are made by this repository. Set the unlisted YouTube link in `DEMO_VIDEO_URL` if you want it visible on About.
+
+Run `npm run build` then `npm run check:publish`. The read-only check rejects blank/placeholder domains, stale canonical/social URLs, an incomplete sitemap, a missing social card, and an unsafe video-link scheme. It deliberately reports that publication is not configured while `SITE_URL` is empty; ordinary local builds still work without a domain. It does not deploy, verify DNS ownership, or establish photo permission.
 
 ## Pre-publish check
 

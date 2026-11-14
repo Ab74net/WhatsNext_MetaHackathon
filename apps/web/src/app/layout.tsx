@@ -3,18 +3,17 @@ import brand from "@shared/brand.json";
 import { AppShell } from "@/components/AppShell";
 import { THEME_BOOTSTRAP } from "@/lib/theme";
 import { CSP, SITE_URL } from "@/lib/demo/config";
+import { normalizeSiteOrigin, pageMetadata, SITE_DESCRIPTION } from "@/lib/site";
 import "./globals.css";
 
+const siteOrigin = normalizeSiteOrigin(SITE_URL);
+const sharing = pageMetadata("/");
 export const metadata: Metadata = {
   title: { default: `${brand.projectName} | Concept demo`, template: `%s | ${brand.projectName} concept demo` },
-  description: `${brand.projectName} is an independent disaster recovery concept with sample photos, simulated inventories, and scripted responses. No uploads or live AI.`,
-  ...(SITE_URL ? { metadataBase: new URL(SITE_URL) } : {}),
-  openGraph: {
-    title: `${brand.projectName} | Concept demo`,
-    description: "Explore a simulated disaster recovery workflow. Sample data only; no uploads or live AI.",
-    type: "website",
-    images: SITE_URL ? [{ url: new URL("/hero/intro-2-1100.webp", SITE_URL).href, width: 1100, height: 733, alt: "Belongings after a disaster; independent recovery concept demo" }] : [],
-  },
+  description: SITE_DESCRIPTION,
+  ...(siteOrigin ? { metadataBase: new URL(siteOrigin) } : {}),
+  openGraph: sharing.openGraph,
+  twitter: sharing.twitter,
   robots: { index: true, follow: true },
 };
 

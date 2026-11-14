@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/site";
 import { ArrowDown, ArrowRight, Check, Compass, Images, ListChecks, MapPin, Search } from "lucide-react";
 import brand from "@shared/brand.json";
 import { ButtonLink } from "@/components/ui";
@@ -6,10 +6,7 @@ import { StoryReveals } from "@/components/story/StoryReveals";
 import { STORY_PHOTOS } from "@/lib/storyPhotos";
 import "./story.css";
 
-export const metadata: Metadata = {
-  title: "Our Story",
-  description: `A Virginia Tech student's experience of the 2024 New River Valley floods, and the idea behind ${brand.projectName}.`,
-};
+export const metadata = pageMetadata("/our-story/");
 
 const PROBLEMS = [
   { icon: Images, title: "Remembering what was lost", body: "An insurance claim can mean listing hundreds of belongings, often without an inventory prepared beforehand." },

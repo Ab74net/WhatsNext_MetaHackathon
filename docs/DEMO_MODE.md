@@ -14,6 +14,8 @@ Build preparation emits `_headers` for Netlify/Cloudflare and `.nojekyll` for Gi
 
 Local `next dev` adds `unsafe-eval` for React debugging, as required by the installed Next.js guide. Production export never allows it, and the build check rejects development CSP in exported HTML. Both modes use only the demo adapters and retain `connect-src 'self'`.
 
+Publication metadata comes from `lib/site.ts`: eight public pages have distinct titles, descriptions, canonicals, and social URLs once `SITE_URL` is configured. `scripts/make-social-card.mjs` renders an original card during the build using locally bundled Next/React/font assets. HTTP fetches are blocked during rendering. Only its PNG is shipped; no image endpoint or renderer runs on the host. `npm run check:publish` verifies the final-domain metadata and sitemap against the exported files without deploying.
+
 Aid's `ProgramMatcher` remains deterministic and local. `interpretAidSentence` selects example details; unknown input asks for a sample. `buildAidDraft` supplies the editable template. Source dates are retained, every record is unverified, and declaration checking is an official link. Toolkit resolves to static content; no live voice implementation exists. See [DEMO_REVIEW.md](DEMO_REVIEW.md) for fixture/brand references, audit findings, rights gaps, and manual checks.
 
 ## Fixtures and adding examples

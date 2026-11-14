@@ -110,6 +110,7 @@ try {
   await clickText("Merge 2"); await wait("document.querySelectorAll('[data-item-id]').length===5", "manual merge");
   await click('[data-tour="claims-step-remember"]');
   await wait("document.querySelector('[data-node-kind=suggestion]')", "static Memory Web");
+  assert.equal(await evaluate("[...document.querySelectorAll('header nav a')].find(a=>a.textContent.trim()==='Memory Web')?.getAttribute('aria-current')"), "page", "Memory Web navigation must stay active with trailing slashes");
   await evaluate("document.querySelector('[data-node-kind=room]').dispatchEvent(new MouseEvent('click',{bubbles:true,detail:0}))");
   await wait("document.getElementById('memory-related-suggestions')", "related suggestion popover");
   await evaluate("document.querySelector('[data-node-kind=suggestion][aria-label=\"Did you own laptop?\"]').dispatchEvent(new MouseEvent('click',{bubbles:true,detail:0}))");

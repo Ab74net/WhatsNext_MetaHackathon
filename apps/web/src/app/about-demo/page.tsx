@@ -1,9 +1,9 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/site";
 import brand from "@shared/brand.json";
 import { DEMO_VIDEO_URL, GITHUB_URL } from "@/lib/demo/config";
 import { ButtonLink } from "@/components/ui";
 import { EmergencyNotice } from "@/components/EmergencyNotice";
-export const metadata: Metadata = { title: "About this demo" };
+export const metadata = pageMetadata("/about-demo/");
 
 export default function AboutDemo() {
   return <article className="mx-auto flex w-full max-w-3xl flex-col gap-7 px-5 py-12">
