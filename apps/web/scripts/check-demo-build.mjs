@@ -24,6 +24,15 @@ function walk(dir) {
 if (!fs.existsSync(root)) throw new Error("Build the static site first.");
 if (DEMO_MODE !== true) throw new Error("The public site must use demo mode.");
 const vercel = JSON.parse(fs.readFileSync(new URL("../../../vercel.json", import.meta.url), "utf8"));
+const web = vercel.services?.web;
+if (Object.keys(vercel.services ?? {}).join() !== "web" || web.root !== "apps/web" || web.framework !== "nextjs" || web.outputDirectory !== "out" || web.bindings?.length || web.functions) {
+  throw new Error("The public deployment must contain only the static web service, without backend bindings or functions.");
+}
+const serviceBuildKeys = ["framework", "functions", "installCommand", "buildCommand", "devCommand", "ignoreCommand", "outputDirectory"];
+if (serviceBuildKeys.some(key => key in vercel)) throw new Error("Vercel Services build settings must live inside services.web.");
+if (vercel.rewrites?.length !== 1 || vercel.rewrites[0].source !== "/(.*)" || vercel.rewrites[0].destination?.service !== "web" || vercel.trailingSlash !== true) {
+  throw new Error("Public routes must target the static web service and preserve trailing slashes.");
+}
 const vercelCsp = vercel.headers?.find(rule => rule.source === "/(.*)")?.headers.find(header => header.key.toLowerCase() === "content-security-policy")?.value;
 if (vercelCsp !== `${CSP}; frame-ancestors 'none'`) throw new Error("Vercel CSP must match the shared demo policy.");
 walk(root);

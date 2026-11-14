@@ -43,12 +43,17 @@ For repository builds, use repository root, install `npm --prefix apps/web ci`, 
 
 If connecting the repo later, use the same install/build/output paths as above and select a static-site setup. [Netlify's framework overview](https://docs.netlify.com/build/frameworks/overview/) lists the static export output directory. Review current free-plan quotas; do not enable paid add-ons for the demo.
 
-## Vercel: static project
+## Vercel: Services project with a static frontend
 
-1. Import the repository when ready to publish; choose `demo-mode` as the source branch if it has not been merged.
-2. Keep the project root at the repository root. The included `vercel.json` selects **Other**, installs only frontend dependencies, builds the export, and publishes `apps/web/out`.
-3. Add no environment variables, integrations, analytics, or runtime functions.
-4. Set the assigned URL in `SITE_URL` and rebuild before announcing the site. Verify direct route loads and CSP.
+The repository contains a retained FastAPI app, which Vercel may auto-detect during import. The public concept uses only local fixtures and browser storage: it never calls that backend. The root `vercel.json` explicitly declares just `web`, rooted at `apps/web`, and routes all public paths to it. No `api` service is deployed, either publicly or internally. There are no service bindings or generated URL variables because there are no calls between services.
+
+1. Review and commit the configuration, then push it to the branch you intend to deploy (`master` after merging the demo).
+2. In Vercel's import screen, keep **Root Directory** at `./` and **Application Preset** at **Services**. Refresh after the pushed configuration reaches GitHub. Use the configured Services import; do not import the detected FastAPI app as a separate project.
+3. The `web` service runs `npm ci` and `npm run build` inside `apps/web`, then publishes `out`. Next.js retains `output: "export"`; no server functions are needed. Keep the complete repository available for the build because the frontend imports `packages/shared` and `content`.
+4. Leave environment variables empty. Do not add model keys or an API URL. No integrations or analytics are required.
+5. Set the assigned URL in `SITE_URL` and rebuild before announcing the site. Verify direct visits to `/claims/`, `/claims/#memory`, `/aid/`, `/our-story/`, an unknown route, and a local image/CSS asset. Inspect the response security headers.
+
+For a local routing check, run `npx vercel@latest dev --local` from the repository root. This runs the configured `web` service without signing in or deploying. `next dev` is a development server; use `npm run build` and `npm run test:demo` to check the actual static export. [Vercel's Services documentation](https://vercel.com/docs/services) describes the service-level build settings and top-level routing. Adding a live backend later requires a separate decision and application changes; the current public adapter deliberately never imports it.
 
 `vercel.json` includes CSP, no-referrer, content-type, and camera/microphone/geolocation restriction headers. `_headers` is not a Vercel configuration file. The build verifies that Vercel's CSP stays aligned with `lib/demo/config.ts`. [Vercel's header configuration](https://vercel.com/docs/project-configuration/vercel-json#headers) documents how these apply to static files. Confirm that the intended use fits the current free plan.
 
@@ -78,7 +83,7 @@ Run `npm run build` then `npm run check:publish`. The read-only check rejects bl
 
 ## Pre-publish check
 
-- Resolve image publication rights; review the visible `Meta Muse` partner text and the historical/disclaimer references listed in [DEMO_REVIEW.md](DEMO_REVIEW.md).
+- Resolve image publication rights in [IMAGE_CREDITS.md](IMAGE_CREDITS.md). Review the `Meta Muse` partner text in `packages/shared/brand.json` and the historical references and independence notices on About and Our Story.
 - Fill `SITE_URL`; optionally fill the video link; rebuild and inspect the generated social-image URL and sitemap.
 - Run unit tests, lint, the static firewall, browser journey, and read-only history audit. Do not run the original paid model diagnostic.
 - Check mobile navigation, keyboard tour/Escape, light/dark toggle, sample scan, confirmation, Memory Web, all three marked downloads, Aid checklist, Toolkit notes, and Reset demo.

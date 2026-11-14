@@ -71,7 +71,7 @@ The original hackathon implementation used **Python/FastAPI**, **Meta Muse Spark
 | `apps/api` | Retained real pipeline, models, image handling, merging, and server exports. Never deploy for this demo. |
 | `packages/shared` | Shared schemas and brand names. |
 | `content` | Dated source material for safety and document guides; no live ingestion. |
-| `docs` | [Demo internals](docs/DEMO_MODE.md), [deployment](docs/DEPLOY.md), [review findings](docs/DEMO_REVIEW.md), [image credits](docs/IMAGE_CREDITS.md), and the original video script. |
+| `docs` | [Deployment instructions](docs/DEPLOY.md) and [image credits](docs/IMAGE_CREDITS.md). |
 
 For original backend development on Windows, `npm run setup:original` installs its dependencies, and `npm run dev:api` explicitly starts FastAPI. Tests run with `npm run test:api` and force mock mode. On macOS/Linux, create `apps/api/.venv`, install `apps/api/requirements.txt`, and run `.venv/bin/python -m pytest -q` from `apps/api`. Starting the backend does not turn on live behavior in the public frontend.
 

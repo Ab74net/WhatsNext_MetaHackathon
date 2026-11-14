@@ -1,0 +1,15 @@
+{
+	"folders": [
+		{
+			"name": "PicsForHomepagehackathon",
+			"path": "../../PicsForHomepagehackathon"
+		},
+		{
+			"name": "Meta2026Hackathon",
+			"path": ".."
+		}
+	],
+	"settings": {
+		"python-envs.defaultEnvManager": "ms-python.python:venv"
+	}
+}

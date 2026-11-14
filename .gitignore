@@ -20,6 +20,7 @@ scripts/**/*.avif
 
 node_modules/
 .next/
+.vercel/
 apps/web/out/
 apps/web/public/_headers
 apps/web/public/.nojekyll
