@@ -5,8 +5,7 @@
       "root": "apps/web",
       "framework": "nextjs",
       "installCommand": "npm ci",
-      "buildCommand": "npm run build",
-      "outputDirectory": "out"
+      "buildCommand": "npm run build"
     }
   },
   "rewrites": [

@@ -25,9 +25,10 @@ if (!fs.existsSync(root)) throw new Error("Build the static site first.");
 if (DEMO_MODE !== true) throw new Error("The public site must use demo mode.");
 const vercel = JSON.parse(fs.readFileSync(new URL("../../../vercel.json", import.meta.url), "utf8"));
 const web = vercel.services?.web;
-if (Object.keys(vercel.services ?? {}).join() !== "web" || web.root !== "apps/web" || web.framework !== "nextjs" || web.outputDirectory !== "out" || web.bindings?.length || web.functions) {
+if (Object.keys(vercel.services ?? {}).join() !== "web" || web.root !== "apps/web" || web.framework !== "nextjs" || web.bindings?.length || web.functions) {
   throw new Error("The public deployment must contain only the static web service, without backend bindings or functions.");
 }
+if ("outputDirectory" in web) throw new Error("Leave Vercel's outputDirectory unset: Next.js metadata is in .next, and output: export produces the static out folder automatically.");
 const serviceBuildKeys = ["framework", "functions", "installCommand", "buildCommand", "devCommand", "ignoreCommand", "outputDirectory"];
 if (serviceBuildKeys.some(key => key in vercel)) throw new Error("Vercel Services build settings must live inside services.web.");
 if (vercel.rewrites?.length !== 1 || vercel.rewrites[0].source !== "/(.*)" || vercel.rewrites[0].destination?.service !== "web" || vercel.trailingSlash !== true) {

@@ -49,7 +49,7 @@ The repository contains a retained FastAPI app, which Vercel may auto-detect dur
 
 1. Review and commit the configuration, then push it to the branch you intend to deploy (`master` after merging the demo).
 2. In Vercel's import screen, keep **Root Directory** at `./` and **Application Preset** at **Services**. Refresh after the pushed configuration reaches GitHub. Use the configured Services import; do not import the detected FastAPI app as a separate project.
-3. The `web` service runs `npm ci` and `npm run build` inside `apps/web`, then publishes `out`. Next.js retains `output: "export"`; no server functions are needed. Keep the complete repository available for the build because the frontend imports `packages/shared` and `content`.
+3. The `web` service runs `npm ci` and `npm run build` inside `apps/web`. Leave **Output Directory** at its framework default, with no override in the dashboard or `vercel.json`. Vercel's Next.js builder first reads metadata from `.next`, then discovers the static `out` folder through Next.js's `output: "export"` setting. Setting the override to `out` makes it look for `out/routes-manifest.json` and causes `NEXT_NO_ROUTES_MANIFEST`. No server functions are needed. Keep the complete repository available for the build because the frontend imports `packages/shared` and `content`.
 4. Leave environment variables empty. Do not add model keys or an API URL. No integrations or analytics are required.
 5. Set the assigned URL in `SITE_URL` and rebuild before announcing the site. Verify direct visits to `/claims/`, `/claims/#memory`, `/aid/`, `/our-story/`, an unknown route, and a local image/CSS asset. Inspect the response security headers.
 
